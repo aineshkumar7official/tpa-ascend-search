@@ -1,0 +1,309 @@
+{
+  "_note": "Per airline|aircraft_type: cabin/seat/food images ONLY from CC BY, CC BY-SA, CC0 or public-domain files; copy the credit verbatim. Missing image_url -> Commons search, then gray placeholder. airline|* fills any slot an aircraft entry leaves empty. Local files live in static/ and use /app/static/... URLs.",
+  "DL|Airbus A321": {
+    "cabin": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "seat": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "food": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "layout": null
+  },
+  "DL|Boeing 737-900ER": {
+    "cabin": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "seat": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "food": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "layout": null
+  },
+  "WN|Boeing 737 MAX 8": {
+    "cabin": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "seat": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "food": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "layout": null
+  },
+  "WN|Boeing 737-800": {
+    "cabin": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "seat": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "food": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "layout": null
+  },
+  "B6|Airbus A320": {
+    "cabin": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "seat": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "food": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "layout": null
+  },
+  "B6|Airbus A321neo": {
+    "cabin": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "seat": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "food": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "layout": null
+  },
+  "AA|Airbus A321": {
+    "cabin": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "seat": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "food": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "layout": null
+  },
+  "AA|Boeing 737-800": {
+    "cabin": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "seat": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "food": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "layout": null
+  },
+  "UA|Boeing 737-900ER": {
+    "cabin": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "seat": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "food": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "layout": null
+  },
+  "NK|Airbus A320neo": {
+    "cabin": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "seat": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "food": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "layout": null
+  },
+  "F9|*": {
+    "cabin": {
+      "image_url": "/app/static/airlines/F9/cabin.jpg",
+      "credit": "Frontier Airlines",
+      "source_page": "https://news.flyfrontier.com/"
+    },
+    "seat": {
+      "image_url": "/app/static/airlines/F9/seat.jpg",
+      "credit": "Frontier Airlines",
+      "source_page": "https://news.flyfrontier.com/"
+    },
+    "food": {
+      "image_url": "/app/static/airlines/F9/food.jpg",
+      "credit": "Frontier Airlines",
+      "source_page": "https://flyfrontier-com-frontdoor-en-chh3dufqdpdff8h9.a02.azurefd.net/media/10543/updated-inflight-menu-landing-page_snack-packs_400x400.png"
+    },
+    "layout": null
+  },
+  "F9|Airbus A321neo": {
+    "cabin": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "seat": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "food": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "layout": null
+  },
+  "AS|Boeing 737-900ER": {
+    "cabin": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "seat": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "food": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "layout": null
+  },
+  "SY|Boeing 737-800": {
+    "cabin": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "seat": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "food": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "layout": null
+  },
+  "MX|Airbus A220-300": {
+    "cabin": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "seat": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "food": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "layout": null
+  },
+  "G4|Airbus A320": {
+    "cabin": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "seat": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "food": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "layout": null
+  },
+  "AC|Airbus A220-300": {
+    "cabin": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "seat": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "food": {
+      "image_url": null,
+      "credit": null,
+      "source_page": null
+    },
+    "layout": null
+  }
+}

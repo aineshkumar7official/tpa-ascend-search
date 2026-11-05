@@ -1,0 +1,252 @@
+{
+ "updated": "2026-10-24",
+ "destinations": {
+  "ALB": [
+   "WN"
+  ],
+  "ATL": [
+   "DL",
+   "F9",
+   "WN"
+  ],
+  "AUS": [
+   "DL",
+   "WN"
+  ],
+  "BDL": [
+   "MX",
+   "WN"
+  ],
+  "BGR": [
+   "MX"
+  ],
+  "BHM": [
+   "WN"
+  ],
+  "BNA": [
+   "AA",
+   "WN"
+  ],
+  "BOG": [
+   "AV"
+  ],
+  "BOS": [
+   "B6",
+   "DL"
+  ],
+  "BTV": [
+   "MX"
+  ],
+  "BUF": [
+   "WN"
+  ],
+  "BWI": [
+   "F9",
+   "WN"
+  ],
+  "CAK": [
+   "MX"
+  ],
+  "CHS": [
+   "MX"
+  ],
+  "CLE": [
+   "F9"
+  ],
+  "CLT": [
+   "AA"
+  ],
+  "CMH": [
+   "WN"
+  ],
+  "CUN": [
+   "B6"
+  ],
+  "CVG": [
+   "DL",
+   "F9"
+  ],
+  "DAL": [
+   "WN"
+  ],
+  "DCA": [
+   "AA",
+   "WN"
+  ],
+  "DEN": [
+   "F9",
+   "UA",
+   "WN"
+  ],
+  "DFW": [
+   "AA",
+   "F9"
+  ],
+  "DTW": [
+   "DL",
+   "F9"
+  ],
+  "EWR": [
+   "UA"
+  ],
+  "FRA": [
+   "4Y"
+  ],
+  "GCM": [
+   "KX"
+  ],
+  "GSP": [
+   "MX"
+  ],
+  "HAV": [
+   "WN"
+  ],
+  "HOU": [
+   "WN"
+  ],
+  "HPN": [
+   "B6"
+  ],
+  "HSV": [
+   "MX"
+  ],
+  "HVN": [
+   "XP"
+  ],
+  "IAD": [
+   "UA"
+  ],
+  "IAH": [
+   "UA"
+  ],
+  "ILG": [
+   "XP"
+  ],
+  "IND": [
+   "WN"
+  ],
+  "JFK": [
+   "B6",
+   "DL"
+  ],
+  "LAS": [
+   "WN"
+  ],
+  "LAX": [
+   "DL",
+   "UA",
+   "WN"
+  ],
+  "LGA": [
+   "AA",
+   "DL"
+  ],
+  "LHR": [
+   "BA",
+   "VS"
+  ],
+  "MCI": [
+   "WN"
+  ],
+  "MDW": [
+   "WN"
+  ],
+  "MEX": [
+   "AM"
+  ],
+  "MHT": [
+   "WN"
+  ],
+  "MIA": [
+   "AA"
+  ],
+  "MKE": [
+   "WN"
+  ],
+  "MSP": [
+   "DL",
+   "SY"
+  ],
+  "MSY": [
+   "MX",
+   "WN"
+  ],
+  "MYR": [
+   "MX"
+  ],
+  "ORD": [
+   "AA",
+   "UA"
+  ],
+  "ORF": [
+   "MX"
+  ],
+  "PHL": [
+   "AA",
+   "F9"
+  ],
+  "PHX": [
+   "AA",
+   "WN"
+  ],
+  "PIT": [
+   "WN"
+  ],
+  "PTY": [
+   "CM"
+  ],
+  "PVD": [
+   "MX",
+   "WN"
+  ],
+  "PWM": [
+   "MX"
+  ],
+  "RDU": [
+   "DL",
+   "MX",
+   "WN"
+  ],
+  "RIC": [
+   "MX"
+  ],
+  "ROC": [
+   "MX"
+  ],
+  "SAN": [
+   "AS",
+   "WN"
+  ],
+  "SAT": [
+   "WN"
+  ],
+  "SDF": [
+   "WN"
+  ],
+  "SEA": [
+   "AS",
+   "DL"
+  ],
+  "SFO": [
+   "UA"
+  ],
+  "SJU": [
+   "B6",
+   "F9",
+   "WN"
+  ],
+  "SLC": [
+   "DL"
+  ],
+  "STL": [
+   "WN"
+  ],
+  "YUL": [
+   "AC"
+  ],
+  "YYZ": [
+   "AC",
+   "PD"
+  ]
+ }
+}

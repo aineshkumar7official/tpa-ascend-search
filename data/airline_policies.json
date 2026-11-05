@@ -1,0 +1,939 @@
+{
+  "_note": "Economy fare. Fill every value from the airline's OWN policy page, then set 'checked'. fee_usd = numeric estimate for bag totals only (null = unknown -> fare shown without bags). each_way = fee charged per direction. Nothing here is guessed; null renders 'Not verified yet'. seat_selection.fee_usd / extra_legroom.fee_usd = cheapest economy seat / extra-legroom seat per traveler per flight (card Upgrades menu). change_cancel may add label, rows ([what, fee] pairs) and note for the fee table; text is still required for the round-trip summary. fee_label = text for the Upgrades menu when a fee applies but fee_usd is unknown.",
+  "DL": {
+    "checked": null,
+    "personal_item": {
+      "text": "Free",
+      "fee_usd": 0
+    },
+    "carry_on": {
+      "text": "Included",
+      "fee_usd": 0,
+      "each_way": true
+    },
+    "first_checked": {
+      "text": "$45 online, $45–$50 airport",
+      "fee_usd": 45,
+      "each_way": true
+    },
+    "seat_selection": {
+      "text": "Main Basic: assigned at check-in",
+      "fee_usd": null
+    },
+    "change_cancel": {
+      "text": "Main Basic: no changes on most routes; cancel fee, eCredit"
+    },
+    "boarding": {
+      "text": null
+    },
+    "loyalty_program": {
+      "text": "SkyMiles"
+    },
+    "recently_changed": {
+      "text": null,
+      "date": null
+    },
+    "policy_url": null,
+    "extra_legroom": {
+      "text": null,
+      "fee_usd": null
+    }
+  },
+  "WN": {
+    "checked": null,
+    "personal_item": {
+      "text": "Free",
+      "fee_usd": 0
+    },
+    "carry_on": {
+      "text": "Free",
+      "fee_usd": 0,
+      "each_way": true
+    },
+    "first_checked": {
+      "text": "$45",
+      "fee_usd": 45,
+      "each_way": true
+    },
+    "seat_selection": {
+      "text": "Basic: assigned at check-in",
+      "fee_usd": null
+    },
+    "change_cancel": {
+      "text": "Basic: no changes, non-refundable"
+    },
+    "boarding": {
+      "text": null
+    },
+    "loyalty_program": {
+      "text": "Rapid Rewards"
+    },
+    "recently_changed": {
+      "text": null,
+      "date": null
+    },
+    "policy_url": null,
+    "extra_legroom": {
+      "text": null,
+      "fee_usd": null
+    }
+  },
+  "B6": {
+    "checked": null,
+    "personal_item": {
+      "text": "Included",
+      "fee_usd": 0
+    },
+    "carry_on": {
+      "text": "Included on Main Base (unconfirmed)",
+      "fee_usd": null,
+      "each_way": true
+    },
+    "first_checked": {
+      "text": "$50, $55 peak",
+      "fee_usd": 50,
+      "each_way": true
+    },
+    "seat_selection": {
+      "text": "Fee, or free seat assigned before departure",
+      "fee_usd": null,
+      "fee_label": "Requires fee"
+    },
+    "change_cancel": {
+      "text": "Main Base: $150 to change or cancel"
+    },
+    "boarding": {
+      "text": null
+    },
+    "loyalty_program": {
+      "text": "TrueBlue"
+    },
+    "recently_changed": {
+      "text": null,
+      "date": null
+    },
+    "policy_url": null,
+    "extra_legroom": {
+      "text": null,
+      "fee_usd": null
+    }
+  },
+  "AA": {
+    "checked": null,
+    "personal_item": {
+      "text": "Free",
+      "fee_usd": 0
+    },
+    "carry_on": {
+      "text": "Free",
+      "fee_usd": 0,
+      "each_way": true
+    },
+    "first_checked": {
+      "text": "$50 online, $55 airport (Basic)",
+      "fee_usd": 50,
+      "each_way": true
+    },
+    "seat_selection": {
+      "text": "Paid, on tickets bought May 18, 2026 or later",
+      "fee_usd": null,
+      "fee_label": "Requires fee"
+    },
+    "change_cancel": {
+      "text": null
+    },
+    "boarding": {
+      "text": null
+    },
+    "loyalty_program": {
+      "text": "AAdvantage"
+    },
+    "recently_changed": {
+      "text": null,
+      "date": null
+    },
+    "policy_url": null,
+    "extra_legroom": {
+      "text": null,
+      "fee_usd": null
+    }
+  },
+  "UA": {
+    "checked": null,
+    "personal_item": {
+      "text": "Included",
+      "fee_usd": 0
+    },
+    "carry_on": {
+      "text": "Included on Economy; Basic unconfirmed",
+      "fee_usd": null,
+      "each_way": true
+    },
+    "first_checked": {
+      "text": "$45 in advance, $50 within 24 hours",
+      "fee_usd": 45,
+      "each_way": true
+    },
+    "seat_selection": {
+      "text": null,
+      "fee_usd": null
+    },
+    "change_cancel": {
+      "text": null
+    },
+    "boarding": {
+      "text": null
+    },
+    "loyalty_program": {
+      "text": "MileagePlus"
+    },
+    "recently_changed": {
+      "text": null,
+      "date": null
+    },
+    "policy_url": null,
+    "extra_legroom": {
+      "text": null,
+      "fee_usd": null
+    }
+  },
+  "NK": {
+    "checked": null,
+    "personal_item": {
+      "text": null,
+      "fee_usd": null
+    },
+    "carry_on": {
+      "text": null,
+      "fee_usd": null,
+      "each_way": true
+    },
+    "first_checked": {
+      "text": null,
+      "fee_usd": null,
+      "each_way": true
+    },
+    "seat_selection": {
+      "text": null,
+      "fee_usd": null
+    },
+    "change_cancel": {
+      "text": null
+    },
+    "boarding": {
+      "text": null
+    },
+    "loyalty_program": {
+      "text": null
+    },
+    "recently_changed": {
+      "text": null,
+      "date": null
+    },
+    "policy_url": null,
+    "extra_legroom": {
+      "text": null,
+      "fee_usd": null
+    }
+  },
+  "F9": {
+    "checked": null,
+    "personal_item": {
+      "text": "Free",
+      "fee_usd": 0
+    },
+    "carry_on": {
+      "text": "Fee on Basic, included with Standard",
+      "fee_usd": null,
+      "each_way": true
+    },
+    "first_checked": {
+      "text": "Fee, max 40 lb",
+      "fee_usd": null,
+      "each_way": true,
+      "fee_label": "Requires fee"
+    },
+    "seat_selection": {
+      "text": "Add-on",
+      "fee_usd": null,
+      "fee_label": "Requires fee"
+    },
+    "change_cancel": {
+      "text": "Basic: change $0 at 60+ days, else $149; cancel $149. Bundles $0.",
+      "rows": [
+        [
+          "Change, 60+ days out",
+          "$0"
+        ],
+        [
+          "Change, 59 days or less",
+          "$149"
+        ],
+        [
+          "Cancel",
+          "$149"
+        ],
+        [
+          "Bundles",
+          "$0"
+        ]
+      ],
+      "label": "Basic fare",
+      "note": "Cancel fee: booked Sep 25, 2026 or later. Refunded as travel credit minus the fee."
+    },
+    "boarding": {
+      "text": null
+    },
+    "loyalty_program": {
+      "text": "Frontier Miles"
+    },
+    "recently_changed": {
+      "text": null,
+      "date": null
+    },
+    "policy_url": null,
+    "extra_legroom": {
+      "text": null,
+      "fee_usd": null,
+      "fee_label": "Requires fee"
+    }
+  },
+  "AS": {
+    "checked": null,
+    "personal_item": {
+      "text": "Free",
+      "fee_usd": 0
+    },
+    "carry_on": {
+      "text": "Free",
+      "fee_usd": 0,
+      "each_way": true
+    },
+    "first_checked": {
+      "text": "$45 online",
+      "fee_usd": 45,
+      "each_way": true
+    },
+    "seat_selection": {
+      "text": "Saver: can't choose in advance",
+      "fee_usd": null
+    },
+    "change_cancel": {
+      "text": "Saver: no changes; 50% credit if canceled 14+ days out"
+    },
+    "boarding": {
+      "text": null
+    },
+    "loyalty_program": {
+      "text": "Atmos Rewards"
+    },
+    "recently_changed": {
+      "text": null,
+      "date": null
+    },
+    "policy_url": null,
+    "extra_legroom": {
+      "text": null,
+      "fee_usd": null
+    }
+  },
+  "SY": {
+    "checked": null,
+    "personal_item": {
+      "text": "Free",
+      "fee_usd": 0
+    },
+    "carry_on": {
+      "text": "$30 online, $45 by check-in, $50 airport",
+      "fee_usd": 30,
+      "each_way": true
+    },
+    "first_checked": {
+      "text": "$34 online, $50 airport",
+      "fee_usd": 34,
+      "each_way": true
+    },
+    "seat_selection": {
+      "text": null,
+      "fee_usd": null
+    },
+    "change_cancel": {
+      "text": "$0 at 60+ days; otherwise not verified"
+    },
+    "boarding": {
+      "text": null
+    },
+    "loyalty_program": {
+      "text": "Sun Country Rewards"
+    },
+    "recently_changed": {
+      "text": null,
+      "date": null
+    },
+    "policy_url": null,
+    "extra_legroom": {
+      "text": null,
+      "fee_usd": null
+    }
+  },
+  "MX": {
+    "checked": null,
+    "personal_item": {
+      "text": "Free",
+      "fee_usd": 0
+    },
+    "carry_on": {
+      "text": "$35 on Nice; included on Nicer, Nicest",
+      "fee_usd": 35,
+      "each_way": true
+    },
+    "first_checked": {
+      "text": "$35–$41 by route",
+      "fee_usd": null,
+      "each_way": true,
+      "fee_label": "$35–$41"
+    },
+    "seat_selection": {
+      "text": null,
+      "fee_usd": null
+    },
+    "change_cancel": {
+      "text": "$0 to change or cancel; cancel gives flight credit. No Flex can't change."
+    },
+    "boarding": {
+      "text": null
+    },
+    "loyalty_program": {
+      "text": "BreezyRewards"
+    },
+    "recently_changed": {
+      "text": null,
+      "date": null
+    },
+    "policy_url": null,
+    "extra_legroom": {
+      "text": null,
+      "fee_usd": null
+    }
+  },
+  "G4": {
+    "checked": null,
+    "personal_item": {
+      "text": null,
+      "fee_usd": null
+    },
+    "carry_on": {
+      "text": null,
+      "fee_usd": null,
+      "each_way": true
+    },
+    "first_checked": {
+      "text": null,
+      "fee_usd": null,
+      "each_way": true
+    },
+    "seat_selection": {
+      "text": null,
+      "fee_usd": null
+    },
+    "change_cancel": {
+      "text": null
+    },
+    "boarding": {
+      "text": null
+    },
+    "loyalty_program": {
+      "text": null
+    },
+    "recently_changed": {
+      "text": null,
+      "date": null
+    },
+    "policy_url": null,
+    "extra_legroom": {
+      "text": null,
+      "fee_usd": null
+    }
+  },
+  "AC": {
+    "checked": null,
+    "personal_item": {
+      "text": "1 included",
+      "fee_usd": 0
+    },
+    "carry_on": {
+      "text": "Not included on Basic",
+      "fee_usd": null,
+      "each_way": true
+    },
+    "first_checked": {
+      "text": "$45",
+      "fee_usd": 45,
+      "each_way": true
+    },
+    "seat_selection": {
+      "text": "$15–$80 per segment, may be CAD",
+      "fee_usd": null,
+      "fee_label": "$15–$80, may be CAD"
+    },
+    "change_cancel": {
+      "text": "Basic: no changes within Canada; cancel not verified"
+    },
+    "boarding": {
+      "text": null
+    },
+    "loyalty_program": {
+      "text": "Aeroplan"
+    },
+    "recently_changed": {
+      "text": null,
+      "date": null
+    },
+    "policy_url": null,
+    "extra_legroom": {
+      "text": null,
+      "fee_usd": null
+    }
+  },
+  "AM": {
+    "checked": null,
+    "personal_item": {
+      "text": "Free, 10 kg combined on Basic",
+      "fee_usd": 0
+    },
+    "carry_on": {
+      "text": "Free",
+      "fee_usd": 0,
+      "each_way": true
+    },
+    "first_checked": {
+      "text": "$45 online, $50 airport",
+      "fee_usd": 45,
+      "each_way": true
+    },
+    "seat_selection": {
+      "text": "Free at check-in; $10–$30 to choose early",
+      "fee_usd": null,
+      "fee_label": "$10–$30"
+    },
+    "change_cancel": {
+      "text": "Basic: no changes or cancellation"
+    },
+    "boarding": {
+      "text": null
+    },
+    "loyalty_program": {
+      "text": "Aeroméxico Rewards"
+    },
+    "recently_changed": {
+      "text": null,
+      "date": null
+    },
+    "policy_url": null,
+    "extra_legroom": {
+      "text": null,
+      "fee_usd": null
+    }
+  },
+  "AV": {
+    "checked": null,
+    "personal_item": {
+      "text": "Included",
+      "fee_usd": 0
+    },
+    "carry_on": {
+      "text": "Included on Basic, 10 kg (unconfirmed)",
+      "fee_usd": null,
+      "each_way": true
+    },
+    "first_checked": {
+      "text": "Basic: fee; 1 included on Classic and Flex",
+      "fee_usd": null,
+      "each_way": true,
+      "fee_label": "Requires fee"
+    },
+    "seat_selection": {
+      "text": "May cost extra on Basic",
+      "fee_usd": null,
+      "fee_label": "May require fee"
+    },
+    "change_cancel": {
+      "text": "Basic: change for a fee, no refund"
+    },
+    "boarding": {
+      "text": null
+    },
+    "loyalty_program": {
+      "text": "LifeMiles"
+    },
+    "recently_changed": {
+      "text": null,
+      "date": null
+    },
+    "policy_url": null,
+    "extra_legroom": {
+      "text": null,
+      "fee_usd": null
+    }
+  },
+  "XP": {
+    "checked": null,
+    "personal_item": {
+      "text": "Free",
+      "fee_usd": 0
+    },
+    "carry_on": {
+      "text": "$54–$75",
+      "fee_usd": null,
+      "each_way": true
+    },
+    "first_checked": {
+      "text": "$49–$75 by timing",
+      "fee_usd": null,
+      "each_way": true,
+      "fee_label": "$49–$75"
+    },
+    "seat_selection": {
+      "text": "Free assigned seat; preferred from $10",
+      "fee_usd": null,
+      "fee_label": "From $10"
+    },
+    "change_cancel": {
+      "text": "Standard: 10%–90% of booking value by timing; AveloFlex $0"
+    },
+    "boarding": {
+      "text": null
+    },
+    "loyalty_program": {
+      "text": "None"
+    },
+    "recently_changed": {
+      "text": null,
+      "date": null
+    },
+    "policy_url": null,
+    "extra_legroom": {
+      "text": null,
+      "fee_usd": null
+    }
+  },
+  "BA": {
+    "checked": null,
+    "personal_item": {
+      "text": null,
+      "fee_usd": null
+    },
+    "carry_on": {
+      "text": "Included",
+      "fee_usd": 0,
+      "each_way": true
+    },
+    "first_checked": {
+      "text": "Basic: fee; included on higher fares",
+      "fee_usd": null,
+      "each_way": true,
+      "fee_label": "Requires fee"
+    },
+    "seat_selection": {
+      "text": "Basic: assigned at check-in; pay to choose earlier",
+      "fee_usd": null,
+      "fee_label": "Requires fee"
+    },
+    "change_cancel": {
+      "text": null
+    },
+    "boarding": {
+      "text": null
+    },
+    "loyalty_program": {
+      "text": "Avios"
+    },
+    "recently_changed": {
+      "text": null,
+      "date": null
+    },
+    "policy_url": null,
+    "extra_legroom": {
+      "text": null,
+      "fee_usd": null
+    }
+  },
+  "KX": {
+    "checked": null,
+    "personal_item": {
+      "text": "Free, 15 lb",
+      "fee_usd": 0
+    },
+    "carry_on": {
+      "text": "Free",
+      "fee_usd": 0,
+      "each_way": true
+    },
+    "first_checked": {
+      "text": "$30 online, $35 airport",
+      "fee_usd": 30,
+      "each_way": true
+    },
+    "seat_selection": {
+      "text": null,
+      "fee_usd": null
+    },
+    "change_cancel": {
+      "text": null
+    },
+    "boarding": {
+      "text": null
+    },
+    "loyalty_program": {
+      "text": "Sir Turtle Rewards"
+    },
+    "recently_changed": {
+      "text": null,
+      "date": null
+    },
+    "policy_url": null,
+    "extra_legroom": {
+      "text": null,
+      "fee_usd": null
+    }
+  },
+  "CM": {
+    "checked": null,
+    "personal_item": {
+      "text": "Free",
+      "fee_usd": 0
+    },
+    "carry_on": {
+      "text": "Free, 10 kg",
+      "fee_usd": 0,
+      "each_way": true
+    },
+    "first_checked": {
+      "text": "$38 at airport",
+      "fee_usd": 38,
+      "each_way": true
+    },
+    "seat_selection": {
+      "text": "Paid on Basic",
+      "fee_usd": null,
+      "fee_label": "Requires fee"
+    },
+    "change_cancel": {
+      "text": "Basic: change for a fee, no refund"
+    },
+    "boarding": {
+      "text": null
+    },
+    "loyalty_program": {
+      "text": "ConnectMiles"
+    },
+    "recently_changed": {
+      "text": null,
+      "date": null
+    },
+    "policy_url": null,
+    "extra_legroom": {
+      "text": null,
+      "fee_usd": null
+    }
+  },
+  "4Y": {
+    "checked": null,
+    "personal_item": {
+      "text": null,
+      "fee_usd": null
+    },
+    "carry_on": {
+      "text": "1 included, 8 kg",
+      "fee_usd": 0,
+      "each_way": true
+    },
+    "first_checked": {
+      "text": "Free, 2nd bag $90",
+      "fee_usd": 0,
+      "each_way": true
+    },
+    "seat_selection": {
+      "text": null,
+      "fee_usd": null
+    },
+    "change_cancel": {
+      "text": "Light: $199 change plus fare difference; cancel not verified"
+    },
+    "boarding": {
+      "text": null
+    },
+    "loyalty_program": {
+      "text": "Miles & More"
+    },
+    "recently_changed": {
+      "text": null,
+      "date": null
+    },
+    "policy_url": null,
+    "extra_legroom": {
+      "text": null,
+      "fee_usd": null
+    }
+  },
+  "WK": {
+    "checked": null,
+    "personal_item": {
+      "text": null,
+      "fee_usd": null
+    },
+    "carry_on": {
+      "text": null,
+      "fee_usd": null,
+      "each_way": true
+    },
+    "first_checked": {
+      "text": "Max 23 kg; fee not verified",
+      "fee_usd": null,
+      "each_way": true
+    },
+    "seat_selection": {
+      "text": null,
+      "fee_usd": null
+    },
+    "change_cancel": {
+      "text": null
+    },
+    "boarding": {
+      "text": null
+    },
+    "loyalty_program": {
+      "text": "Miles & More"
+    },
+    "recently_changed": {
+      "text": null,
+      "date": null
+    },
+    "policy_url": null,
+    "extra_legroom": {
+      "text": null,
+      "fee_usd": null
+    }
+  },
+  "PD": {
+    "checked": null,
+    "personal_item": {
+      "text": "Included",
+      "fee_usd": 0
+    },
+    "carry_on": {
+      "text": "Not included on Basic",
+      "fee_usd": null,
+      "each_way": true
+    },
+    "first_checked": {
+      "text": "Fee",
+      "fee_usd": null,
+      "each_way": true,
+      "fee_label": "Requires fee"
+    },
+    "seat_selection": {
+      "text": "Free assigned seat; from C$12 to choose",
+      "fee_usd": null,
+      "fee_label": "From C$12"
+    },
+    "change_cancel": {
+      "text": "Basic: no changes; no refund or credit after 24 hours"
+    },
+    "boarding": {
+      "text": null
+    },
+    "loyalty_program": {
+      "text": "VIPorter"
+    },
+    "recently_changed": {
+      "text": null,
+      "date": null
+    },
+    "policy_url": null,
+    "extra_legroom": {
+      "text": null,
+      "fee_usd": null
+    }
+  },
+  "VS": {
+    "checked": null,
+    "personal_item": {
+      "text": null,
+      "fee_usd": null
+    },
+    "carry_on": {
+      "text": "1 included, 10 kg",
+      "fee_usd": 0,
+      "each_way": true
+    },
+    "first_checked": {
+      "text": "$100 per flight on Light; included on Classic, Delight",
+      "fee_usd": 100,
+      "each_way": true
+    },
+    "seat_selection": {
+      "text": "Free within 24 hours of departure; paid earlier",
+      "fee_usd": null,
+      "fee_label": "Requires fee"
+    },
+    "change_cancel": {
+      "text": null
+    },
+    "boarding": {
+      "text": null
+    },
+    "loyalty_program": {
+      "text": "Flying Club"
+    },
+    "recently_changed": {
+      "text": null,
+      "date": null
+    },
+    "policy_url": null,
+    "extra_legroom": {
+      "text": null,
+      "fee_usd": null
+    }
+  },
+  "WS": {
+    "checked": null,
+    "personal_item": {
+      "text": "Included",
+      "fee_usd": 0
+    },
+    "carry_on": {
+      "text": "Not included on UltraBasic",
+      "fee_usd": null,
+      "each_way": true
+    },
+    "first_checked": {
+      "text": "$55–$65 prepaid, $80–$94 airport",
+      "fee_usd": null,
+      "each_way": true,
+      "fee_label": "$55–$65"
+    },
+    "seat_selection": {
+      "text": null,
+      "fee_usd": null
+    },
+    "change_cancel": {
+      "text": "UltraBasic: no changes or cancellation"
+    },
+    "boarding": {
+      "text": null
+    },
+    "loyalty_program": {
+      "text": "WestJet Rewards"
+    },
+    "recently_changed": {
+      "text": null,
+      "date": null
+    },
+    "policy_url": null,
+    "extra_legroom": {
+      "text": null,
+      "fee_usd": null
+    }
+  }
+}

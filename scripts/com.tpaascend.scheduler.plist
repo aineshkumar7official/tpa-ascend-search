@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Install: cp this file to ~/Library/LaunchAgents/ then `launchctl load ~/Library/LaunchAgents/com.tpaascend.scheduler.plist`
+     Remove:  launchctl unload ~/Library/LaunchAgents/com.tpaascend.scheduler.plist && rm that file -->
+<plist version="1.0"><dict>
+  <key>Label</key><string>com.tpaascend.scheduler</string>
+  <key>ProgramArguments</key><array>
+    <string>/usr/bin/caffeinate</string><string>-i</string>
+    <string>/Users/aineshkumar/Desktop/TPA Ascend Project Official/.venv/bin/python</string>
+    <string>/Users/aineshkumar/Desktop/TPA Ascend Project Official/scripts/run_scheduler.py</string>
+  </array>
+  <key>WorkingDirectory</key><string>/Users/aineshkumar/Desktop/TPA Ascend Project Official</string>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+  <key>StandardOutPath</key><string>/Users/aineshkumar/Desktop/TPA Ascend Project Official/data/scheduler.log</string>
+  <key>StandardErrorPath</key><string>/Users/aineshkumar/Desktop/TPA Ascend Project Official/data/scheduler.log</string>
+</dict></plist>

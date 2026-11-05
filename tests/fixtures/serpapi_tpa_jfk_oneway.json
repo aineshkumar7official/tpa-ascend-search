@@ -1,0 +1,29 @@
+{
+  "_note": "Hand-built from SerpApi's documented google_flights response shape; replace with a real saved response once you have a key.",
+  "search_metadata": {"google_flights_url": "https://www.google.com/travel/flights?hl=en&gl=us&curr=USD"},
+  "best_flights": [
+    {
+      "flights": [
+        {"departure_airport": {"name": "Tampa International Airport", "id": "TPA", "time": "2026-11-13 06:05"},
+         "arrival_airport": {"name": "John F. Kennedy International Airport", "id": "JFK", "time": "2026-11-13 08:52"},
+         "duration": 167, "airplane": "Airbus A321neo", "airline": "JetBlue", "travel_class": "Economy",
+         "flight_number": "B6 1234", "legroom": "32 in"}
+      ],
+      "total_duration": 167, "price": 129, "type": "One way", "booking_token": "tok_b6"
+    }
+  ],
+  "other_flights": [
+    {
+      "flights": [
+        {"departure_airport": {"name": "Tampa International Airport", "id": "TPA", "time": "2026-11-13 09:00"},
+         "arrival_airport": {"name": "Hartsfield-Jackson Atlanta International Airport", "id": "ATL", "time": "2026-11-13 10:30"},
+         "duration": 90, "airplane": "Boeing 737-900ER", "airline": "Delta", "flight_number": "DL 100"},
+        {"departure_airport": {"name": "Hartsfield-Jackson Atlanta International Airport", "id": "ATL", "time": "2026-11-13 11:30"},
+         "arrival_airport": {"name": "John F. Kennedy International Airport", "id": "JFK", "time": "2026-11-13 13:45"},
+         "duration": 135, "airplane": "Airbus A321", "airline": "Delta", "flight_number": "DL 200"}
+      ],
+      "layovers": [{"duration": 60, "name": "Hartsfield-Jackson Atlanta International Airport", "id": "ATL"}],
+      "total_duration": 285, "price": 98, "type": "One way", "booking_token": "tok_dl"
+    }
+  ]
+}

@@ -1,0 +1,201 @@
+{
+  "_note": "description: 2-3 sentences in YOUR words (fare style, cabin, what's included). null renders 'Description coming soon'.",
+  "DL": {
+    "name": "Delta Air Lines",
+    "brand_color": "#003366",
+    "aliases": [
+      "Delta"
+    ],
+    "website": "https://www.delta.com",
+    "description": null
+  },
+  "WN": {
+    "name": "Southwest Airlines",
+    "brand_color": "#304CB2",
+    "aliases": [
+      "Southwest"
+    ],
+    "website": "https://www.southwest.com",
+    "description": null
+  },
+  "B6": {
+    "name": "JetBlue",
+    "brand_color": "#0033A0",
+    "aliases": [
+      "JetBlue Airways",
+      "Jetblue"
+    ],
+    "website": "https://www.jetblue.com",
+    "description": null
+  },
+  "AA": {
+    "name": "American Airlines",
+    "brand_color": "#0078D2",
+    "aliases": [
+      "American"
+    ],
+    "website": "https://www.aa.com",
+    "description": null
+  },
+  "UA": {
+    "name": "United Airlines",
+    "brand_color": "#005DAA",
+    "aliases": [
+      "United"
+    ],
+    "website": "https://www.united.com",
+    "description": null
+  },
+  "NK": {
+    "name": "Spirit Airlines",
+    "brand_color": "#B8A200",
+    "aliases": [
+      "Spirit"
+    ],
+    "website": "https://www.spirit.com",
+    "description": null
+  },
+  "F9": {
+    "name": "Frontier Airlines",
+    "brand_color": "#1E7F4F",
+    "aliases": [
+      "Frontier"
+    ],
+    "website": "https://www.flyfrontier.com",
+    "description": null
+  },
+  "AS": {
+    "name": "Alaska Airlines",
+    "brand_color": "#01426A",
+    "aliases": [
+      "Alaska"
+    ],
+    "website": "https://www.alaskaair.com",
+    "description": null
+  },
+  "SY": {
+    "name": "Sun Country Airlines",
+    "brand_color": "#E37222",
+    "aliases": [
+      "Sun Country"
+    ],
+    "website": "https://www.suncountry.com",
+    "description": null
+  },
+  "MX": {
+    "name": "Breeze Airways",
+    "brand_color": "#1F4E9A",
+    "aliases": [
+      "Breeze"
+    ],
+    "website": "https://www.flybreeze.com",
+    "description": null
+  },
+  "G4": {
+    "name": "Allegiant Air",
+    "brand_color": "#F5A623",
+    "aliases": [
+      "Allegiant"
+    ],
+    "website": "https://www.allegiantair.com",
+    "description": null
+  },
+  "AC": {
+    "name": "Air Canada",
+    "brand_color": "#D22630",
+    "aliases": [],
+    "website": "https://www.aircanada.com",
+    "description": null
+  },
+  "AM": {
+    "name": "Aeroméxico",
+    "brand_color": "#0B2343",
+    "aliases": [
+      "Aeromexico"
+    ],
+    "website": "https://www.aeromexico.com",
+    "description": null
+  },
+  "AV": {
+    "name": "Avianca",
+    "brand_color": "#DA291C",
+    "aliases": [],
+    "website": "https://www.avianca.com",
+    "description": null
+  },
+  "XP": {
+    "name": "Avelo Airlines",
+    "brand_color": "#4B2E83",
+    "aliases": [
+      "Avelo"
+    ],
+    "website": "https://www.aveloair.com",
+    "description": null
+  },
+  "BA": {
+    "name": "British Airways",
+    "brand_color": "#075AAA",
+    "aliases": [],
+    "website": "https://www.britishairways.com",
+    "description": null
+  },
+  "KX": {
+    "name": "Cayman Airways",
+    "brand_color": "#00843D",
+    "aliases": [],
+    "website": "https://www.caymanairways.com",
+    "description": null
+  },
+  "CM": {
+    "name": "Copa Airlines",
+    "brand_color": "#0032A0",
+    "aliases": [
+      "Copa"
+    ],
+    "website": "https://www.copaair.com",
+    "description": null
+  },
+  "4Y": {
+    "name": "Discover Airlines",
+    "brand_color": "#1A1A1A",
+    "aliases": [
+      "Discover"
+    ],
+    "website": "https://www.discover-airlines.com",
+    "description": null
+  },
+  "WK": {
+    "name": "Edelweiss Air",
+    "brand_color": "#B0182F",
+    "aliases": [
+      "Edelweiss"
+    ],
+    "website": "https://www.flyedelweiss.com",
+    "description": null
+  },
+  "PD": {
+    "name": "Porter Airlines",
+    "brand_color": "#00264B",
+    "aliases": [
+      "Porter"
+    ],
+    "website": "https://www.flyporter.com",
+    "description": null
+  },
+  "VS": {
+    "name": "Virgin Atlantic",
+    "brand_color": "#DA0530",
+    "aliases": [],
+    "website": "https://www.virginatlantic.com",
+    "description": null
+  },
+  "WS": {
+    "name": "WestJet",
+    "brand_color": "#00A3AD",
+    "aliases": [
+      "Westjet"
+    ],
+    "website": "https://www.westjet.com",
+    "description": null
+  }
+}

@@ -1,0 +1,12 @@
+.venv/
+.env
+__pycache__/
+data/*.db
+data/*.db-*
+data/raw/
+data/*.log
+.DS_Store
+.pytest_cache/
+# Large or third-party source files, kept locally
+*Wireframes*.pdf
+Frontier Airlines/

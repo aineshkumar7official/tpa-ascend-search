@@ -1,0 +1,14 @@
+[theme]
+base = "light"
+primaryColor = "#7F1719"
+backgroundColor = "#F8F4F0"
+secondaryBackgroundColor = "#F7F8FA"
+textColor = "#1F2328"
+font = "Inter:https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+
+[client]
+toolbarMode = "minimal"
+showSidebarNavigation = false
+
+[server]
+enableStaticServing = true

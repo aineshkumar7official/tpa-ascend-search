@@ -1,0 +1,12 @@
+streamlit>=1.46         # st.navigation(position="top"); tested on 1.66.1
+fast-flights==3.1.0     # pinned: sources/flights_fast.py parses this version's raw payload
+requests
+pandas
+openpyxl                # reads the Skytrax .xlsx review dataset
+apscheduler
+vaderSentiment
+python-dotenv
+rapidfuzz               # fuzzy route/airline matching in reviews
+feedparser              # airline news RSS
+pytest
+python-docx             # scripts/import_destinations_docx.py

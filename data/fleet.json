@@ -1,0 +1,49 @@
+{
+  "_note": "representative_tails are UNVERIFIED starting points. Confirm each on planespotters.net shows the current livery before relying on it.",
+  "DL": {
+    "default_type": "Boeing 737-900ER",
+    "representative_tails": {
+      "Airbus A321": "N301DN",
+      "Boeing 737-900ER": "N801DZ"
+    }
+  },
+  "WN": {
+    "default_type": "Boeing 737-800",
+    "representative_tails": {
+      "Boeing 737-800": "N8301J",
+      "Boeing 737 MAX 8": "N8701Q"
+    }
+  },
+  "B6": {
+    "default_type": "Airbus A320",
+    "representative_tails": {
+      "Airbus A321neo": "N2002J"
+    }
+  },
+  "AA": {
+    "default_type": "Boeing 737-800",
+    "representative_tails": {
+      "Boeing 737-800": "N901NN",
+      "Airbus A321": "N101NN"
+    }
+  },
+  "UA": {
+    "default_type": "Boeing 737-900ER",
+    "representative_tails": {}
+  },
+  "NK": {
+    "default_type": "Airbus A320neo",
+    "representative_tails": {
+      "Airbus A320neo": "N902NK"
+    }
+  },
+  "F9": {
+    "default_type": "Airbus A321neo",
+    "representative_tails": {}
+  },
+  "AS": { "default_type": "Boeing 737-900ER", "representative_tails": {} },
+  "SY": { "default_type": "Boeing 737-800", "representative_tails": {} },
+  "MX": { "default_type": "Airbus A220-300", "representative_tails": {} },
+  "G4": { "default_type": "Airbus A320", "representative_tails": {} },
+  "AC": { "default_type": "Airbus A220-300", "representative_tails": {} }
+}
