@@ -7,7 +7,9 @@
       "Delta"
     ],
     "website": "https://www.delta.com",
-    "description": null
+    "description": "Delta Main includes snacks and non-alcoholic drinks on eligible flights. Main Basic limits seat choice and flexibility; baggage exemptions depend on the ticket and traveler.",
+    "description_source": "https://www.delta.com/us/en/baggage/overview",
+    "description_checked": "2026-11-06"
   },
   "WN": {
     "name": "Southwest Airlines",
@@ -16,7 +18,9 @@
       "Southwest"
     ],
     "website": "https://www.southwest.com",
-    "description": null
+    "description": "Southwest now uses assigned seating. Basic normally receives its seat at check-in, while eligible fares and loyalty benefits offer earlier seat selection.",
+    "description_source": "https://www.southwest.com/seats",
+    "description_checked": "2026-11-06"
   },
   "B6": {
     "name": "JetBlue",
@@ -26,7 +30,9 @@
       "Jetblue"
     ],
     "website": "https://www.jetblue.com",
-    "description": null
+    "description": "JetBlue includes a carry-on and personal item with every fare. Main Base charges for advance seat selection and changes or cancellations; standard and Flex fares provide more flexibility.",
+    "description_source": "https://www.jetblue.com/flying-with-us/our-fares",
+    "description_checked": "2026-11-06"
   },
   "AA": {
     "name": "American Airlines",
@@ -35,7 +41,9 @@
       "American"
     ],
     "website": "https://www.aa.com",
-    "description": null
+    "description": "American includes one carry-on and one personal item. Checked bags and advance seat selection can cost extra on Basic Economy; rules depend on route and ticket date.",
+    "description_source": "https://www.aa.com/web/i18n/customer-service/support/optional-service-fees.html",
+    "description_checked": "2026-11-06"
   },
   "UA": {
     "name": "United Airlines",
@@ -53,7 +61,13 @@
       "Spirit"
     ],
     "website": "https://www.spirit.com",
-    "description": null
+    "description": "Spirit’s official site reports that all flights are canceled as the airline winds down operations. Confirm refund information with Spirit before making travel plans.",
+    "description_source": "https://vacations.spirit.com/vacationpackages/",
+    "description_checked": "2026-11-06",
+    "operating": false,
+    "status": "Operations winding down",
+    "status_source": "https://vacations.spirit.com/vacationpackages/",
+    "status_checked": "2026-11-06"
   },
   "F9": {
     "name": "Frontier Airlines",
@@ -62,7 +76,9 @@
       "Frontier"
     ],
     "website": "https://www.flyfrontier.com",
-    "description": null
+    "description": "Frontier sells bags and seat selection separately from its lowest fares. Bundles can include a carry-on, seat selection and waived change or cancellation fees.",
+    "description_source": "https://www.flyfrontier.com/optional-services/",
+    "description_checked": "2026-11-06"
   },
   "AS": {
     "name": "Alaska Airlines",
@@ -71,7 +87,9 @@
       "Alaska"
     ],
     "website": "https://www.alaskaair.com",
-    "description": null
+    "description": "Alaska Saver includes a carry-on and personal item with Main Cabin onboard service. Seat assignments and ticket changes are restricted, and cancellation credit depends on how early you cancel.",
+    "description_source": "https://www.alaskaair.com/content/travel-info/flight-experience/saver",
+    "description_checked": "2026-11-06"
   },
   "SY": {
     "name": "Sun Country Airlines",
@@ -80,7 +98,9 @@
       "Sun Country"
     ],
     "website": "https://www.suncountry.com",
-    "description": null
+    "description": "Sun Country’s base fare includes a seat and personal item. Carry-on bags, checked bags and advance seat selection cost extra; onboard entertainment streams to your own device.",
+    "description_source": "https://stories.suncountry.com/post/your-first-sun-country-flight-here-s-what-to-expect-from-booking-to-boarding",
+    "description_checked": "2026-11-06"
   },
   "MX": {
     "name": "Breeze Airways",
@@ -89,7 +109,9 @@
       "Breeze"
     ],
     "website": "https://www.flybreeze.com",
-    "description": null
+    "description": "Breeze offers a No Flex fare with a personal item and optional paid extras. Nice adds a carry-on and flexibility; Nicer and Nicest add seating and baggage benefits.",
+    "description_source": "https://www.flybreeze.com/fly-with-us/bundles",
+    "description_checked": "2026-11-06"
   },
   "G4": {
     "name": "Allegiant Air",
@@ -98,14 +120,18 @@
       "Allegiant"
     ],
     "website": "https://www.allegiantair.com",
-    "description": null
+    "description": "Allegiant includes a small personal item with its base fare. Carry-on and checked bags are paid extras, with prices varying by route and when you add them.",
+    "description_source": "https://www.allegiantair.com/popup/optional-services-fees",
+    "description_checked": "2026-11-06"
   },
   "AC": {
     "name": "Air Canada",
     "brand_color": "#D22630",
     "aliases": [],
     "website": "https://www.aircanada.com",
-    "description": null
+    "description": "Air Canada’s Economy Basic restricts carry-on baggage on eligible North American and sun routes. Standard and higher fares have different baggage, seating and flexibility benefits.",
+    "description_source": "https://www.aircanada.com/ca/en/aco/home/legal/products-and-services.html",
+    "description_checked": "2026-11-06"
   },
   "AM": {
     "name": "Aeroméxico",
@@ -114,14 +140,18 @@
       "Aeromexico"
     ],
     "website": "https://www.aeromexico.com",
-    "description": null
+    "description": "Aeroméxico’s cabin baggage allowance depends on fare and route. Basic and Classic differ in advance seat selection and baggage benefits; check the exact ticket conditions.",
+    "description_source": "https://www.aeromexico.com/en-us/travel-information/baggage/carry-on-baggage",
+    "description_checked": "2026-11-06"
   },
   "AV": {
     "name": "Avianca",
     "brand_color": "#DA291C",
     "aliases": [],
     "website": "https://www.avianca.com",
-    "description": null
+    "description": "Avianca includes a carry-on in its lowest international fare within the Americas. Domestic Basic has a different allowance, and checked baggage and seat selection depend on fare.",
+    "description_source": "https://www.avianca.com/en/about-us/corporate-news/2026/february-2",
+    "description_checked": "2026-11-06"
   },
   "XP": {
     "name": "Avelo Airlines",
@@ -130,21 +160,27 @@
       "Avelo"
     ],
     "website": "https://www.aveloair.com",
-    "description": null
+    "description": "Avelo offers AveloFlex as a paid option for a one-time change or cancellation without a penalty. Standard ticket penalties increase closer to departure, and canceled bookings generally return Avelo Cash.",
+    "description_source": "https://www.aveloair.com/help/aveloflex",
+    "description_checked": "2026-11-06"
   },
   "BA": {
     "name": "British Airways",
     "brand_color": "#075AAA",
     "aliases": [],
     "website": "https://www.britishairways.com",
-    "description": null
+    "description": "British Airways Basic tickets receive an allocated seat at check-in unless you pay to choose earlier. Advance seat selection benefits depend on fare, cabin and frequent flyer status.",
+    "description_source": "https://www.britishairways.com/content/information/seating/reserving-your-seat",
+    "description_checked": "2026-11-06"
   },
   "KX": {
     "name": "Cayman Airways",
     "brand_color": "#00843D",
     "aliases": [],
     "website": "https://www.caymanairways.com",
-    "description": null
+    "description": "Cayman Airways includes cabin baggage on international jet services. Tampa economy travelers pay for checked bags, with a lower fee available through the website or app.",
+    "description_source": "https://www.caymanairways.com/baggage-policy",
+    "description_checked": "2026-11-06"
   },
   "CM": {
     "name": "Copa Airlines",
@@ -153,7 +189,9 @@
       "Copa"
     ],
     "website": "https://www.copaair.com",
-    "description": null
+    "description": "Copa Economy Basic includes a 10 kg carry-on. Checked bags and advance regular or Premium seat selection cost extra; other fare families provide different benefits.",
+    "description_source": "https://help.copaair.com/hc/en-us/articles/360051189074-What-are-the-fare-classes-Copa-Airlines-offers",
+    "description_checked": "2026-11-06"
   },
   "4Y": {
     "name": "Discover Airlines",
@@ -162,7 +200,9 @@
       "Discover"
     ],
     "website": "https://www.discover-airlines.com",
-    "description": null
+    "description": "Discover’s long-haul Economy includes entertainment, a hot meal and non-alcoholic drinks. Economy Light excludes the checked bag included with other Economy fares.",
+    "description_source": "https://www.discover-airlines.com/us/en/discover/travel-classes/economy-class.html",
+    "description_checked": "2026-11-06"
   },
   "WK": {
     "name": "Edelweiss Air",
@@ -171,7 +211,9 @@
       "Edelweiss"
     ],
     "website": "https://www.flyedelweiss.com",
-    "description": null
+    "description": "Edelweiss long-haul economy includes a 23 kg checked bag and an 8 kg carry-on. Economy Saver charges for advance seats and rebooking and does not allow cancellation refunds.",
+    "description_source": "https://www.flyedelweiss.com/xk/en/legal/fare-conditions.html",
+    "description_checked": "2026-11-06"
   },
   "PD": {
     "name": "Porter Airlines",
@@ -180,14 +222,18 @@
       "Porter"
     ],
     "website": "https://www.flyporter.com",
-    "description": null
+    "description": "Porter Basic includes a personal item and complimentary beer, wine and snacks. A standard carry-on, advance seat selection and checked bags require extra payment or an eligible bundle.",
+    "description_source": "https://www.flyporter.com/en-us/book-travel/our-fares-and-fees/our-fare-options/basic-fare",
+    "description_checked": "2026-11-06"
   },
   "VS": {
     "name": "Virgin Atlantic",
     "brand_color": "#DA0530",
     "aliases": [],
     "website": "https://www.virginatlantic.com",
-    "description": null
+    "description": "Virgin Atlantic Economy Light includes a 10 kg cabin bag without checked baggage. Economy Classic and Delight each include a 23 kg checked bag.",
+    "description_source": "https://www.virginatlantic.com/en-EU/experience/seating",
+    "description_checked": "2026-11-06"
   },
   "WS": {
     "name": "WestJet",
@@ -196,6 +242,8 @@
       "Westjet"
     ],
     "website": "https://www.westjet.com",
-    "description": null
+    "description": "WestJet UltraBasic includes a personal item. A carry-on is generally excluded on Tampa routes unless the Extended Comfort exception applies; other fares include cabin baggage.",
+    "description_source": "https://www.westjet.com/en-ca/baggage/carry-on",
+    "description_checked": "2026-11-06"
   }
 }

@@ -21,7 +21,7 @@
     "cool_thing": "Trading cards"
   },
   "B6|*": {
-    "carry_on": "Included on Main Base (unconfirmed)",
+    "carry_on": "Included on all fares, space permitting",
     "food_drinks": null,
     "wifi": true,
     "seatback_screen": true,
@@ -41,7 +41,7 @@
     "cool_thing": "Trading cards"
   },
   "UA|*": {
-    "carry_on": "Included on Economy; Basic unconfirmed",
+    "carry_on": "Domestic Basic Economy: full-size carry-on generally not included; route and traveler exceptions apply",
     "food_drinks": null,
     "wifi": true,
     "seatback_screen": null,
@@ -61,7 +61,7 @@
     "cool_thing": null
   },
   "F9|*": {
-    "carry_on": "Fee; included with Standard",
+    "carry_on": "Fee on Basic / Standard; included with eligible bundles",
     "food_drinks": "Buy from Fly Bar",
     "wifi": false,
     "seatback_screen": false,
@@ -81,8 +81,8 @@
     "cool_thing": "Trading cards"
   },
   "SY|*": {
-    "carry_on": "$30 online, $45 by check-in, $50 airport",
-    "food_drinks": null,
+    "carry_on": "Fee; varies by itinerary",
+    "food_drinks": "Snacks and drinks available for purchase",
     "wifi": false,
     "seatback_screen": false,
     "stream_to_device": true,
@@ -91,7 +91,7 @@
     "cool_thing": null
   },
   "MX|*": {
-    "carry_on": "$35 on Nice; included on Nicer, Nicest",
+    "carry_on": "No Flex: add-on; included with Nice, Nicer and Nicest",
     "food_drinks": "Buy on board: meals, snacks, drinks",
     "wifi": true,
     "seatback_screen": false,
@@ -118,7 +118,8 @@
     "stream_to_device": null,
     "power": false,
     "legroom_pitch_in": "29",
-    "cool_thing": null
+    "cool_thing": null,
+    "verification_note": "Aircraft-specific draft values; do not assume these apply to every TPA aircraft."
   },
   "AM|*": {
     "carry_on": "Free",
@@ -131,7 +132,7 @@
     "cool_thing": "2024 anniversary collector cards, mainly at events"
   },
   "AV|*": {
-    "carry_on": "Included on Basic, 10 kg (unconfirmed)",
+    "carry_on": "International Americas: carry-on included in lowest fare; domestic Basic includes personal item only",
     "food_drinks": "Free snack and drink; more to buy",
     "wifi": null,
     "seatback_screen": null,
@@ -158,7 +159,8 @@
     "stream_to_device": null,
     "power": true,
     "legroom_pitch_in": "31",
-    "cool_thing": null
+    "cool_thing": null,
+    "verification_note": "Aircraft-specific draft values; do not assume these apply to every TPA aircraft."
   },
   "KX|*": {
     "carry_on": "Free",
@@ -182,7 +184,7 @@
   },
   "4Y|*": {
     "carry_on": "1 included, 8 kg",
-    "food_drinks": null,
+    "food_drinks": "Long-haul: hot meal, soft drinks and water included",
     "wifi": true,
     "seatback_screen": true,
     "stream_to_device": null,
@@ -202,7 +204,7 @@
   },
   "PD|*": {
     "carry_on": "Not included on Basic",
-    "food_drinks": null,
+    "food_drinks": "Complimentary beer, wine and snacks",
     "wifi": true,
     "seatback_screen": false,
     "stream_to_device": true,
@@ -218,7 +220,8 @@
     "stream_to_device": null,
     "power": true,
     "legroom_pitch_in": "31",
-    "cool_thing": null
+    "cool_thing": null,
+    "verification_note": "Aircraft-specific draft values; do not assume these apply to every TPA aircraft."
   },
   "WS|*": {
     "carry_on": "Not included on UltraBasic",

@@ -1,0 +1,642 @@
+[
+  {
+    "airline": "AM",
+    "name": "Aeroméxico",
+    "photos": {
+      "exterior": {
+        "url": null,
+        "status": "missing"
+      },
+      "interior": {
+        "url": null,
+        "status": "missing"
+      },
+      "seat": {
+        "url": null,
+        "status": "missing"
+      },
+      "food": {
+        "url": null,
+        "status": "missing"
+      },
+      "grid_exterior": {
+        "url": null,
+        "status": "missing"
+      }
+    },
+    "complete": false,
+    "visual_review_required": true
+  },
+  {
+    "airline": "AC",
+    "name": "Air Canada",
+    "photos": {
+      "exterior": {
+        "url": null,
+        "status": "missing"
+      },
+      "interior": {
+        "url": null,
+        "status": "missing"
+      },
+      "seat": {
+        "url": null,
+        "status": "missing"
+      },
+      "food": {
+        "url": null,
+        "status": "missing"
+      },
+      "grid_exterior": {
+        "url": null,
+        "status": "missing"
+      }
+    },
+    "complete": false,
+    "visual_review_required": true
+  },
+  {
+    "airline": "AS",
+    "name": "Alaska Airlines",
+    "photos": {
+      "exterior": {
+        "url": null,
+        "status": "missing"
+      },
+      "interior": {
+        "url": null,
+        "status": "missing"
+      },
+      "seat": {
+        "url": null,
+        "status": "missing"
+      },
+      "food": {
+        "url": null,
+        "status": "missing"
+      },
+      "grid_exterior": {
+        "url": null,
+        "status": "missing"
+      }
+    },
+    "complete": false,
+    "visual_review_required": true
+  },
+  {
+    "airline": "AA",
+    "name": "American Airlines",
+    "photos": {
+      "exterior": {
+        "url": "https://t.plnspttrs.net/47028/1719174_fbfa0ebb72_280.jpg",
+        "status": "decodes",
+        "dimensions": [
+          420,
+          280
+        ]
+      },
+      "interior": {
+        "url": null,
+        "status": "missing"
+      },
+      "seat": {
+        "url": null,
+        "status": "missing"
+      },
+      "food": {
+        "url": null,
+        "status": "missing"
+      },
+      "grid_exterior": {
+        "url": "https://t.plnspttrs.net/47028/1719174_fbfa0ebb72_280.jpg",
+        "status": "decodes",
+        "dimensions": [
+          420,
+          280
+        ]
+      }
+    },
+    "complete": false,
+    "visual_review_required": true
+  },
+  {
+    "airline": "XP",
+    "name": "Avelo Airlines",
+    "photos": {
+      "exterior": {
+        "url": null,
+        "status": "missing"
+      },
+      "interior": {
+        "url": null,
+        "status": "missing"
+      },
+      "seat": {
+        "url": null,
+        "status": "missing"
+      },
+      "food": {
+        "url": null,
+        "status": "missing"
+      },
+      "grid_exterior": {
+        "url": null,
+        "status": "missing"
+      }
+    },
+    "complete": false,
+    "visual_review_required": true
+  },
+  {
+    "airline": "AV",
+    "name": "Avianca",
+    "photos": {
+      "exterior": {
+        "url": null,
+        "status": "missing"
+      },
+      "interior": {
+        "url": null,
+        "status": "missing"
+      },
+      "seat": {
+        "url": null,
+        "status": "missing"
+      },
+      "food": {
+        "url": null,
+        "status": "missing"
+      },
+      "grid_exterior": {
+        "url": null,
+        "status": "missing"
+      }
+    },
+    "complete": false,
+    "visual_review_required": true
+  },
+  {
+    "airline": "MX",
+    "name": "Breeze Airways",
+    "photos": {
+      "exterior": {
+        "url": null,
+        "status": "missing"
+      },
+      "interior": {
+        "url": null,
+        "status": "missing"
+      },
+      "seat": {
+        "url": null,
+        "status": "missing"
+      },
+      "food": {
+        "url": null,
+        "status": "missing"
+      },
+      "grid_exterior": {
+        "url": null,
+        "status": "missing"
+      }
+    },
+    "complete": false,
+    "visual_review_required": true
+  },
+  {
+    "airline": "BA",
+    "name": "British Airways",
+    "photos": {
+      "exterior": {
+        "url": null,
+        "status": "missing"
+      },
+      "interior": {
+        "url": null,
+        "status": "missing"
+      },
+      "seat": {
+        "url": null,
+        "status": "missing"
+      },
+      "food": {
+        "url": null,
+        "status": "missing"
+      },
+      "grid_exterior": {
+        "url": null,
+        "status": "missing"
+      }
+    },
+    "complete": false,
+    "visual_review_required": true
+  },
+  {
+    "airline": "KX",
+    "name": "Cayman Airways",
+    "photos": {
+      "exterior": {
+        "url": null,
+        "status": "missing"
+      },
+      "interior": {
+        "url": null,
+        "status": "missing"
+      },
+      "seat": {
+        "url": null,
+        "status": "missing"
+      },
+      "food": {
+        "url": null,
+        "status": "missing"
+      },
+      "grid_exterior": {
+        "url": null,
+        "status": "missing"
+      }
+    },
+    "complete": false,
+    "visual_review_required": true
+  },
+  {
+    "airline": "CM",
+    "name": "Copa Airlines",
+    "photos": {
+      "exterior": {
+        "url": null,
+        "status": "missing"
+      },
+      "interior": {
+        "url": null,
+        "status": "missing"
+      },
+      "seat": {
+        "url": null,
+        "status": "missing"
+      },
+      "food": {
+        "url": null,
+        "status": "missing"
+      },
+      "grid_exterior": {
+        "url": null,
+        "status": "missing"
+      }
+    },
+    "complete": false,
+    "visual_review_required": true
+  },
+  {
+    "airline": "DL",
+    "name": "Delta Air Lines",
+    "photos": {
+      "exterior": {
+        "url": "https://t.plnspttrs.net/44390/776439_04802c19ee_280.jpg",
+        "status": "decodes",
+        "dimensions": [
+          498,
+          280
+        ]
+      },
+      "interior": {
+        "url": null,
+        "status": "missing"
+      },
+      "seat": {
+        "url": null,
+        "status": "missing"
+      },
+      "food": {
+        "url": null,
+        "status": "missing"
+      },
+      "grid_exterior": {
+        "url": "https://t.plnspttrs.net/44390/776439_04802c19ee_280.jpg",
+        "status": "decodes",
+        "dimensions": [
+          498,
+          280
+        ]
+      }
+    },
+    "complete": false,
+    "visual_review_required": true
+  },
+  {
+    "airline": "4Y",
+    "name": "Discover Airlines",
+    "photos": {
+      "exterior": {
+        "url": null,
+        "status": "missing"
+      },
+      "interior": {
+        "url": null,
+        "status": "missing"
+      },
+      "seat": {
+        "url": null,
+        "status": "missing"
+      },
+      "food": {
+        "url": null,
+        "status": "missing"
+      },
+      "grid_exterior": {
+        "url": null,
+        "status": "missing"
+      }
+    },
+    "complete": false,
+    "visual_review_required": true
+  },
+  {
+    "airline": "WK",
+    "name": "Edelweiss Air",
+    "photos": {
+      "exterior": {
+        "url": null,
+        "status": "missing"
+      },
+      "interior": {
+        "url": null,
+        "status": "missing"
+      },
+      "seat": {
+        "url": null,
+        "status": "missing"
+      },
+      "food": {
+        "url": null,
+        "status": "missing"
+      },
+      "grid_exterior": {
+        "url": null,
+        "status": "missing"
+      }
+    },
+    "complete": false,
+    "visual_review_required": true
+  },
+  {
+    "airline": "F9",
+    "name": "Frontier Airlines",
+    "photos": {
+      "exterior": {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0e/Frontier_Airbus_A320neo_N354FR_BWI_MD2.jpg/960px-Frontier_Airbus_A320neo_N354FR_BWI_MD2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "status": "decodes",
+        "dimensions": [
+          960,
+          514
+        ]
+      },
+      "interior": {
+        "url": "/app/static/airlines/F9/cabin.jpg",
+        "status": "decodes",
+        "dimensions": [
+          1600,
+          900
+        ]
+      },
+      "seat": {
+        "url": "/app/static/airlines/F9/seat.jpg",
+        "status": "decodes",
+        "dimensions": [
+          1200,
+          420
+        ]
+      },
+      "food": {
+        "url": "/app/static/airlines/F9/food.jpg",
+        "status": "decodes",
+        "dimensions": [
+          1200,
+          400
+        ]
+      },
+      "grid_exterior": {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0e/Frontier_Airbus_A320neo_N354FR_BWI_MD2.jpg/960px-Frontier_Airbus_A320neo_N354FR_BWI_MD2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "status": "decodes",
+        "dimensions": [
+          960,
+          514
+        ]
+      }
+    },
+    "complete": true,
+    "visual_review_required": true
+  },
+  {
+    "airline": "B6",
+    "name": "JetBlue",
+    "photos": {
+      "exterior": {
+        "url": "https://t.plnspttrs.net/44703/1463855_91cb638130_280.jpg",
+        "status": "decodes",
+        "dimensions": [
+          498,
+          280
+        ]
+      },
+      "interior": {
+        "url": null,
+        "status": "missing"
+      },
+      "seat": {
+        "url": null,
+        "status": "missing"
+      },
+      "food": {
+        "url": null,
+        "status": "missing"
+      },
+      "grid_exterior": {
+        "url": "https://t.plnspttrs.net/44703/1463855_91cb638130_280.jpg",
+        "status": "decodes",
+        "dimensions": [
+          498,
+          280
+        ]
+      }
+    },
+    "complete": false,
+    "visual_review_required": true
+  },
+  {
+    "airline": "PD",
+    "name": "Porter Airlines",
+    "photos": {
+      "exterior": {
+        "url": null,
+        "status": "missing"
+      },
+      "interior": {
+        "url": null,
+        "status": "missing"
+      },
+      "seat": {
+        "url": null,
+        "status": "missing"
+      },
+      "food": {
+        "url": null,
+        "status": "missing"
+      },
+      "grid_exterior": {
+        "url": null,
+        "status": "missing"
+      }
+    },
+    "complete": false,
+    "visual_review_required": true
+  },
+  {
+    "airline": "WN",
+    "name": "Southwest Airlines",
+    "photos": {
+      "exterior": {
+        "url": "https://t.plnspttrs.net/33281/1951115_b2739b73e8_280.jpg",
+        "status": "decodes",
+        "dimensions": [
+          420,
+          280
+        ]
+      },
+      "interior": {
+        "url": null,
+        "status": "missing"
+      },
+      "seat": {
+        "url": null,
+        "status": "missing"
+      },
+      "food": {
+        "url": null,
+        "status": "missing"
+      },
+      "grid_exterior": {
+        "url": "https://t.plnspttrs.net/33281/1951115_b2739b73e8_280.jpg",
+        "status": "decodes",
+        "dimensions": [
+          420,
+          280
+        ]
+      }
+    },
+    "complete": false,
+    "visual_review_required": true
+  },
+  {
+    "airline": "SY",
+    "name": "Sun Country Airlines",
+    "photos": {
+      "exterior": {
+        "url": null,
+        "status": "missing"
+      },
+      "interior": {
+        "url": null,
+        "status": "missing"
+      },
+      "seat": {
+        "url": null,
+        "status": "missing"
+      },
+      "food": {
+        "url": null,
+        "status": "missing"
+      },
+      "grid_exterior": {
+        "url": null,
+        "status": "missing"
+      }
+    },
+    "complete": false,
+    "visual_review_required": true
+  },
+  {
+    "airline": "UA",
+    "name": "United Airlines",
+    "photos": {
+      "exterior": {
+        "url": null,
+        "status": "missing"
+      },
+      "interior": {
+        "url": null,
+        "status": "missing"
+      },
+      "seat": {
+        "url": null,
+        "status": "missing"
+      },
+      "food": {
+        "url": null,
+        "status": "missing"
+      },
+      "grid_exterior": {
+        "url": null,
+        "status": "missing"
+      }
+    },
+    "complete": false,
+    "visual_review_required": true
+  },
+  {
+    "airline": "VS",
+    "name": "Virgin Atlantic",
+    "photos": {
+      "exterior": {
+        "url": null,
+        "status": "missing"
+      },
+      "interior": {
+        "url": null,
+        "status": "missing"
+      },
+      "seat": {
+        "url": null,
+        "status": "missing"
+      },
+      "food": {
+        "url": null,
+        "status": "missing"
+      },
+      "grid_exterior": {
+        "url": null,
+        "status": "missing"
+      }
+    },
+    "complete": false,
+    "visual_review_required": true
+  },
+  {
+    "airline": "WS",
+    "name": "WestJet",
+    "photos": {
+      "exterior": {
+        "url": null,
+        "status": "missing"
+      },
+      "interior": {
+        "url": null,
+        "status": "missing"
+      },
+      "seat": {
+        "url": null,
+        "status": "missing"
+      },
+      "food": {
+        "url": null,
+        "status": "missing"
+      },
+      "grid_exterior": {
+        "url": null,
+        "status": "missing"
+      }
+    },
+    "complete": false,
+    "visual_review_required": true
+  }
+]

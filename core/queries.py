@@ -3,7 +3,7 @@ import json
 import statistics
 from datetime import datetime, timedelta
 
-from bots.enricher import amenities_for
+from bots.enricher import amenities_for, curated_photos
 from bots.scouter import BASELINE_DAYS, MIN_POINTS
 from core import config
 from core.dates import WINDOWS
@@ -224,8 +224,10 @@ def matrix(conn):
                GROUP BY a.asset_key
                ORDER BY (a.exterior_source='planespotters') DESC, COUNT(f.id) DESC LIMIT 1""",
             (f"{code}|%",)).fetchone()
+        info = config.airline(code)
         out.append({"iata": code, "name": config.airline_name(code), "n_nonstops": len(airline_routes(conn, code)),
-                    "asset": dict(row) if row else {}})
+                    "status": info.get("status"), "operating": info.get("operating", True),
+                    "asset": dict(row) if row else config.load_json("exteriors.json").get(code, {})})
     return out
 
 
@@ -236,10 +238,11 @@ def airline_photo_asset(conn, airline):
            GROUP BY a.asset_key
            ORDER BY (a.exterior_url IS NOT NULL) + (a.interior_url IS NOT NULL) + (a.seat_url IS NOT NULL)
                     + (a.food_url IS NOT NULL) DESC, COUNT(*) DESC LIMIT 1""", (airline,)).fetchone()
-    if row:
-        return dict(row)
-    row = conn.execute("SELECT * FROM assets WHERE asset_key LIKE ? LIMIT 1", (f"{airline}|%",)).fetchone()
-    return dict(row) if row else {}
+    if not row:
+        row = conn.execute("SELECT * FROM assets WHERE asset_key LIKE ? ORDER BY (exterior_url IS NOT NULL) DESC, asset_key LIMIT 1", (f"{airline}|%",)).fetchone()
+    asset = dict(row) if row else config.load_json("exteriors.json").get(airline, {})
+    aircraft = asset.get("asset_key", "|").split("|", 1)[1]
+    return {**asset, **curated_photos(airline, aircraft)}
 
 
 def airline_review(conn, airline):

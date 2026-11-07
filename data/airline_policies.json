@@ -3,25 +3,35 @@
   "DL": {
     "checked": null,
     "personal_item": {
-      "text": "Free",
-      "fee_usd": 0
+      "text": "1 included",
+      "fee_usd": 0,
+      "source_url": "https://www.delta.com/us/en/baggage/overview",
+      "checked": "2026-11-06"
     },
     "carry_on": {
-      "text": "Included",
+      "text": "1 included",
       "fee_usd": 0,
-      "each_way": true
+      "each_way": true,
+      "source_url": "https://www.delta.com/us/en/baggage/overview",
+      "checked": "2026-11-06"
     },
     "first_checked": {
-      "text": "$45 online, $45–$50 airport",
+      "text": "$45 each way on domestic Main / Comfort fares; exemptions apply",
       "fee_usd": 45,
-      "each_way": true
+      "each_way": true,
+      "source_url": "https://www.delta.com/us/en/baggage/overview",
+      "checked": "2026-11-06"
     },
     "seat_selection": {
-      "text": "Main Basic: assigned at check-in",
-      "fee_usd": null
+      "text": "Main Basic: assigned after check-in or at the gate; advance assignment may be purchased",
+      "fee_usd": null,
+      "source_url": "https://www.delta.com/us/en/onboard/onboard-experience/delta-main-basic",
+      "checked": "2026-11-06"
     },
     "change_cancel": {
-      "text": "Main Basic: no changes on most routes; cancel fee, eCredit"
+      "text": "Basic: changes or cancellation may be available for a fee; remaining value issued as eCredit. Route and ticket date rules apply.",
+      "source_url": "https://www.delta.com/us/en/baggage/overview",
+      "checked": "2026-11-06"
     },
     "boarding": {
       "text": null
@@ -33,11 +43,12 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.delta.com/us/en/baggage/overview",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
-    }
+    },
+    "verification_note": "Only fields carrying source_url and checked were confirmed against official pages. Other values remain review-draft data."
   },
   "WN": {
     "checked": null,
@@ -56,11 +67,15 @@
       "each_way": true
     },
     "seat_selection": {
-      "text": "Basic: assigned at check-in",
-      "fee_usd": null
+      "text": "Basic: assigned at check-in; eligible status / cardmember exceptions apply.",
+      "fee_usd": null,
+      "source_url": "https://www.southwest.com/seats",
+      "checked": "2026-11-06"
     },
     "change_cancel": {
-      "text": "Basic: no changes, non-refundable"
+      "text": "Basic: upgrade to Choice or higher before making changes; fare difference may apply.",
+      "source_url": "https://support.southwest.com/helpcenter/article/rebook-or-change-trip",
+      "checked": "2026-11-06"
     },
     "boarding": {
       "text": null
@@ -72,22 +87,27 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.southwest.com/seats",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
-    }
+    },
+    "verification_note": "Only fields carrying source_url and checked were confirmed against official pages. Other values remain review-draft data."
   },
   "B6": {
     "checked": null,
     "personal_item": {
-      "text": "Included",
-      "fee_usd": 0
+      "text": "1 included",
+      "fee_usd": 0,
+      "source_url": "https://www.jetblue.com/flying-with-us/our-fares",
+      "checked": "2026-11-06"
     },
     "carry_on": {
-      "text": "Included on Main Base (unconfirmed)",
-      "fee_usd": null,
-      "each_way": true
+      "text": "1 included on all fares, including Main Base; space permitting",
+      "fee_usd": 0,
+      "each_way": true,
+      "source_url": "https://www.jetblue.com/flying-with-us/our-fares",
+      "checked": "2026-11-06"
     },
     "first_checked": {
       "text": "$50, $55 peak",
@@ -95,12 +115,16 @@
       "each_way": true
     },
     "seat_selection": {
-      "text": "Fee, or free seat assigned before departure",
+      "text": "Main Base: pay to choose, or receive an assigned seat before departure",
       "fee_usd": null,
-      "fee_label": "Requires fee"
+      "fee_label": "Requires fee",
+      "source_url": "https://www.jetblue.com/flying-with-us/our-fares",
+      "checked": "2026-11-06"
     },
     "change_cancel": {
-      "text": "Main Base: $150 to change or cancel"
+      "text": "Base: $150 per person to change or cancel; fare difference may apply. Cancellation gives travel credit.",
+      "source_url": "https://www.jetblue.com/flying-with-us/our-fares",
+      "checked": "2026-11-06"
     },
     "boarding": {
       "text": null
@@ -112,27 +136,34 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.jetblue.com/flying-with-us/our-fares",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
-    }
+    },
+    "verification_note": "Only fields carrying source_url and checked were confirmed against official pages. Other values remain review-draft data."
   },
   "AA": {
     "checked": null,
     "personal_item": {
-      "text": "Free",
-      "fee_usd": 0
+      "text": "1 included",
+      "fee_usd": 0,
+      "source_url": "https://www.aa.com/web/i18n/customer-service/support/optional-service-fees.html",
+      "checked": "2026-11-06"
     },
     "carry_on": {
-      "text": "Free",
+      "text": "1 included",
       "fee_usd": 0,
-      "each_way": true
+      "each_way": true,
+      "source_url": "https://www.aa.com/web/i18n/customer-service/support/optional-service-fees.html",
+      "checked": "2026-11-06"
     },
     "first_checked": {
-      "text": "$50 online, $55 airport (Basic)",
+      "text": "Basic: $50 online / $55 airport, each way on eligible North American routes; tickets issued from May 18, 2026",
       "fee_usd": 50,
-      "each_way": true
+      "each_way": true,
+      "source_url": "https://www.aa.com/web/i18n/customer-service/support/optional-service-fees.html",
+      "checked": "2026-11-06"
     },
     "seat_selection": {
       "text": "Paid, on tickets bought May 18, 2026 or later",
@@ -152,11 +183,12 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.aa.com/web/i18n/customer-service/support/optional-service-fees.html",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
-    }
+    },
+    "verification_note": "Only fields carrying source_url and checked were confirmed against official pages. Other values remain review-draft data."
   },
   "UA": {
     "checked": null,
@@ -165,18 +197,24 @@
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "Included on Economy; Basic unconfirmed",
+      "text": "Domestic Basic Economy: full-size carry-on generally not included; route and traveler exceptions apply",
       "fee_usd": null,
-      "each_way": true
+      "each_way": true,
+      "source_url": "https://www.united.com/en/us/deals/flights/fares-from-washington-dc-under-250",
+      "checked": "2026-11-06"
     },
     "first_checked": {
-      "text": "$45 in advance, $50 within 24 hours",
-      "fee_usd": 45,
-      "each_way": true
+      "text": "Use United’s calculator: price depends on route, dates and traveler benefits",
+      "fee_usd": null,
+      "each_way": true,
+      "source_url": "https://www.united.com/en/us/checked-bag-fee-calculator/any-flights",
+      "checked": "2026-11-06"
     },
     "seat_selection": {
-      "text": null,
-      "fee_usd": null
+      "text": "Basic Economy: pay for advance assignment before check-in, otherwise assigned at check-in or gate",
+      "fee_usd": null,
+      "source_url": "https://www.united.com/en-kw/seat-options",
+      "checked": "2026-11-06"
     },
     "change_cancel": {
       "text": null
@@ -191,11 +229,12 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.united.com/en/us/checked-bag-fee-calculator/any-flights",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
-    }
+    },
+    "verification_note": "Only fields carrying source_url and checked were confirmed against official pages. Other values remain review-draft data."
   },
   "NK": {
     "checked": null,
@@ -230,11 +269,12 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://vacations.spirit.com/vacationpackages/",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
-    }
+    },
+    "verification_note": "Only fields carrying source_url and checked were confirmed against official pages. Other values remain review-draft data."
   },
   "F9": {
     "checked": null,
@@ -243,9 +283,11 @@
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "Fee on Basic, included with Standard",
+      "text": "Fee on Basic / Standard; included with eligible bundles",
       "fee_usd": null,
-      "each_way": true
+      "each_way": true,
+      "source_url": "https://www.flyfrontier.com/optional-services/",
+      "checked": "2026-11-06"
     },
     "first_checked": {
       "text": "Fee, max 40 lb",
@@ -259,7 +301,7 @@
       "fee_label": "Requires fee"
     },
     "change_cancel": {
-      "text": "Basic: change $0 at 60+ days, else $149; cancel $149. Bundles $0.",
+      "text": "Basic / Standard booked from Sep 25, 2026: change $0 at 60+ days, otherwise $149; cancel $149. Per person, per direction; fare difference applies.",
       "rows": [
         [
           "Change, 60+ days out",
@@ -278,8 +320,10 @@
           "$0"
         ]
       ],
-      "label": "Basic fare",
-      "note": "Cancel fee: booked Sep 25, 2026 or later. Refunded as travel credit minus the fee."
+      "label": "Basic / Standard",
+      "note": "Tickets booked from September 25, 2026. Fees are per passenger, per direction. Fare difference applies.",
+      "source_url": "https://www.flyfrontier.com/optional-services/",
+      "checked": "2026-11-06"
     },
     "boarding": {
       "text": null
@@ -291,12 +335,13 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.flyfrontier.com/optional-services/",
     "extra_legroom": {
       "text": null,
       "fee_usd": null,
       "fee_label": "Requires fee"
-    }
+    },
+    "verification_note": "Only fields carrying source_url and checked were confirmed against official pages. Other values remain review-draft data."
   },
   "AS": {
     "checked": null,
@@ -305,9 +350,11 @@
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "Free",
+      "text": "1 carry-on plus 1 personal item included",
       "fee_usd": 0,
-      "each_way": true
+      "each_way": true,
+      "source_url": "https://www.alaskaair.com/content/travel-info/flight-experience/saver",
+      "checked": "2026-11-06"
     },
     "first_checked": {
       "text": "$45 online",
@@ -315,11 +362,15 @@
       "each_way": true
     },
     "seat_selection": {
-      "text": "Saver: can't choose in advance",
-      "fee_usd": null
+      "text": "Saver: assigned at check-in; paid cabin or seat upgrades may allow advance selection",
+      "fee_usd": null,
+      "source_url": "https://www.alaskaair.com/content/travel-info/flight-experience/saver",
+      "checked": "2026-11-06"
     },
     "change_cancel": {
-      "text": "Saver: no changes; 50% credit if canceled 14+ days out"
+      "text": "Saver: 50% credit if canceled at least 14 days before first departure. No other changes except eligible same-day confirmed changes for a fee.",
+      "source_url": "https://www.alaskaair.com/content/travel-info/flight-experience/saver",
+      "checked": "2026-11-06"
     },
     "boarding": {
       "text": null
@@ -331,31 +382,40 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.alaskaair.com/content/travel-info/flight-experience/saver",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
-    }
+    },
+    "verification_note": "Only fields carrying source_url and checked were confirmed against official pages. Other values remain review-draft data."
   },
   "SY": {
     "checked": null,
     "personal_item": {
-      "text": "Free",
-      "fee_usd": 0
+      "text": "1 included",
+      "fee_usd": 0,
+      "source_url": "https://stories.suncountry.com/post/your-first-sun-country-flight-here-s-what-to-expect-from-booking-to-boarding",
+      "checked": "2026-11-06"
     },
     "carry_on": {
-      "text": "$30 online, $45 by check-in, $50 airport",
-      "fee_usd": 30,
-      "each_way": true
+      "text": "Fee; check your itinerary for price",
+      "fee_usd": null,
+      "each_way": true,
+      "source_url": "https://stories.suncountry.com/post/your-first-sun-country-flight-here-s-what-to-expect-from-booking-to-boarding",
+      "checked": "2026-11-06"
     },
     "first_checked": {
-      "text": "$34 online, $50 airport",
-      "fee_usd": 34,
-      "each_way": true
+      "text": "Fee; check your itinerary for price",
+      "fee_usd": null,
+      "each_way": true,
+      "source_url": "https://stories.suncountry.com/post/your-first-sun-country-flight-here-s-what-to-expect-from-booking-to-boarding",
+      "checked": "2026-11-06"
     },
     "seat_selection": {
-      "text": null,
-      "fee_usd": null
+      "text": "Pay to choose a seat in advance",
+      "fee_usd": null,
+      "source_url": "https://stories.suncountry.com/post/your-first-sun-country-flight-here-s-what-to-expect-from-booking-to-boarding",
+      "checked": "2026-11-06"
     },
     "change_cancel": {
       "text": "$0 at 60+ days; otherwise not verified"
@@ -370,35 +430,46 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://stories.suncountry.com/post/your-first-sun-country-flight-here-s-what-to-expect-from-booking-to-boarding",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
-    }
+    },
+    "verification_note": "Only fields carrying source_url and checked were confirmed against official pages. Other values remain review-draft data."
   },
   "MX": {
     "checked": null,
     "personal_item": {
-      "text": "Free",
-      "fee_usd": 0
+      "text": "1 included",
+      "fee_usd": 0,
+      "source_url": "https://www.flybreeze.com/fly-with-us/bundles",
+      "checked": "2026-11-06"
     },
     "carry_on": {
-      "text": "$35 on Nice; included on Nicer, Nicest",
-      "fee_usd": 35,
-      "each_way": true
-    },
-    "first_checked": {
-      "text": "$35–$41 by route",
+      "text": "No Flex: add-on; included in Nice, Nicer and Nicest bundles",
       "fee_usd": null,
       "each_way": true,
-      "fee_label": "$35–$41"
+      "source_url": "https://www.flybreeze.com/fly-with-us/bundles",
+      "checked": "2026-11-06"
+    },
+    "first_checked": {
+      "text": "Add-on; 1 included with Nicer, 2 with Nicest",
+      "fee_usd": null,
+      "each_way": true,
+      "fee_label": "$35–$41",
+      "source_url": "https://www.flybreeze.com/fly-with-us/bundles",
+      "checked": "2026-11-06"
     },
     "seat_selection": {
-      "text": null,
-      "fee_usd": null
+      "text": "No Flex: pay to choose or receive an assignment at check-in",
+      "fee_usd": null,
+      "source_url": "https://www.flybreeze.com/fly-with-us/bundles",
+      "checked": "2026-11-06"
     },
     "change_cancel": {
-      "text": "$0 to change or cancel; cancel gives flight credit. No Flex can't change."
+      "text": "No Flex: no changes; cancellation gives partial flight credit. Nice / Nicer / Nicest: no change or cancellation fee; fare difference applies.",
+      "source_url": "https://www.flybreeze.com/fly-with-us/bundles",
+      "checked": "2026-11-06"
     },
     "boarding": {
       "text": null
@@ -410,27 +481,34 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.flybreeze.com/fly-with-us/bundles",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
-    }
+    },
+    "verification_note": "Only fields carrying source_url and checked were confirmed against official pages. Other values remain review-draft data."
   },
   "G4": {
     "checked": null,
     "personal_item": {
-      "text": null,
-      "fee_usd": null
+      "text": "1 included, up to 8 × 14 × 18 in",
+      "fee_usd": 0,
+      "source_url": "https://www.allegiantair.com/popup/optional-services-fees",
+      "checked": "2026-11-06"
     },
     "carry_on": {
-      "text": null,
+      "text": "Fee varies by route and purchase timing",
       "fee_usd": null,
-      "each_way": true
+      "each_way": true,
+      "source_url": "https://www.allegiantair.com/popup/optional-services-fees",
+      "checked": "2026-11-06"
     },
     "first_checked": {
-      "text": null,
+      "text": "Fee varies by route and purchase timing; up to 50 lb",
       "fee_usd": null,
-      "each_way": true
+      "each_way": true,
+      "source_url": "https://www.allegiantair.com/popup/optional-services-fees",
+      "checked": "2026-11-06"
     },
     "seat_selection": {
       "text": null,
@@ -449,11 +527,12 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.allegiantair.com/popup/optional-services-fees",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
-    }
+    },
+    "verification_note": "Only fields carrying source_url and checked were confirmed against official pages. Other values remain review-draft data."
   },
   "AC": {
     "checked": null,
@@ -462,14 +541,18 @@
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "Not included on Basic",
+      "text": "Economy Basic bought from Jan 3, 2025: no carry-on on eligible North American / sun routes; personal item included",
       "fee_usd": null,
-      "each_way": true
+      "each_way": true,
+      "source_url": "https://www.aircanada.com/ca/en/aco/home/legal/products-and-services.html",
+      "checked": "2026-11-06"
     },
     "first_checked": {
-      "text": "$45",
-      "fee_usd": 45,
-      "each_way": true
+      "text": "Varies by route, fare, ticket date and status; check allowance",
+      "fee_usd": null,
+      "each_way": true,
+      "source_url": "https://www.aircanada.com/ca/en/aco/home/legal/products-and-services.html",
+      "checked": "2026-11-06"
     },
     "seat_selection": {
       "text": "$15–$80 per segment, may be CAD",
@@ -489,11 +572,12 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.aircanada.com/ca/en/aco/home/legal/products-and-services.html",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
-    }
+    },
+    "verification_note": "Only fields carrying source_url and checked were confirmed against official pages. Other values remain review-draft data."
   },
   "AM": {
     "checked": null,
@@ -502,9 +586,11 @@
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "Free",
+      "text": "Basic includes carry-on; combined cabin weight depends on fare and route",
       "fee_usd": 0,
-      "each_way": true
+      "each_way": true,
+      "source_url": "https://www.aeromexico.com/en-us/travel-information/baggage/carry-on-baggage",
+      "checked": "2026-11-06"
     },
     "first_checked": {
       "text": "$45 online, $50 airport",
@@ -529,11 +615,12 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.aeromexico.com/en-us/travel-information/baggage/carry-on-baggage",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
-    }
+    },
+    "verification_note": "Only fields carrying source_url and checked were confirmed against official pages. Other values remain review-draft data."
   },
   "AV": {
     "checked": null,
@@ -542,9 +629,11 @@
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "Included on Basic, 10 kg (unconfirmed)",
-      "fee_usd": null,
-      "each_way": true
+      "text": "International Americas: carry-on included in lowest fare; domestic Basic includes personal item only",
+      "fee_usd": 0,
+      "each_way": true,
+      "source_url": "https://www.avianca.com/en/about-us/corporate-news/2026/february-2",
+      "checked": "2026-11-06"
     },
     "first_checked": {
       "text": "Basic: fee; 1 included on Classic and Flex",
@@ -570,11 +659,12 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.avianca.com/en/about-us/corporate-news/2026/february-2",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
-    }
+    },
+    "verification_note": "Only fields carrying source_url and checked were confirmed against official pages. Other values remain review-draft data."
   },
   "XP": {
     "checked": null,
@@ -599,7 +689,9 @@
       "fee_label": "From $10"
     },
     "change_cancel": {
-      "text": "Standard: 10%–90% of booking value by timing; AveloFlex $0"
+      "text": "Standard booked from May 6, 2026: 10%–90% fee by time before departure. AveloFlex waives one change/cancel fee until 15 minutes before departure; cancellation gives Avelo Cash.",
+      "source_url": "https://www.aveloair.com/help/aveloflex",
+      "checked": "2026-11-06"
     },
     "boarding": {
       "text": null
@@ -611,11 +703,12 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.aveloair.com/help/aveloflex",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
-    }
+    },
+    "verification_note": "Only fields carrying source_url and checked were confirmed against official pages. Other values remain review-draft data."
   },
   "BA": {
     "checked": null,
@@ -635,9 +728,11 @@
       "fee_label": "Requires fee"
     },
     "seat_selection": {
-      "text": "Basic: assigned at check-in; pay to choose earlier",
+      "text": "Basic: pay to choose in advance or receive an allocated seat at check-in",
       "fee_usd": null,
-      "fee_label": "Requires fee"
+      "fee_label": "Requires fee",
+      "source_url": "https://www.britishairways.com/content/information/seating/reserving-your-seat",
+      "checked": "2026-11-06"
     },
     "change_cancel": {
       "text": null
@@ -652,27 +747,34 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.britishairways.com/content/information/seating/reserving-your-seat",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
-    }
+    },
+    "verification_note": "Only fields carrying source_url and checked were confirmed against official pages. Other values remain review-draft data."
   },
   "KX": {
     "checked": null,
     "personal_item": {
-      "text": "Free, 15 lb",
-      "fee_usd": 0
+      "text": "1 included, up to 14 × 14 × 10 in and 15 lb on international jet service",
+      "fee_usd": 0,
+      "source_url": "https://www.caymanairways.com/baggage-policy",
+      "checked": "2026-11-06"
     },
     "carry_on": {
-      "text": "Free",
+      "text": "Included on international jet service; size limits apply",
       "fee_usd": 0,
-      "each_way": true
+      "each_way": true,
+      "source_url": "https://www.caymanairways.com/baggage-policy",
+      "checked": "2026-11-06"
     },
     "first_checked": {
-      "text": "$30 online, $35 airport",
+      "text": "Tampa economy: $30 website / app, $35 call center / ticket office / check-in, each way",
       "fee_usd": 30,
-      "each_way": true
+      "each_way": true,
+      "source_url": "https://www.caymanairways.com/baggage-policy",
+      "checked": "2026-11-06"
     },
     "seat_selection": {
       "text": null,
@@ -691,11 +793,12 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.caymanairways.com/baggage-policy",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
-    }
+    },
+    "verification_note": "Only fields carrying source_url and checked were confirmed against official pages. Other values remain review-draft data."
   },
   "CM": {
     "checked": null,
@@ -704,19 +807,25 @@
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "Free, 10 kg",
+      "text": "1 included, up to 10 kg",
       "fee_usd": 0,
-      "each_way": true
+      "each_way": true,
+      "source_url": "https://help.copaair.com/hc/en-us/articles/360051189074-What-are-the-fare-classes-Copa-Airlines-offers",
+      "checked": "2026-11-06"
     },
     "first_checked": {
-      "text": "$38 at airport",
-      "fee_usd": 38,
-      "each_way": true
+      "text": "Economy Basic: fee; check Copa’s route calculator",
+      "fee_usd": null,
+      "each_way": true,
+      "source_url": "https://help.copaair.com/hc/en-us/articles/360051189074-What-are-the-fare-classes-Copa-Airlines-offers",
+      "checked": "2026-11-06"
     },
     "seat_selection": {
-      "text": "Paid on Basic",
+      "text": "Economy Basic: fee to select regular or Premium seats",
       "fee_usd": null,
-      "fee_label": "Requires fee"
+      "fee_label": "Requires fee",
+      "source_url": "https://help.copaair.com/hc/en-us/articles/360051189074-What-are-the-fare-classes-Copa-Airlines-offers",
+      "checked": "2026-11-06"
     },
     "change_cancel": {
       "text": "Basic: change for a fee, no refund"
@@ -731,11 +840,12 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://help.copaair.com/hc/en-us/articles/360051189074-What-are-the-fare-classes-Copa-Airlines-offers",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
-    }
+    },
+    "verification_note": "Only fields carrying source_url and checked were confirmed against official pages. Other values remain review-draft data."
   },
   "4Y": {
     "checked": null,
@@ -744,14 +854,18 @@
       "fee_usd": null
     },
     "carry_on": {
-      "text": "1 included, 8 kg",
+      "text": "1 included, up to 8 kg",
       "fee_usd": 0,
-      "each_way": true
+      "each_way": true,
+      "source_url": "https://www.discover-airlines.com/us/en/discover/travel-classes/economy-class.html",
+      "checked": "2026-11-06"
     },
     "first_checked": {
-      "text": "Free, 2nd bag $90",
-      "fee_usd": 0,
-      "each_way": true
+      "text": "Economy Light: not included; other Economy fares include 1 × 23 kg",
+      "fee_usd": null,
+      "each_way": true,
+      "source_url": "https://www.discover-airlines.com/us/en/discover/travel-classes/economy-class.html",
+      "checked": "2026-11-06"
     },
     "seat_selection": {
       "text": null,
@@ -770,11 +884,12 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.discover-airlines.com/us/en/discover/travel-classes/economy-class.html",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
-    }
+    },
+    "verification_note": "Only fields carrying source_url and checked were confirmed against official pages. Other values remain review-draft data."
   },
   "WK": {
     "checked": null,
@@ -783,21 +898,29 @@
       "fee_usd": null
     },
     "carry_on": {
-      "text": null,
-      "fee_usd": null,
-      "each_way": true
+      "text": "1 included, up to 8 kg",
+      "fee_usd": 0,
+      "each_way": true,
+      "source_url": "https://www.flyedelweiss.com/xk/en/legal/fare-conditions.html",
+      "checked": "2026-11-06"
     },
     "first_checked": {
-      "text": "Max 23 kg; fee not verified",
-      "fee_usd": null,
-      "each_way": true
+      "text": "Long-haul economy: 1 × 23 kg included",
+      "fee_usd": 0,
+      "each_way": true,
+      "source_url": "https://www.flyedelweiss.com/xk/en/legal/fare-conditions.html",
+      "checked": "2026-11-06"
     },
     "seat_selection": {
-      "text": null,
-      "fee_usd": null
+      "text": "Advance selection for a fee",
+      "fee_usd": null,
+      "source_url": "https://www.flyedelweiss.com/xk/en/legal/fare-conditions.html",
+      "checked": "2026-11-06"
     },
     "change_cancel": {
-      "text": null
+      "text": "Long-haul Economy Saver booked from Sep 16, 2026: USD 200 rebooking fee plus tax / fare difference; no cancellation refund.",
+      "source_url": "https://www.flyedelweiss.com/xk/en/legal/fare-conditions.html",
+      "checked": "2026-11-06"
     },
     "boarding": {
       "text": null
@@ -809,36 +932,47 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.flyedelweiss.com/xk/en/legal/fare-conditions.html",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
-    }
+    },
+    "verification_note": "Only fields carrying source_url and checked were confirmed against official pages. Other values remain review-draft data."
   },
   "PD": {
     "checked": null,
     "personal_item": {
-      "text": "Included",
-      "fee_usd": 0
+      "text": "1 included",
+      "fee_usd": 0,
+      "source_url": "https://www.flyporter.com/en-us/book-travel/our-fares-and-fees/our-fare-options/basic-fare",
+      "checked": "2026-11-06"
     },
     "carry_on": {
-      "text": "Not included on Basic",
-      "fee_usd": null,
-      "each_way": true
-    },
-    "first_checked": {
-      "text": "Fee",
+      "text": "Not included on Basic; eligible upgrade bundles available",
       "fee_usd": null,
       "each_way": true,
-      "fee_label": "Requires fee"
+      "source_url": "https://www.flyporter.com/en-us/book-travel/our-fares-and-fees/our-fare-options/basic-fare",
+      "checked": "2026-11-06"
+    },
+    "first_checked": {
+      "text": "Fee on Basic",
+      "fee_usd": null,
+      "each_way": true,
+      "fee_label": "Requires fee",
+      "source_url": "https://www.flyporter.com/en-us/book-travel/our-fares-and-fees/our-fare-options/basic-fare",
+      "checked": "2026-11-06"
     },
     "seat_selection": {
-      "text": "Free assigned seat; from C$12 to choose",
+      "text": "Fee to choose in advance",
       "fee_usd": null,
-      "fee_label": "From C$12"
+      "fee_label": "From C$12",
+      "source_url": "https://www.flyporter.com/en-us/book-travel/our-fares-and-fees/our-fare-options/basic-fare",
+      "checked": "2026-11-06"
     },
     "change_cancel": {
-      "text": "Basic: no changes; no refund or credit after 24 hours"
+      "text": "Basic: normally no flight changes or refunds outside 24 hours; limited airport same-day exceptions may be available for a fee.",
+      "source_url": "https://www.flyporter.com/en-us/book-travel/our-fares-and-fees/our-fare-options/basic-fare",
+      "checked": "2026-11-06"
     },
     "boarding": {
       "text": null
@@ -850,11 +984,12 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.flyporter.com/en-us/book-travel/our-fares-and-fees/our-fare-options/basic-fare",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
-    }
+    },
+    "verification_note": "Only fields carrying source_url and checked were confirmed against official pages. Other values remain review-draft data."
   },
   "VS": {
     "checked": null,
@@ -863,14 +998,18 @@
       "fee_usd": null
     },
     "carry_on": {
-      "text": "1 included, 10 kg",
+      "text": "1 included, up to 10 kg",
       "fee_usd": 0,
-      "each_way": true
+      "each_way": true,
+      "source_url": "https://www.virginatlantic.com/en-EU/experience/seating",
+      "checked": "2026-11-06"
     },
     "first_checked": {
-      "text": "$100 per flight on Light; included on Classic, Delight",
-      "fee_usd": 100,
-      "each_way": true
+      "text": "Not included on Light; 1 × 23 kg included on Classic and Delight",
+      "fee_usd": null,
+      "each_way": true,
+      "source_url": "https://www.virginatlantic.com/en-EU/experience/seating",
+      "checked": "2026-11-06"
     },
     "seat_selection": {
       "text": "Free within 24 hours of departure; paid earlier",
@@ -890,22 +1029,27 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.virginatlantic.com/en-EU/experience/seating",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
-    }
+    },
+    "verification_note": "Only fields carrying source_url and checked were confirmed against official pages. Other values remain review-draft data."
   },
   "WS": {
     "checked": null,
     "personal_item": {
-      "text": "Included",
-      "fee_usd": 0
+      "text": "1 included",
+      "fee_usd": 0,
+      "source_url": "https://www.westjet.com/en-ca/baggage/carry-on",
+      "checked": "2026-11-06"
     },
     "carry_on": {
-      "text": "Not included on UltraBasic",
+      "text": "UltraBasic: no carry-on on TPA routes unless Extended Comfort purchased for every flight in that direction",
       "fee_usd": null,
-      "each_way": true
+      "each_way": true,
+      "source_url": "https://www.westjet.com/en-ca/baggage/carry-on",
+      "checked": "2026-11-06"
     },
     "first_checked": {
       "text": "$55–$65 prepaid, $80–$94 airport",
@@ -930,10 +1074,11 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.westjet.com/en-ca/baggage/carry-on",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
-    }
+    },
+    "verification_note": "Only fields carrying source_url and checked were confirmed against official pages. Other values remain review-draft data."
   }
 }

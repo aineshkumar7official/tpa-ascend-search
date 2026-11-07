@@ -56,12 +56,13 @@ def _fresh(row):
 
 
 def _cabin_entry(airline, aircraft_type):
-    """cabins.json entry for the same aircraft variant (prefix match), or None."""
+    """Only the same aircraft variant; a shared prefix does not prove cabin identity."""
     if not (airline and aircraft_type):
         return None
     cabins = config.cabins()
     same_airline = [k.split("|", 1)[1] for k in cabins if k.startswith(f"{airline}|") and not k.endswith("|*")]
-    t = match_key(aircraft_type, same_airline)
+    t = next((candidate for candidate in same_airline
+              if model_code(candidate) == model_code(aircraft_type)), None)
     return cabins.get(f"{airline}|{t}") if t else None
 
 
@@ -72,10 +73,18 @@ def _curated(slot):
     return None
 
 
-# Commons query suffix + image kind for each interior slot.
-INTERIOR_SLOTS = {"cabin": ("cabin interior", "interior"),
-                  "seat": ("seats", "interior"),
-                  "food": ("meal service", "interior")}
+def curated_photos(airline, aircraft_type=None):
+    """Resolve each interior slot from the data file, never an unreviewed search."""
+    cabin = _cabin_entry(airline, aircraft_type) or {}
+    fallback = config.cabins().get(f"{airline}|*") or {}
+    result = {}
+    for slot, prefix in (("cabin", "interior"), ("seat", "seat"), ("food", "food")):
+        photo = _curated(cabin.get(slot)) or _curated(fallback.get(slot)) or {}
+        for suffix, key in (("url", "url"), ("link", "link"), ("credit", "credit")):
+            result[f"{prefix}_{suffix}"] = photo.get(key)
+    result["interior_source"] = "curated" if result["interior_url"] else "placeholder"
+    result["seat_layout"] = cabin.get("layout") or fallback.get("layout")
+    return result
 
 
 def fetch_asset(conn, airline, aircraft_type):
@@ -90,36 +99,13 @@ def fetch_asset(conn, airline, aircraft_type):
     if not exterior and airline:
         exterior = commons.search(f"{name} {aircraft_type or ''}".strip(), "exterior", conn, blocked, needles)
 
-    cabin = _cabin_entry(airline, aircraft_type) or {}
-    airline_wide = config.cabins().get(f"{airline}|*") or {}
-    slots, used = {}, set()
-    for slot, (suffix, kind) in INTERIOR_SLOTS.items():
-        img = _curated(cabin.get(slot)) or _curated(airline_wide.get(slot))
-        if not img and airline:
-            img = commons.search(f"{name} {aircraft_type or ''} {suffix}".strip(), kind, conn, blocked, needles)
-            if img and img["url"] in used:  # don't show the same Commons photo in two tiles
-                img = None
-        if img:
-            used.add(img["url"])
-        slots[slot] = img or {}
-
     exterior = exterior or {"source": "placeholder"}
     return {
         "exterior_url": exterior.get("url"),
         "exterior_link": exterior.get("link"),
         "exterior_credit": exterior.get("credit"),
         "exterior_source": exterior["source"],
-        "interior_url": slots["cabin"].get("url"),
-        "interior_link": slots["cabin"].get("link"),
-        "interior_credit": slots["cabin"].get("credit"),
-        "interior_source": slots["cabin"].get("source", "placeholder"),
-        "seat_url": slots["seat"].get("url"),
-        "seat_link": slots["seat"].get("link"),
-        "seat_credit": slots["seat"].get("credit"),
-        "food_url": slots["food"].get("url"),
-        "food_link": slots["food"].get("link"),
-        "food_credit": slots["food"].get("credit"),
-        "seat_layout": cabin.get("layout"),
+        **curated_photos(airline, aircraft_type),
     }
 
 

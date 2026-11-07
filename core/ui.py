@@ -1441,7 +1441,7 @@ def airline_card(a):
     with st.container(key=f"card_mx_{a['iata']}"):
         st.markdown(card_photo(asset, 115, "card-img mx-img")
                     + f'<div class="card-body"><div class="mx-name" title="{esc(a["name"])}">{esc(a["name"])}</div>'
-                    f'<div class="mx-n">{a["n_nonstops"]} nonstop{"s" if a["n_nonstops"] != 1 else ""} from TPA</div></div>',
+                    f'<div class="mx-n">{esc(a.get("status")) if a.get("operating") is False else str(a["n_nonstops"]) + " nonstop" + ("s" if a["n_nonstops"] != 1 else "") + " from TPA"}</div></div>',
                     unsafe_allow_html=True)
         if st.button("View airline", key=f"view_{a['iata']}", type="primary", width="stretch"):
             st.query_params["airline"] = a["iata"]
@@ -1480,13 +1480,19 @@ def fees_grid(code):
                     unsafe_allow_html=True)
         cells = []
         for k, label in FEE_ROWS:
-            table = fee_table_cell(p.get(k))
+            item = p.get(k) or {}
+            source = item.get("source_url")
+            verified = bool(source and item.get("checked"))
+            evidence = (f'<div class="credit"><a href="{esc(source)}" target="_blank" rel="noopener">'
+                        f'Checked {esc(item["checked"])} ↗</a></div>') if verified else \
+                '<div class="credit">Draft · not verified</div>'
+            table = fee_table_cell(item)
             if table:
-                cells.append(table)
+                cells.append(table[:-6] + evidence + '</div>')
                 continue
-            text = (p.get(k) or {}).get("text")
+            text = item.get("text")
             v = f'<div class="v">{esc(text)}</div>' if text else '<div class="v unknown">Not verified yet</div>'
-            cells.append(f'<div class="fee"><div class="k">{label}</div>{v}</div>')
+            cells.append(f'<div class="fee"><div class="k">{label}</div>{v}{evidence if text else ""}</div>')
         recent = p.get("recently_changed") or {}
         recent_html = (f'<div class="recent"><b>Recently changed:</b> {esc(recent["text"])}'
                        + (f' · {esc(recent["date"])}' if recent.get("date") else "") + "</div>") if recent.get("text") else \

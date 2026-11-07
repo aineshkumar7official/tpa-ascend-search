@@ -1,0 +1,42 @@
+{
+  "DL": {
+    "asset_key": "DL|Boeing 737-900ER",
+    "exterior_url": "https://t.plnspttrs.net/34916/1980299_0bc86cf063_280.jpg",
+    "exterior_link": "https://www.planespotters.net/photo/1980299/n801dz-delta-air-lines-boeing-737-932er-wl?utm_source=api",
+    "exterior_credit": "\u00a9 OMGcat / Planespotters.net",
+    "exterior_source": "planespotters",
+    "registration": "N801DZ",
+    "api_url": "https://api.planespotters.net/pub/photos/reg/N801DZ",
+    "checked": "2026-11-06"
+  },
+  "WN": {
+    "asset_key": "WN|Boeing 737-800",
+    "exterior_url": "https://t.plnspttrs.net/33281/1951115_b2739b73e8_280.jpg",
+    "exterior_link": "https://www.planespotters.net/photo/1951115/n8301j-southwest-airlines-boeing-737-8h4-wl?utm_source=api",
+    "exterior_credit": "\u00a9 Brad Ice / Planespotters.net",
+    "exterior_source": "planespotters",
+    "registration": "N8301J",
+    "api_url": "https://api.planespotters.net/pub/photos/reg/N8301J",
+    "checked": "2026-11-06"
+  },
+  "B6": {
+    "asset_key": "B6|Airbus A321neo",
+    "exterior_url": "https://t.plnspttrs.net/44703/1463855_91cb638130_280.jpg",
+    "exterior_link": "https://www.planespotters.net/photo/1463855/n2002j-jetblue-airbus-a321-271nx?utm_source=api",
+    "exterior_credit": "\u00a9 OMGcat / Planespotters.net",
+    "exterior_source": "planespotters",
+    "registration": "N2002J",
+    "api_url": "https://api.planespotters.net/pub/photos/reg/N2002J",
+    "checked": "2026-11-06"
+  },
+  "AA": {
+    "asset_key": "AA|Boeing 737-800",
+    "exterior_url": "https://t.plnspttrs.net/47028/1719174_fbfa0ebb72_280.jpg",
+    "exterior_link": "https://www.planespotters.net/photo/1719174/n901nn-american-airlines-boeing-737-823-wl?utm_source=api",
+    "exterior_credit": "\u00a9 Paul Brito / Planespotters.net",
+    "exterior_source": "planespotters",
+    "registration": "N901NN",
+    "api_url": "https://api.planespotters.net/pub/photos/reg/N901NN",
+    "checked": "2026-11-06"
+  }
+}

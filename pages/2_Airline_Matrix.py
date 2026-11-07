@@ -13,6 +13,8 @@ code = (st.query_params.get("airline") or "").upper()
 if code and code in config.airlines():
     info = config.airline(code)
     name = html.escape(info["name"])
+    if info.get("operating") is False:
+        st.warning(info.get("status") or "Airline is not operating")
     if st.button("← All airlines", type="tertiary", key="back_airlines"):
         del st.query_params["airline"]
         st.rerun()
@@ -35,6 +37,7 @@ if code and code in config.airlines():
                         unsafe_allow_html=True)
     with right:
         ui.heading("Photo library", level=3)
+        st.caption("Representative airline photos. Cabins, seats and service can vary by aircraft and fare.")
         ui.photo_library(ui.q("airline_photo_asset", code))
         ui.routes_panel(code, routes, ui.q("route_prices", code))
 
