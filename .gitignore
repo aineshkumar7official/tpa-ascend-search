@@ -13,3 +13,6 @@ Frontier Airlines/
 
 # Raw hand-picked photos; import_cabin_images.py copies them into static/airlines/
 Ascend Search Images/
+
+# Streamlit Cloud secrets (paste them in the app settings instead)
+.streamlit/secrets.toml

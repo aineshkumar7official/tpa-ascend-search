@@ -11,7 +11,7 @@ from core import config
 from core.config import settings
 from core.dates import today_local, window_dates, windows as date_windows
 from core.db import utcnow
-from sources import flights_fast
+from sources import flights_fast, flights_serpapi
 
 log = logging.getLogger(__name__)
 
@@ -82,9 +82,59 @@ def attach_return_legs(conn, rows, dest, window_id, scan_id, scanned_at, search_
             log.info("no same-price return for %s %s %s", dest, window_id, r.get("flight_numbers"))
 
 
+BLOCKED_AFTER = 3          # consecutive fast-flights failures before a scan treats Google as blocking this machine
+SERPAPI_SCAN_DESTS = 3     # when blocked: this many destinations, first date window, one-way + round trip
+
+
+class FallbackSearch:
+    """fast-flights first (free, no quota). If Google blocks it (BLOCKED_AFTER failures in a row), the rest of the scan
+    uses SerpApi, but only for a small fixed plan (SERPAPI_SCAN_DESTS destinations × the first date window × one-way
+    and round trip, nonstop), at most settings.SERPAPI_SCAN_DAILY searches a day, and never into the last
+    settings.SERPAPI_RESERVE searches of the monthly budget. Anything outside that plan just fails, like before."""
+
+    def __init__(self, conn, fast=None, serp=None, plan=None):
+        self.conn, self.fails, self.blocked = conn, 0, False
+        self.fast = fast or flights_fast.search
+        self.serp = serp or (lambda *a, **k: flights_serpapi.search(conn, *a, **k))
+        if plan is None:
+            dests = [d["iata"] for d in config.scan_destinations()][:SERPAPI_SCAN_DESTS]
+            first = date_windows()[0]
+            plan = {(d, first["depart"]) for d in dests}
+        self.plan = plan
+
+    def _day_key(self):
+        return f"serpapi_scan_{today_local().isoformat()}"
+
+    def serp_allowed(self):
+        if not flights_serpapi.available():
+            return False
+        if flights_serpapi.remaining(self.conn) <= settings.SERPAPI_RESERVE:
+            return False
+        return flights_serpapi.used(self.conn, self._day_key()) < settings.SERPAPI_SCAN_DAILY
+
+    def __call__(self, origin, dest, depart, ret=None, nonstop=True, party=1):
+        if not self.blocked:
+            try:
+                rows = self.fast(origin, dest, depart, ret, nonstop=nonstop)
+                self.fails = 0
+                return rows
+            except flights_fast.SearchFailed:
+                self.fails += 1
+                if self.fails < BLOCKED_AFTER:
+                    raise
+                self.blocked = True
+                log.warning("fast-flights failed %d times in a row: using the SerpApi fallback plan", self.fails)
+        if not nonstop or (dest, depart) not in self.plan:
+            raise flights_fast.SearchFailed("fast-flights blocked; not in the SerpApi fallback plan")
+        if not self.serp_allowed():
+            raise flights_fast.SearchFailed("fast-flights blocked; SerpApi daily allowance or reserve reached")
+        flights_serpapi.spend(self.conn, self._day_key(), budget=10 ** 6)  # daily counter (the real budget is below)
+        return self.serp(origin, dest, depart, ret, nonstop=nonstop, party=party)
+
+
 def scan(conn, destinations=None, limit=None, dry_run=False, with_any_stops=True, search=None, search_returns=None):
     """Run one scan cycle. Returns the scan_id (or the list of rows when dry_run)."""
-    search = search or flights_fast.search
+    search = search or FallbackSearch(conn)
     search_returns = search_returns or flights_fast.search_returns
     dests = destinations or [d["iata"] for d in config.scan_destinations()]
     if limit:
@@ -100,7 +150,7 @@ def scan(conn, destinations=None, limit=None, dry_run=False, with_any_stops=True
         ret = w["return"] if trip_type == "round_trip" else None
         try:
             results = search(settings.ORIGIN, dest, w["depart"], ret, nonstop=(mode == "nonstop"))
-        except Exception as e:  # never fall back to SerpApi here — protect the quota
+        except Exception as e:  # FallbackSearch already decided whether SerpApi may be used
             log.warning("scan %s %s %s failed: %s", dest, w["window_id"], trip_type, e)
             if not dry_run:
                 _log_search(conn, scan_id, scanned_at, dest, w["window_id"], trip_type, mode, 0, str(e))

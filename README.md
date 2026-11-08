@@ -23,6 +23,11 @@ streamlit run app.py
 
 `python -m bots.pipeline --dry-run --limit 2` hits real sources for 2 destinations and prints rows.
 
+## Deploy (free)
+
+GitHub Actions scans twice a day and saves the database to the `data` branch; the Streamlit Cloud app reads it. No credit
+card anywhere. Steps and settings: **[DEPLOY.md](DEPLOY.md)**.
+
 ## Layout
 
 | Path | What |

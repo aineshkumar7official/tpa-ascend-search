@@ -1,0 +1,96 @@
+# Price scan on GitHub's free runners. Twice a day, plus "Run workflow" by hand (Actions tab → Price scan).
+#
+# Loads the database from the `data` branch, runs one scan cycle (fast-flights first; SerpApi only if Google blocks it,
+# within the limits below), refreshes airline news, and saves the database back to `data` as a single commit, so the
+# repo never grows. The deployed app (core/remote_db.py) picks up the new database within about 10 minutes.
+#
+# Free-tier notes: private repos get 2,000 Actions minutes a month at no cost; a scan takes about 15–30 minutes, so
+# 2 scans a day stays under it. With no payment method on the account GitHub cannot charge: runs simply pause if the
+# minutes run out. SerpApi is capped at SERPAPI_MONTHLY_BUDGET with SERPAPI_RESERVE kept back.
+name: Price scan
+
+on:
+  schedule:
+    - cron: "17 10,22 * * *"   # 10:17 and 22:17 UTC (about 5–6 AM and 5–6 PM in Tampa)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: price-scan
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      SERPAPI_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
+      SERPAPI_MONTHLY_BUDGET: "200"
+      SERPAPI_RESERVE: "50"
+      SERPAPI_SCAN_DAILY: "6"
+      FARE_OPTIONS: "off"
+      HTTP_USER_AGENT: "TPA-AscendSearch/0.1 (student project)"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: pip install -r requirements.txt
+
+      - name: Load the database from the data branch
+        run: |
+          if git fetch --depth=1 origin data; then
+            git show origin/data:ascend.db.gz | gunzip > data/ascend.db
+            echo "Loaded $(du -h data/ascend.db | cut -f1) database"
+          else
+            echo "::warning::No data branch yet: starting from an empty database"
+            python scripts/init_db.py
+          fi
+
+      - name: Scan
+        run: python -m bots.pipeline --once
+
+      - name: News
+        continue-on-error: true
+        run: python -m bots.pipeline --news
+
+      - name: Summary
+        run: |
+          python - <<'EOF' >> "$GITHUB_STEP_SUMMARY"
+          import sqlite3
+          c = sqlite3.connect("data/ascend.db")
+          scan, at = c.execute("SELECT scan_id, MIN(scanned_at) FROM scan_log GROUP BY scan_id ORDER BY 2 DESC LIMIT 1").fetchone()
+          ok, failed, rows = c.execute("SELECT SUM(error IS NULL), SUM(error IS NOT NULL), SUM(result_count) FROM scan_log WHERE scan_id=?", (scan,)).fetchone()
+          fares = c.execute("SELECT COUNT(*) FROM fares WHERE scan_id=?", (scan,)).fetchone()[0]
+          serp = c.execute("SELECT COALESCE(SUM(calls),0) FROM api_usage WHERE provider='serpapi' AND month=strftime('%Y-%m','now')").fetchone()[0]
+          print(f"### Scan {at}\n\n| | |\n|---|---|\n| Searches OK | {ok or 0} |\n| Searches failed | {failed or 0} |\n"
+                f"| Fares saved | {fares} |\n| SerpApi used this month | {serp} |")
+          if not fares:
+              raise SystemExit("No fares came back from this scan")
+          EOF
+
+      - name: Save the database to the data branch
+        run: |
+          python - <<'EOF'
+          import sqlite3
+          c = sqlite3.connect("data/ascend.db")
+          c.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+          c.execute("PRAGMA journal_mode=DELETE")
+          c.execute("VACUUM")
+          c.close()
+          EOF
+          mkdir -p /tmp/out && gzip -9 -c data/ascend.db > /tmp/out/ascend.db.gz
+          cd /tmp/out
+          git init -q -b data
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ascend.db.gz
+          git commit -q -m "Price data $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" data
+          echo "Saved $(du -h ascend.db.gz | cut -f1) to the data branch"

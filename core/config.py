@@ -26,13 +26,29 @@ DISCLAIMER_SHORT = "Prices are snapshots and may have changed. Always confirm on
 STUDENT_LINE = "Student project · USF"
 
 
+def _env(name):
+    """Environment variable, else a Streamlit Cloud secret of the same name (the deployed app's settings)."""
+    if os.getenv(name) is not None:
+        return os.getenv(name)
+    if not (ROOT / ".streamlit" / "secrets.toml").exists() and not os.getenv("STREAMLIT_SHARING_MODE") \
+            and not Path("/mount/src").exists():
+        return ""  # no secrets anywhere: skip importing Streamlit (scripts, tests, GitHub Actions)
+    try:
+        import streamlit as st
+
+        v = st.secrets.get(name)
+        return "" if v is None else str(v)
+    except Exception:
+        return ""
+
+
 def _int(name, default):
-    raw = os.getenv(name, "").split("#")[0].strip()
+    raw = _env(name).split("#")[0].strip()
     return int(raw) if raw else default
 
 
 def _str(name, default):
-    raw = os.getenv(name, "").split(" #")[0].strip()
+    raw = _env(name).split(" #")[0].strip()
     return raw or default
 
 
@@ -51,6 +67,18 @@ class Settings:
     REVIEWS_SOURCE_URL = "https://data.mendeley.com/datasets/vgjk58vf8h/1"
     POLICY_STALE_DAYS = 45
     FARE_OPTIONS = _str("FARE_OPTIONS", "on")  # "off" skips the local-Chrome lookups of Google's fare options
+    DB_DIR = str(ROOT / "data")
+    # Deployed app (core/remote_db.py): read the database the scan workflow pushes to this repo's data branch.
+    DATA_REPO = _str("DATA_REPO", "")          # "owner/repo"
+    DATA_BRANCH = _str("DATA_BRANCH", "data")
+    GITHUB_TOKEN = _str("GITHUB_TOKEN", "")    # fine-grained, read-only "Contents" on that repo
+    # Quota protection. Scans: SerpApi only when Google blocks fast-flights, at most SERPAPI_SCAN_DAILY searches a day,
+    # and never into the last SERPAPI_RESERVE of the monthly budget (kept for testing and the demo).
+    SERPAPI_SCAN_DAILY = _int("SERPAPI_SCAN_DAILY", 6)
+    SERPAPI_RESERVE = _int("SERPAPI_RESERVE", 50)
+    # Live search: "off" never spends SerpApi from the app (the public server), only free fast-flights.
+    LIVE_SERPAPI = _str("LIVE_SERPAPI", "on")
+    LIVE_SEARCH_DAILY_CAP = _int("LIVE_SEARCH_DAILY_CAP", 0)  # Google requests per day for live search; 0 = no cap
 
 
 settings = Settings()

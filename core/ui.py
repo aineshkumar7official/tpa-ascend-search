@@ -7,7 +7,7 @@ from zoneinfo import ZoneInfo
 
 import streamlit as st
 
-from core import booking, config, pricing, queries, theme
+from core import booking, config, pricing, queries, remote_db, theme
 from core.config import settings
 from core.db import get_conn
 from sources import fare_options
@@ -131,8 +131,28 @@ def airline_label(f):
 
 
 # ================================================================ chrome
+_db_seen = {"sha": None}
+
+
+@st.cache_data(ttl=600, show_spinner="Loading the latest prices…")
+def _latest_data():
+    """At most every 10 minutes: switch to the newest scan on the data branch (deployed app only)."""
+    return remote_db.sync()
+
+
+def sync_db():
+    """Deployed app: use the database from the latest scan, and drop cached query results when it changes."""
+    if not remote_db.enabled():
+        return
+    sha = _latest_data()
+    if sha and sha != _db_seen["sha"]:
+        _db_seen["sha"] = sha
+        q.clear()
+
+
 def chrome(active):
     """Theme + header + nav row + banner. Call first on every page."""
+    sync_db()
     theme.inject()
     st.markdown(
         f"""<div class="as-header bleed"><div><span class="as-wordmark">{config.PRODUCT_NAME}</span>
@@ -857,7 +877,7 @@ def booking_links(f):
     """Optional 'Get booking links' (spends SerpApi calls; falls back to search_url)."""
     from sources import flights_serpapi
 
-    if not flights_serpapi.available():
+    if not flights_serpapi.available() or settings.LIVE_SERPAPI == "off":
         return
     key = f"bk_{f['fare_id']}"
     if st.button("Get booking links", key=key, type="tertiary"):
