@@ -222,3 +222,11 @@ def test_live_search_progress_passes_status_label_by_keyword():
     from pathlib import Path
     page = (Path(__file__).parent.parent / "views" / "1_Ascend_Deals.py").read_text()
     assert "progress=status.update" not in page
+
+
+def test_local_images_use_relative_paths_for_streamlit_cloud():
+    from core.ui import asset_src, image
+    assert asset_src("/app/static/airlines/SY/exterior.jpg") == "app/static/airlines/SY/exterior.jpg"
+    assert asset_src("https://upload.wikimedia.org/x.jpg") == "https://upload.wikimedia.org/x.jpg"
+    assert asset_src(None) is None
+    assert 'src="app/static/a.jpg"' in image("/app/static/a.jpg")
