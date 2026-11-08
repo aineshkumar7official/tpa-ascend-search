@@ -33,9 +33,15 @@ if not getattr(st.markdown, "_dollar_safe", False):
 
 
 # ================================================================ data access (cached)
-@st.cache_resource
 def conn():
-    return get_conn()
+    """The shared connection for the database currently in use. Keyed by path: when the deployed app switches to a
+    newer scan (core/remote_db.py) it gets a connection to that file, not one opened earlier on another database."""
+    return _conn_for(settings.DB_PATH)
+
+
+@st.cache_resource(max_entries=3)
+def _conn_for(path):
+    return get_conn(path)
 
 
 @st.cache_data(ttl=300, show_spinner=False)
