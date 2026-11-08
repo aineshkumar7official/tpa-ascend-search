@@ -555,19 +555,29 @@ label p {{ font-size: .88rem !important; }}
 
 /* ---------- V4: To picker ---------- */
 [data-testid="stPopoverBody"]:has([class*="st-key-destpick"]) {{ width: 440px !important; max-width: 440px !important; }}
-.dest-hint {{ color: var(--muted); font-size: .82rem; line-height: 1.35; }}
-.dest-n {{ color: var(--muted); font-size: .82rem; white-space: nowrap; }}
+.dest-hint {{ color: var(--muted); font-size: .76rem; line-height: 1.3; }}
+.dest-n {{ color: var(--muted); font-size: .78rem; white-space: nowrap; }}
 [class*="st-key-destlist"] {{ gap: 0 !important; }}
-[class*="st-key-destlist"] [data-testid="stBaseButton-tertiary"] {{ justify-content: flex-start; width: 100%; min-height: 40px;
+[class*="st-key-destlist"] [data-testid="stBaseButton-tertiary"] {{ justify-content: flex-start; width: 100%; min-height: 30px;
   padding: 0 .25rem; }}
 [class*="st-key-destlist"] [data-testid="stBaseButton-tertiary"] p {{ color: var(--ink); text-decoration: none; font-weight: 600;
-  font-size: .95rem; text-align: left; }}
+  font-size: .88rem; text-align: left; }}
 [class*="st-key-destlist"] [data-testid="stBaseButton-tertiary"] > div {{ justify-content: flex-start; width: 100%; }}
 [class*="st-key-destlist"] [data-testid="stBaseButton-tertiary"] [data-testid="stMarkdownContainer"] {{ text-align: left; }}
 [class*="st-key-destlist"] [data-testid="stBaseButton-tertiary"]:hover {{ background: var(--page-bg); }}
-[class*="st-key-destmetro"] {{ flex-wrap: nowrap !important; min-height: 40px; padding: 0 .25rem; }}
-[class*="st-key-destairport"] {{ min-height: 36px; padding-left: 1.75rem; justify-content: center; }}
-[class*="st-key-destlist"] label p {{ font-size: .95rem !important; font-weight: 500 !important; }}
+[class*="st-key-destmetro"] {{ flex-wrap: nowrap !important; min-height: 32px; padding: 0 .25rem; }}
+[class*="st-key-destairport"] {{ min-height: 28px; padding-left: 1.75rem; justify-content: center; }}
+[class*="st-key-destlist"] label p {{ font-size: .88rem !important; font-weight: 500 !important; }}
+/* Clear / Done stay pinned to the bottom of the pop-up while it scrolls (V7.2 p13) */
+[data-testid="stLayoutWrapper"]:has(> [class*="st-key-destfoot"]), [class*="st-key-destfoot"] {{
+  position: sticky; bottom: 0; z-index: 3; background: #fff; }}
+[class*="st-key-destfoot"] {{ flex-wrap: nowrap !important; padding: .45rem 0 .75rem; border-top: 1px solid var(--border); }}
+/* No bottom padding on this pop-up, so the pinned footer sits flush with its edge and no list row shows beneath it. */
+[data-testid="stPopoverBody"]:has([class*="st-key-destpick"]) {{ padding-bottom: 0 !important; }}
+/* On short screens the city list shrinks (it scrolls on its own) so the whole pop-up fits without scrolling. */
+[class*="st-key-destlist"] {{ height: auto !important; max-height: clamp(120px, calc(100vh - 590px), 250px) !important;
+  overflow-y: auto !important; }}
+[class*="st-key-destfoot"] button {{ min-height: 34px; white-space: nowrap; }}
 [class*="st-key-destmetro"] label p strong {{ font-weight: 600; }}
 
 /* ---------- V4: separate legs ---------- */
