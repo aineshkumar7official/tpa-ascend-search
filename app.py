@@ -51,11 +51,6 @@ def home():
             ui.fare_card(f, cp, "home", highlight=(i == 0))
 
         ui.card_grid(list(enumerate(picks)), render)
-        open_id = st.session_state.get("open_home")
-        opened = next((f for f in fares if f["fare_id"] == open_id), None)
-        if opened:
-            ui.heading(f"Cabin experience · {ui.airline_label(opened)} to {config.city(opened['destination'])}", level=3)
-            ui.cabin_panel(opened, came_from="home")
     ui.footer(full=True)
 
 

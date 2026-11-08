@@ -1,5 +1,5 @@
 {
-  "_note": "Keyed airline|aircraft_type, with airline|* fallback ('Typical for [airline]'). Chips render only for true values; missing keys render nothing. legroom_pitch_in from the airline's published seat pitch. cool_thing in your own words. routes (on airline|* only): overrides for flights to or from one airport, e.g. Delta's Amsterdam meal. food_drinks format when snacks, drinks and more to buy: 'Free snacks (names, if known)/soft drinks, buy on board also available'.",
+  "_note": "Keyed airline|aircraft_type, with airline|* fallback ('Typical for [airline]'). Chips render only for true values; missing keys render nothing. legroom_pitch_in from the airline's published seat pitch. cool_thing in your own words. routes (on airline|* only): overrides for flights to or from one airport, e.g. Delta's Amsterdam meal. food_drinks format when snacks, drinks and more to buy: 'Free snacks (names, if known)/soft drinks, buy on board also available'. Chip pop-up keys (wifi_cost, wifi_speed, screen_size_in, entertainment_system, stream_app, stream_connect, stream_content, power_outlet) come from the Entertainment row of TPA_Airline_Fees_and_Policies.pdf (Nov 7, 2026).",
   "DL|*": {
     "carry_on": "Free",
     "food_drinks": "Free snacks (Cheez-It, Biscoff, Sun Chips)/soft drinks, buy on board also available",
@@ -13,7 +13,10 @@
       "AMS": {
         "food_drinks": "Choice of appetizer, entree, dessert and beverage options"
       }
-    }
+    },
+    "entertainment_system": "Delta Studio",
+    "wifi_cost": "Free for SkyMiles members, or $5 flight pass",
+    "power_outlet": "USB and universal (AC) outlets"
   },
   "WN|*": {
     "carry_on": "Free",
@@ -23,7 +26,10 @@
     "stream_to_device": true,
     "power": true,
     "legroom_pitch_in": "31–32",
-    "cool_thing": "Trading cards"
+    "cool_thing": "Trading cards",
+    "stream_content": "Free live TV, movies and TV shows",
+    "wifi_cost": "Free for Rapid Rewards members; $8 for non-members",
+    "power_outlet": "USB charging port"
   },
   "B6|*": {
     "carry_on": "Included",
@@ -33,7 +39,9 @@
     "stream_to_device": null,
     "power": true,
     "legroom_pitch_in": "32",
-    "cool_thing": "Trading cards"
+    "cool_thing": "Trading cards",
+    "screen_size_in": "5.6 or 10.1 (by aircraft)",
+    "entertainment_system": "Blueprint by JetBlue"
   },
   "AA|*": {
     "carry_on": "Free",
@@ -43,7 +51,11 @@
     "stream_to_device": true,
     "power": true,
     "legroom_pitch_in": "30–31",
-    "cool_thing": "Free trading cards"
+    "cool_thing": "Free trading cards",
+    "stream_app": "AA Inflight Entertainment",
+    "stream_connect": "aainflight.com",
+    "wifi_cost": "Free for AAdvantage members; paid plans for everyone else",
+    "power_outlet": "In-seat power and USB outlets"
   },
   "UA|*": {
     "carry_on": "Free. Basic: not included domestic, short-haul; included transatlantic, transpacific.",
@@ -53,7 +65,9 @@
     "stream_to_device": null,
     "power": true,
     "legroom_pitch_in": "30–31",
-    "cool_thing": "Trading cards"
+    "cool_thing": "Trading cards",
+    "wifi_cost": "Free messaging",
+    "power_outlet": "USB and universal (AC) outlets"
   },
   "UA|Boeing 737": {
     "carry_on": "Free. Basic: not included domestic, short-haul; included transatlantic, transpacific.",
@@ -63,7 +77,9 @@
     "stream_to_device": null,
     "power": true,
     "legroom_pitch_in": "30–31",
-    "cool_thing": "Trading cards"
+    "cool_thing": "Trading cards",
+    "wifi_cost": "Free messaging",
+    "power_outlet": "USB and universal (AC) outlets"
   },
   "UA|737-700": {
     "carry_on": "Free. Basic: not included domestic, short-haul; included transatlantic, transpacific.",
@@ -73,7 +89,10 @@
     "stream_to_device": null,
     "power": true,
     "legroom_pitch_in": "30–31",
-    "cool_thing": "Trading cards"
+    "cool_thing": "Trading cards",
+    "wifi_cost": "Free messaging",
+    "power_outlet": "USB and universal (AC) outlets",
+    "screen_size_in": "10"
   },
   "UA|737 MAX 8": {
     "carry_on": "Free. Basic: not included domestic, short-haul; included transatlantic, transpacific.",
@@ -83,7 +102,10 @@
     "stream_to_device": null,
     "power": true,
     "legroom_pitch_in": "30–31",
-    "cool_thing": "Trading cards"
+    "cool_thing": "Trading cards",
+    "wifi_cost": "Free messaging",
+    "power_outlet": "USB and universal (AC) outlets",
+    "screen_size_in": "10"
   },
   "UA|737 MAX 9": {
     "carry_on": "Free. Basic: not included domestic, short-haul; included transatlantic, transpacific.",
@@ -93,7 +115,10 @@
     "stream_to_device": null,
     "power": true,
     "legroom_pitch_in": "30–31",
-    "cool_thing": "Trading cards"
+    "cool_thing": "Trading cards",
+    "wifi_cost": "Free messaging",
+    "power_outlet": "USB and universal (AC) outlets",
+    "screen_size_in": "10"
   },
   "UA|A321neo": {
     "carry_on": "Free. Basic: not included domestic, short-haul; included transatlantic, transpacific.",
@@ -103,7 +128,10 @@
     "stream_to_device": null,
     "power": true,
     "legroom_pitch_in": "30–31",
-    "cool_thing": "Trading cards"
+    "cool_thing": "Trading cards",
+    "wifi_cost": "Free messaging",
+    "power_outlet": "USB and universal (AC) outlets",
+    "screen_size_in": "10"
   },
   "UA|737-800": {
     "carry_on": "Free. Basic: not included domestic, short-haul; included transatlantic, transpacific.",
@@ -113,7 +141,9 @@
     "stream_to_device": true,
     "power": true,
     "legroom_pitch_in": "30–31",
-    "cool_thing": "Trading cards"
+    "cool_thing": "Trading cards",
+    "wifi_cost": "Free messaging",
+    "power_outlet": "USB and universal (AC) outlets"
   },
   "UA|737-900": {
     "carry_on": "Free. Basic: not included domestic, short-haul; included transatlantic, transpacific.",
@@ -123,7 +153,9 @@
     "stream_to_device": true,
     "power": true,
     "legroom_pitch_in": "30–31",
-    "cool_thing": "Trading cards"
+    "cool_thing": "Trading cards",
+    "wifi_cost": "Free messaging",
+    "power_outlet": "USB and universal (AC) outlets"
   },
   "NK|*": {
     "carry_on": null,
@@ -153,7 +185,11 @@
     "stream_to_device": true,
     "power": true,
     "legroom_pitch_in": "30–32",
-    "cool_thing": "Trading cards"
+    "cool_thing": "Trading cards",
+    "stream_app": "Alaska Beyond Entertainment",
+    "wifi_cost": "$8 (Standard Wi-Fi)",
+    "wifi_speed": "Stream, browse and chat; Starlink coming soon",
+    "power_outlet": "In-seat power and USB outlets"
   },
   "SY|*": {
     "carry_on": "$34 during booking, $50 before or at check-in; max 35 lb",
@@ -163,7 +199,9 @@
     "stream_to_device": true,
     "power": true,
     "legroom_pitch_in": "29",
-    "cool_thing": null
+    "cool_thing": null,
+    "stream_app": "AirFi Network",
+    "power_outlet": "USB socket"
   },
   "MX|*": {
     "carry_on": "$35 on Nice; included on Nicer, Nicest; max 35 lb",
@@ -173,7 +211,8 @@
     "stream_to_device": true,
     "power": true,
     "legroom_pitch_in": "31",
-    "cool_thing": "Trading cards"
+    "cool_thing": "Trading cards",
+    "wifi_cost": "For purchase; messaging free"
   },
   "G4|*": {
     "carry_on": null,
@@ -193,7 +232,10 @@
     "stream_to_device": null,
     "power": true,
     "legroom_pitch_in": "29",
-    "cool_thing": null
+    "cool_thing": null,
+    "screen_size_in": "10",
+    "wifi_cost": "Free for Aeroplan members; paid for everyone else",
+    "power_outlet": "USB and universal (AC) outlets"
   },
   "AM|*": {
     "carry_on": "Free",
@@ -203,7 +245,11 @@
     "stream_to_device": null,
     "power": true,
     "legroom_pitch_in": "30",
-    "cool_thing": "Limited 90th anniversary trading cards"
+    "cool_thing": "Limited 90th anniversary trading cards",
+    "screen_size_in": "9",
+    "entertainment_system": "AM Streaming (seatback touchscreen)",
+    "wifi_cost": "Free messaging; paid plans for more",
+    "power_outlet": "USB and universal (AC) outlets"
   },
   "AV|*": {
     "carry_on": "Not included on Basic; included on Light and above; 10 kg",
@@ -213,7 +259,9 @@
     "stream_to_device": true,
     "power": true,
     "legroom_pitch_in": "28",
-    "cool_thing": "Free stopover when connecting through Bogotá, with hotel, tour and dining discounts"
+    "cool_thing": "Free stopover when connecting through Bogotá, with hotel, tour and dining discounts",
+    "stream_app": "Avianca On Air",
+    "power_outlet": "USB outlet"
   },
   "XP|*": {
     "carry_on": "$54–$75",
@@ -233,7 +281,10 @@
     "stream_to_device": null,
     "power": true,
     "legroom_pitch_in": "31",
-    "cool_thing": null
+    "cool_thing": null,
+    "screen_size_in": "10",
+    "entertainment_system": "Highlife (Paramount+ and Audible)",
+    "wifi_cost": "Messaging free for Club members; $4–$6.67 for non-members"
   },
   "KX|*": {
     "carry_on": "Free",
@@ -243,7 +294,9 @@
     "stream_to_device": true,
     "power": true,
     "legroom_pitch_in": "32",
-    "cool_thing": "Free Seven Fathoms Rum Punch"
+    "cool_thing": "Free Seven Fathoms Rum Punch",
+    "stream_app": "Sir Turtle Entertainment",
+    "power_outlet": "USB outlet"
   },
   "CM|*": {
     "carry_on": "Free on every fare, 10 kg",
@@ -253,7 +306,8 @@
     "stream_to_device": null,
     "power": true,
     "legroom_pitch_in": "30–32",
-    "cool_thing": null
+    "cool_thing": null,
+    "power_outlet": "USB outlet"
   },
   "4Y|*": {
     "carry_on": "Free, 8 kg",
@@ -263,7 +317,10 @@
     "stream_to_device": null,
     "power": true,
     "legroom_pitch_in": "31",
-    "cool_thing": "Free Discover cookies for dessert"
+    "cool_thing": "Free Discover cookies for dessert",
+    "screen_size_in": "9",
+    "wifi_cost": "Free messaging; more Wi-Fi plans for a fee",
+    "power_outlet": "Universal (AC) and USB sockets"
   },
   "WK|*": {
     "carry_on": "Free, 8 kg",
@@ -273,7 +330,9 @@
     "stream_to_device": null,
     "power": true,
     "legroom_pitch_in": "31",
-    "cool_thing": "Pre-arrival Biberli, a Swiss ginger biscuit"
+    "cool_thing": "Pre-arrival Biberli, a Swiss ginger biscuit",
+    "screen_size_in": "9",
+    "power_outlet": "In-seat power and USB outlets"
   },
   "PD|*": {
     "carry_on": "Not included on Basic; 1 free on Standard and above",
@@ -283,7 +342,9 @@
     "stream_to_device": true,
     "power": true,
     "legroom_pitch_in": "30",
-    "cool_thing": null
+    "cool_thing": null,
+    "wifi_cost": "Free",
+    "power_outlet": "In-seat power"
   },
   "VS|*": {
     "carry_on": "1 included, 10 kg",
@@ -293,7 +354,11 @@
     "stream_to_device": null,
     "power": true,
     "legroom_pitch_in": "31",
-    "cool_thing": "'Mile High' afternoon tea on day flights from the UK"
+    "cool_thing": "'Mile High' afternoon tea on day flights from the UK",
+    "screen_size_in": "9 (older aircraft) or 13.3 (A330-900neo)",
+    "entertainment_system": "Vera (touchscreen)",
+    "wifi_cost": "For a fee",
+    "power_outlet": "In-seat power, USB and universal (AC) outlets"
   },
   "WS|*": {
     "carry_on": "1 free on Econo and above. UltraBasic: none on U.S., Canada flights.",
@@ -303,6 +368,8 @@
     "stream_to_device": true,
     "power": true,
     "legroom_pitch_in": "29–30",
-    "cool_thing": "Trading cards"
+    "cool_thing": "Trading cards",
+    "stream_app": "WestJet Connect",
+    "power_outlet": "USB and universal (AC) outlets"
   }
 }

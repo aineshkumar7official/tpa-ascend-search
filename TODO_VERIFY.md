@@ -129,3 +129,8 @@ Edit the doc and re-run rather than editing the JSON. Open items from the doc:
 - **Frontier Washington–Dulles (IAD)** — not confirmed.
 - Seasonal tags come from an older copy of TPA's page.
 Flip `scan: true` on more current routes once a week of scans runs clean.
+
+## Entertainment chip pop-ups (Wireframes V7 p20)
+Every pop-up currently says "Not verified yet". Fill these optional keys in `data/amenities.json` (per `airline|*` or aircraft)
+from each airline's own site: `wifi_cost`, `wifi_speed`, `screen_size_in`, `entertainment_system`, `stream_app`,
+`stream_connect`, `stream_content`, `power_outlet`; checked-bag weight in `airline_policies.json` `first_checked.weight_limit`.

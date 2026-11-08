@@ -74,10 +74,14 @@ def _change():
 fare_id = st.query_params.get("fare_id")
 if fare_id:
     f = queries.fare_by_id(ui.conn(), fare_id)
-    from_home = st.query_params.get("from") == "home"
-    if st.button("← Back to home" if from_home else "← Back to results", type="tertiary"):
-        if from_home:
-            st.switch_page(ui.PAGES[config.NAV_HOME])
+    origin = st.query_params.get("from") or ""
+    back = {"home": (config.NAV_HOME, "home", None), "deals": (config.NAV_DEALS, "deals", None)}.get(origin)
+    if origin.startswith("airline:"):
+        code = origin.split(":", 1)[1]
+        back = (config.NAV_MATRIX, config.airline_name(code), {"airline": code})
+    if st.button(f"← Back to {back[1]}" if back else "← Back to results", type="tertiary"):
+        if back:
+            st.switch_page(ui.PAGES[back[0]], query_params=back[2])
         del st.query_params["fare_id"]
         st.rerun()
     if not f:

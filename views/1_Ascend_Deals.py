@@ -8,7 +8,8 @@ from core import config, pricing, queries, ui
 
 ui.chrome(config.NAV_DEALS)
 queries.mark_alerts_seen(ui.conn())
-ui.heading("Ascend deals from TPA", "Stand-out price drops first, then every route for the dates you pick.")
+ui.heading("Ascend deals from TPA", "Routes whose price dropped the most compared with their recent average. "
+           "Open a card's dropdowns for fare &amp; upgrades, cabin experience and price trend.")
 
 s = ui.search_state()
 with st.container(key="panel_filters"):
@@ -93,15 +94,6 @@ else:
             ui.card_grid(rest, render)
         else:
             st.markdown('<div class="muted">All of these are in Stand-out deals above.</div>', unsafe_allow_html=True)
-    # Opened by a card button on the previous run. Popped, so any later rerun doesn't reopen it.
-    dialog = st.session_state.pop("card_dialog", None)
-    opened = dialog and next((d for d in standouts + items if d["fare"]["fare_id"] == dialog["fare_id"]), None)
-    if opened:
-        cp = ui.card_price(opened["fare"], party, carry, checked, bool(carry or checked))
-        if dialog["kind"] == "trend":
-            ui.price_trend_dialog(opened, cp, carry, checked, party)
-        else:
-            ui.cabin_dialog(opened["fare"], cp, carry, checked, party)
     st.markdown(f'<div class="credit" style="margin-top:1rem">Routes with fewer than {MIN_POINTS} price checks show '
                 '“Tracking — trend available soon” instead of a % drop. Trends only compare prices for the same '
                 'departure date, so a route goes back to Tracking when its date moves forward.</div>', unsafe_allow_html=True)

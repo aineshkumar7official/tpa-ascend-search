@@ -4,7 +4,7 @@
 
 A Streamlit web app that watches Tampa International (TPA) for cheap **nonstop** flights and pairs each
 fare with livery photos, cabin details, fees and policies, passenger reviews and fun facts. $0 to run.
-Built from `tpabuildv2.md`; design follows `TPA AscendSearch Wireframes 5.2.pdf`.
+Built from `tpabuildv2.md`; design follows `TPA AscendSearch Wireframes V7.2.pdf`.
 
 ## Run it
 
@@ -36,7 +36,32 @@ streamlit run app.py
 | `core/` | config/naming, db schema, dates, geo, pricing (bags/travelers), queries, theme (CSS), ui (components) |
 | `data/` | Static JSON (see `TODO_VERIFY.md`), airports.csv, SQLite DB |
 
-## Wireframes 5.2 (current design)
+## Wireframes V7.2 (current design)
+Changes from V7 (below still applies otherwise):
+- On Home, Deals and airline-page deal cards, **Cabin experience ▾** is a button next to **Book now** (the "Baggage, food,
+  entertainment" dropdown box is gone). It opens under the buttons, inside the card: **Cabin images** (The plane · Seats ·
+  Food/drink, with credits), then Baggage · Food & drinks · Entertainment, then Special freebie. On Deals the price trend sits above the buttons.
+- Result rows, leg rows and the full Cabin experience page use the same three cabin images (Seats falls back to the cabin photo).
+- A bundle's Cabin experience shows the cabin images above Compare both flights.
+- "Open full cabin experience" from an airline-page deal comes back to that airline page.
+
+## Wireframes V7
+`TPA AscendSearch Wireframes V7.pdf`. Changes from V6:
+- **Fare & upgrades ▾** replaces Upgrades ▾ everywhere (Home, Deals, airline deals, one-way results, separate legs, bundles):
+  Base fare · UPGRADES rows · **Your price**. Only rows with a fixed `+$X` have a checkbox; a range, "from" price or
+  "Check on Google Flights" row has none, because it can't change the price.
+- **Cabin experience ▾** is a second dropdown on Home and Deals cards ("Baggage, food, entertainment"), opening in the card.
+  Book now sits under the dropdowns. Deals no longer uses pop-ups: the **price trend** also opens in the card.
+- Result rows, leg rows and bundles show **Fare & upgrades ▾ · Cabin experience ▾ · Book now** under the row. A bundle's fare panel
+  sits beside the Booking summary; its cabin panel is Compare both flights (Aircraft, Baggage, Food & drinks, Entertainment & power, Special freebie).
+- Cabin experience content is **Baggage** (carry-on · checked fee) · **Food & drinks** · **Entertainment · hover a chip**, then
+  **Special freebie** only when the airline has one. Legroom, the fare list and the fun fact are no longer shown there.
+- **Chip pop-ups** (p20): hover or tap Wi-Fi / Seatback screen / Stream to your device / Power for details, from optional
+  `amenities.json` keys `wifi_cost`, `wifi_speed`, `screen_size_in`, `entertainment_system`, `stream_app`, `stream_connect`,
+  `stream_content`, `power_outlet` (missing → "Not verified yet"). A checked-bag weight can go in `checked_weight` or the policy's `first_checked.weight_limit`.
+- **Airline Matrix** tiles keep one airplane photo (by request, instead of the wireframe's 2–4 photo collage).
+
+## Wireframes 5.2
 Changes from V5.1 (pages 6, 7, 9, 11, 13); everything else below still applies:
 - Passenger reviews are no longer shown on the cabin experience page and panel, airline page, round-trip leg cards or Compare both flights. Reviews are still collected and still count toward the Experience score.
 - "Cool thing to check out" is now **Special freebies** (data key is still `cool_thing`).

@@ -67,8 +67,14 @@ def test_trend_summary_is_honest_about_span_and_today():
     assert "▼ 33% vs. 2-day avg" in html
 
 
-def test_compare_table_has_no_reviews_row():
-    assert [k for k, _ in CMP_ROWS] == ["aircraft", "legroom", "ent", "food", "bags"]
+def test_compare_table_rows_follow_v7():
+    assert [k for k, _ in CMP_ROWS] == ["aircraft", "bags", "food", "ent", "freebie"]
+
+
+def test_chip_popups_list_only_that_flights_amenities():
+    html = amenity_chips({"wifi": True, "wifi_cost": "Free", "power": False})
+    assert "Wi-Fi" in html and "Cost" in html and "Free" in html and "Speed" in html and "Not verified yet" in html
+    assert "Outlet type" not in html
 
 
 def test_amenities_fallback_label(monkeypatch):
