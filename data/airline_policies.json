@@ -7,17 +7,17 @@
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "Included",
+      "text": "Free",
       "fee_usd": 0,
       "each_way": true
     },
     "first_checked": {
-      "text": "$45 online, $45–$50 airport",
+      "text": "$45, 2nd bag $55. Amsterdam: Main Basic $75, 2nd bag $100; Main Cabin 1 included.",
       "fee_usd": 45,
       "each_way": true
     },
     "seat_selection": {
-      "text": "Main Basic: assigned at check-in",
+      "text": "Main Basic: assigned at check-in. Main Classic and above: included.",
       "fee_usd": null
     },
     "change_cancel": {
@@ -33,7 +33,7 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.delta.com/us/en/baggage/overview",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
@@ -51,12 +51,12 @@
       "each_way": true
     },
     "first_checked": {
-      "text": "$45",
+      "text": "$45, 2nd bag $55, 3rd bag $150; max 50 lb",
       "fee_usd": 45,
       "each_way": true
     },
     "seat_selection": {
-      "text": "Basic: assigned at check-in",
+      "text": "Basic: assigned at check-in. Higher fares: choose at booking.",
       "fee_usd": null
     },
     "change_cancel": {
@@ -72,7 +72,7 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.southwest.com/flying-with-southwest/",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
@@ -85,19 +85,19 @@
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "Included on Main Base (unconfirmed)",
-      "fee_usd": null,
+      "text": "Included",
+      "fee_usd": 0,
       "each_way": true
     },
     "first_checked": {
-      "text": "$50, $55 peak",
-      "fee_usd": 50,
+      "text": "$55, $70 within 24 hours; max 50 lb",
+      "fee_usd": 55,
       "each_way": true
     },
     "seat_selection": {
-      "text": "Fee, or free seat assigned before departure",
+      "text": "Free on standard Main. Basic: about $10–$15, or free at check-in.",
       "fee_usd": null,
-      "fee_label": "Requires fee"
+      "fee_label": "$10–$15"
     },
     "change_cancel": {
       "text": "Main Base: $150 to change or cancel"
@@ -112,7 +112,7 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.jetblue.com/legal/flights-terms",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
@@ -130,12 +130,12 @@
       "each_way": true
     },
     "first_checked": {
-      "text": "$50 online, $55 airport (Basic)",
-      "fee_usd": 50,
+      "text": "$45 online, $50 airport; 2nd bag $55, $60; Basic $5 more per bag; max 50 lb",
+      "fee_usd": 45,
       "each_way": true
     },
     "seat_selection": {
-      "text": "Paid, on tickets bought May 18, 2026 or later",
+      "text": "Fee to choose; free assigned at check-in",
       "fee_usd": null,
       "fee_label": "Requires fee"
     },
@@ -152,7 +152,7 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.aa.com/i18n/travel-info/baggage/checked-baggage-policy.jsp",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
@@ -161,22 +161,23 @@
   "UA": {
     "checked": null,
     "personal_item": {
-      "text": "Included",
+      "text": "Free",
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "Included on Economy; Basic unconfirmed",
+      "text": "Free. Basic: not included domestic, short-haul; included transatlantic, transpacific.",
       "fee_usd": null,
       "each_way": true
     },
     "first_checked": {
-      "text": "$45 in advance, $50 within 24 hours",
+      "text": "$45 prepaid, $50 airport; 2nd bag $55, $60; 3rd bag $200; max 50 lb",
       "fee_usd": 45,
       "each_way": true
     },
     "seat_selection": {
-      "text": null,
-      "fee_usd": null
+      "text": "Standard Economy: free when booking. Basic: assigned at check-in, fee to choose.",
+      "fee_usd": null,
+      "fee_label": "Requires fee"
     },
     "change_cancel": {
       "text": null
@@ -191,7 +192,7 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.united.com/en/us/fly/travel.html",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
@@ -243,20 +244,20 @@
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "Fee on Basic, included with Standard",
+      "text": "Fee on Basic, included with Standard; max 35 lb",
       "fee_usd": null,
       "each_way": true
     },
     "first_checked": {
-      "text": "Fee, max 40 lb",
+      "text": "$55–$99 by route and timing; max 40 lb",
       "fee_usd": null,
       "each_way": true,
-      "fee_label": "Requires fee"
+      "fee_label": "$55–$99"
     },
     "seat_selection": {
-      "text": "Add-on",
+      "text": "Basic: from $15, or random at check-in. Bundles include a seat.",
       "fee_usd": null,
-      "fee_label": "Requires fee"
+      "fee_label": "From $15"
     },
     "change_cancel": {
       "text": "Basic: change $0 at 60+ days, else $149; cancel $149. Bundles $0.",
@@ -291,7 +292,7 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.flyfrontier.com/travel/travel-info/seating-options",
     "extra_legroom": {
       "text": null,
       "fee_usd": null,
@@ -310,19 +311,40 @@
       "each_way": true
     },
     "first_checked": {
-      "text": "$45 online",
+      "text": "$45, 2nd bag $55; max 50 lb",
       "fee_usd": 45,
       "each_way": true
     },
     "seat_selection": {
-      "text": "Saver: can't choose in advance",
-      "fee_usd": null
+      "text": "Saver: assigned at check-in, pay to choose early. Main: free.",
+      "fee_usd": null,
+      "fee_label": "Requires fee"
     },
     "change_cancel": {
-      "text": "Saver: no changes; 50% credit if canceled 14+ days out"
+      "text": "Saver: same-day change only, for a fee; 50% credit if canceled 14+ days out. Main: no change fee.",
+      "label": "Saver vs. Main",
+      "rows": [
+        [
+          "Saver, change",
+          "Same-day only, for a fee"
+        ],
+        [
+          "Saver, cancel 14+ days out",
+          "50% credit"
+        ],
+        [
+          "Saver, no-show",
+          "Rest of trip canceled, no refund"
+        ],
+        [
+          "Main, change",
+          "No fee, fare difference applies"
+        ]
+      ],
+      "note": "Saver has no standby, even for status holders."
     },
     "boarding": {
-      "text": null
+      "text": "Saver boards last"
     },
     "loyalty_program": {
       "text": "Atmos Rewards"
@@ -331,7 +353,7 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.alaskaair.com/content/travel-info/policies/policies-overview",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
@@ -344,18 +366,20 @@
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "$30 online, $45 by check-in, $50 airport",
-      "fee_usd": 30,
-      "each_way": true
-    },
-    "first_checked": {
-      "text": "$34 online, $50 airport",
+      "text": "$34 during booking, $50 before or at check-in; max 35 lb",
       "fee_usd": 34,
       "each_way": true
     },
+    "first_checked": {
+      "text": "$36–$50; max 50 lb",
+      "fee_usd": null,
+      "each_way": true,
+      "fee_label": "$36–$50"
+    },
     "seat_selection": {
-      "text": null,
-      "fee_usd": null
+      "text": "Free random seat at check-in; fee to choose",
+      "fee_usd": null,
+      "fee_label": "Requires fee"
     },
     "change_cancel": {
       "text": "$0 at 60+ days; otherwise not verified"
@@ -370,7 +394,7 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.suncountry.com/terms-and-conditions",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
@@ -383,19 +407,20 @@
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "$35 on Nice; included on Nicer, Nicest",
+      "text": "$35 on Nice; included on Nicer, Nicest; max 35 lb",
       "fee_usd": 35,
       "each_way": true
     },
     "first_checked": {
-      "text": "$35–$41 by route",
+      "text": "$35–$41 on Nice; 1 included on Nicer, 2 on Nicest; max 50 lb",
       "fee_usd": null,
       "each_way": true,
       "fee_label": "$35–$41"
     },
     "seat_selection": {
-      "text": null,
-      "fee_usd": null
+      "text": "Nice: from $10, or random at check-in",
+      "fee_usd": null,
+      "fee_label": "From $10"
     },
     "change_cancel": {
       "text": "$0 to change or cancel; cancel gives flight credit. No Flex can't change."
@@ -410,7 +435,7 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.flybreeze.com/support",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
@@ -462,19 +487,19 @@
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "Not included on Basic",
+      "text": "Not included on Basic; included on Standard and above",
       "fee_usd": null,
       "each_way": true
     },
     "first_checked": {
-      "text": "$45",
-      "fee_usd": 45,
+      "text": "$47.25 on Basic, Standard; free on Flex; 2 free on Latitude; max 23 kg",
+      "fee_usd": 47.25,
       "each_way": true
     },
     "seat_selection": {
-      "text": "$15–$80 per segment, may be CAD",
+      "text": "$15–$80 per segment",
       "fee_usd": null,
-      "fee_label": "$15–$80, may be CAD"
+      "fee_label": "$15–$80"
     },
     "change_cancel": {
       "text": "Basic: no changes within Canada; cancel not verified"
@@ -489,7 +514,7 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.aircanada.com/ca/en/aco/home/legal/conditions-carriage-tariffs.html",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
@@ -498,7 +523,7 @@
   "AM": {
     "checked": null,
     "personal_item": {
-      "text": "Free, 10 kg combined on Basic",
+      "text": "Free, 10 kg combined with carry-on on Basic",
       "fee_usd": 0
     },
     "carry_on": {
@@ -507,7 +532,7 @@
       "each_way": true
     },
     "first_checked": {
-      "text": "$45 online, $50 airport",
+      "text": "$45 online, $50 airport; max 25 kg",
       "fee_usd": 45,
       "each_way": true
     },
@@ -529,7 +554,7 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.aeromexico.com/en-us/travel-information/baggage",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
@@ -538,24 +563,24 @@
   "AV": {
     "checked": null,
     "personal_item": {
-      "text": "Included",
+      "text": "Free",
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "Included on Basic, 10 kg (unconfirmed)",
+      "text": "Not included on Basic; included on Light and above; 10 kg",
       "fee_usd": null,
       "each_way": true
     },
     "first_checked": {
-      "text": "Basic: fee; 1 included on Classic and Flex",
+      "text": "Fee on Basic, Light; 1 included on Classic, Flex; max 23 kg",
       "fee_usd": null,
       "each_way": true,
       "fee_label": "Requires fee"
     },
     "seat_selection": {
-      "text": "May cost extra on Basic",
+      "text": "Basic: assigned at check-in, fee to choose. Classic: included. Flex: Plus seat.",
       "fee_usd": null,
-      "fee_label": "May require fee"
+      "fee_label": "Requires fee"
     },
     "change_cancel": {
       "text": "Basic: change for a fee, no refund"
@@ -570,7 +595,7 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.avianca.com/en/information-and-help/baggage/",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
@@ -588,13 +613,13 @@
       "each_way": true
     },
     "first_checked": {
-      "text": "$49–$75 by timing",
+      "text": "$49–$75; max 22 kg",
       "fee_usd": null,
       "each_way": true,
       "fee_label": "$49–$75"
     },
     "seat_selection": {
-      "text": "Free assigned seat; preferred from $10",
+      "text": "Free assigned at check-in; preferred from $10",
       "fee_usd": null,
       "fee_label": "From $10"
     },
@@ -611,7 +636,7 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.aveloair.com/optional-services",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
@@ -620,16 +645,16 @@
   "BA": {
     "checked": null,
     "personal_item": {
-      "text": null,
-      "fee_usd": null
+      "text": "Free",
+      "fee_usd": 0
     },
     "carry_on": {
-      "text": "Included",
+      "text": "Free on every fare, including Basic",
       "fee_usd": 0,
       "each_way": true
     },
     "first_checked": {
-      "text": "Basic: fee; included on higher fares",
+      "text": "Fee on Basic; 1 included on Economy; 2nd bag $90 online, $100 airport; max 23 kg",
       "fee_usd": null,
       "each_way": true,
       "fee_label": "Requires fee"
@@ -652,7 +677,7 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.britishairways.com/en-ca/information/baggage-essentials",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
@@ -670,13 +695,13 @@
       "each_way": true
     },
     "first_checked": {
-      "text": "$30 online, $35 airport",
+      "text": "$30 online, $35 at check-in; 2nd bag same; max 55 lb",
       "fee_usd": 30,
       "each_way": true
     },
     "seat_selection": {
-      "text": null,
-      "fee_usd": null
+      "text": "Free",
+      "fee_usd": 0
     },
     "change_cancel": {
       "text": null
@@ -691,7 +716,7 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.caymanairways.com/baggage-policy",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
@@ -704,17 +729,17 @@
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "Free, 10 kg",
+      "text": "Free on every fare, 10 kg",
       "fee_usd": 0,
       "each_way": true
     },
     "first_checked": {
-      "text": "$38 at airport",
-      "fee_usd": 38,
+      "text": "$65 on Basic; 1 included on Classic, 2 on Full; max 23 kg",
+      "fee_usd": 65,
       "each_way": true
     },
     "seat_selection": {
-      "text": "Paid on Basic",
+      "text": "Basic: fee to choose. Classic and above: included.",
       "fee_usd": null,
       "fee_label": "Requires fee"
     },
@@ -731,7 +756,7 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.copaair.com/en-us/flights-terms-and-conditions",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
@@ -740,22 +765,24 @@
   "4Y": {
     "checked": null,
     "personal_item": {
-      "text": null,
-      "fee_usd": null
+      "text": "Free",
+      "fee_usd": 0
     },
     "carry_on": {
-      "text": "1 included, 8 kg",
+      "text": "Free, 8 kg",
       "fee_usd": 0,
       "each_way": true
     },
     "first_checked": {
-      "text": "Free, 2nd bag $90",
-      "fee_usd": 0,
-      "each_way": true
+      "text": "1 included except Economy Light (fee); 2nd bag $90 from U.S.; max 23 kg",
+      "fee_usd": null,
+      "each_way": true,
+      "fee_label": "Requires fee"
     },
     "seat_selection": {
-      "text": null,
-      "fee_usd": null
+      "text": "Light: from $41. Flex: preferred seat included.",
+      "fee_usd": null,
+      "fee_label": "From $41"
     },
     "change_cancel": {
       "text": "Light: $199 change plus fare difference; cancel not verified"
@@ -770,7 +797,7 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.discover-airlines.com/us/en/book/baggage",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
@@ -779,22 +806,23 @@
   "WK": {
     "checked": null,
     "personal_item": {
-      "text": null,
-      "fee_usd": null
+      "text": "Free",
+      "fee_usd": 0
     },
     "carry_on": {
-      "text": null,
-      "fee_usd": null,
+      "text": "Free, 8 kg",
+      "fee_usd": 0,
       "each_way": true
     },
     "first_checked": {
-      "text": "Max 23 kg; fee not verified",
-      "fee_usd": null,
+      "text": "1 included on every Economy fare; max 23 kg",
+      "fee_usd": 0,
       "each_way": true
     },
     "seat_selection": {
-      "text": null,
-      "fee_usd": null
+      "text": "Saver: from $41, or assigned at check-in. Economy, Flex: free.",
+      "fee_usd": null,
+      "fee_label": "From $41"
     },
     "change_cancel": {
       "text": null
@@ -809,7 +837,7 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.flyedelweiss.com/ch/en/legal/fare-conditions.html",
     "extra_legroom": {
       "text": null,
       "fee_usd": null
@@ -818,22 +846,22 @@
   "PD": {
     "checked": null,
     "personal_item": {
-      "text": "Included",
+      "text": "Free",
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "Not included on Basic",
+      "text": "Not included on Basic; 1 free on Standard and above",
       "fee_usd": null,
       "each_way": true
     },
     "first_checked": {
-      "text": "Fee",
+      "text": "C$40–$51.75 on Basic, Standard; 1 included on Flexible, Freedom; max 23 kg",
       "fee_usd": null,
       "each_way": true,
-      "fee_label": "Requires fee"
+      "fee_label": "C$40–$51.75"
     },
     "seat_selection": {
-      "text": "Free assigned seat; from C$12 to choose",
+      "text": "Free at check-in. To choose: Basic, Standard pay; Flexible free standard seat; Freedom, PorterReserve free.",
       "fee_usd": null,
       "fee_label": "From C$12"
     },
@@ -850,17 +878,18 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.flyporter.com/en-us/book-travel/our-fares-and-fees/our-fare-options",
     "extra_legroom": {
-      "text": null,
-      "fee_usd": null
+      "text": "Stretch seats, 34 in, E195-E2 only. Free on Freedom, PorterReserve; paid on other fares.",
+      "fee_usd": null,
+      "fee_label": "Requires fee"
     }
   },
   "VS": {
     "checked": null,
     "personal_item": {
-      "text": null,
-      "fee_usd": null
+      "text": "Free on every fare",
+      "fee_usd": 0
     },
     "carry_on": {
       "text": "1 included, 10 kg",
@@ -868,12 +897,12 @@
       "each_way": true
     },
     "first_checked": {
-      "text": "$100 per flight on Light; included on Classic, Delight",
+      "text": "$100 per flight on Light; 1 included on Classic, Delight; max 23 kg",
       "fee_usd": 100,
       "each_way": true
     },
     "seat_selection": {
-      "text": "Free within 24 hours of departure; paid earlier",
+      "text": "Light, Classic: free at check-in, pay to choose earlier. Delight: free in advance.",
       "fee_usd": null,
       "fee_label": "Requires fee"
     },
@@ -892,30 +921,31 @@
     },
     "policy_url": null,
     "extra_legroom": {
-      "text": null,
+      "text": "Economy Delight: free extra-legroom seat, up to 34 in vs 31 in",
       "fee_usd": null
     }
   },
   "WS": {
     "checked": null,
     "personal_item": {
-      "text": "Included",
+      "text": "Free",
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "Not included on UltraBasic",
+      "text": "1 free on Econo and above. UltraBasic: none on U.S., Canada flights.",
       "fee_usd": null,
       "each_way": true
     },
     "first_checked": {
-      "text": "$55–$65 prepaid, $80–$94 airport",
+      "text": "UltraBasic about $55–$65, Econo about $45–$53 prepaid; more at airport; max 23 kg",
       "fee_usd": null,
       "each_way": true,
-      "fee_label": "$55–$65"
+      "fee_label": "$45–$65"
     },
     "seat_selection": {
-      "text": null,
-      "fee_usd": null
+      "text": "Fee to choose, shown on seat map; free assigned at check-in",
+      "fee_usd": null,
+      "fee_label": "Requires fee"
     },
     "change_cancel": {
       "text": "UltraBasic: no changes or cancellation"
@@ -930,7 +960,7 @@
       "text": null,
       "date": null
     },
-    "policy_url": null,
+    "policy_url": "https://www.westjet.com/en-ca/legal/travel-terms-conditions/westjet-flights",
     "extra_legroom": {
       "text": null,
       "fee_usd": null

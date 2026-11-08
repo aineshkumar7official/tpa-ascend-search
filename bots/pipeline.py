@@ -2,6 +2,7 @@
 
     python -m bots.pipeline --once               # one full scan cycle
     python -m bots.pipeline --dry-run --limit 2  # hit real sources for 2 destinations, print rows, no writes
+    python -m bots.pipeline --routes             # price Airline Matrix routes that have no recent fare
 """
 import argparse
 import random
@@ -41,6 +42,8 @@ def run_background_cycle(conn=None, limit=None, dry_run=False):
         print(f"\n{len(rows)} rows (dry run, nothing written)")
         return None
     scan_id = scouter.scan(conn, limit=limit)
+    if not limit and scouter.route_scan_due(conn):
+        scouter.scan_routes(conn)
     enriched = enricher.run(conn)
     reviewed = critic.run(conn)
     carriers = sorted({c for d in config.destinations() for c in d.get("carriers", [])})
@@ -179,13 +182,19 @@ def main():
     ap.add_argument("--dry-run", action="store_true", help="print scan rows without writing to the DB")
     ap.add_argument("--limit", type=int, help="only scan the first N destinations")
     ap.add_argument("--news", action="store_true", help="refresh airline news headlines")
+    ap.add_argument("--routes", action="store_true", help="price Airline Matrix routes that have no recent fare")
     args = ap.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
     logging.getLogger("primp").setLevel(logging.WARNING)
-    if not (args.once or args.dry_run or args.news):
-        ap.error("pass --once, --dry-run or --news")
+    if not (args.once or args.dry_run or args.news or args.routes):
+        ap.error("pass --once, --dry-run, --news or --routes")
     if args.news:
         refresh_news()
+    if args.routes:
+        conn = get_conn()
+        scouter.scan_routes(conn)
+        enricher.run(conn)
+        critic.run(conn)
     if args.once or args.dry_run:
         run_background_cycle(limit=args.limit, dry_run=args.dry_run)
 

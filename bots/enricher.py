@@ -86,12 +86,15 @@ def fetch_asset(conn, airline, aircraft_type):
     tails = config.fleet().get(airline or "", {}).get("representative_tails", {})
     tail = tails.get(match_key(aircraft_type, tails)) if aircraft_type else None
 
-    exterior = planespotters.by_registration(tail, conn) if tail else None
+    cabin = _cabin_entry(airline, aircraft_type) or {}
+    airline_wide = config.cabins().get(f"{airline}|*") or {}
+
+    exterior = _curated(cabin.get("exterior")) or _curated(airline_wide.get("exterior"))
+    if not exterior and tail:
+        exterior = planespotters.by_registration(tail, conn)
     if not exterior and airline:
         exterior = commons.search(f"{name} {aircraft_type or ''}".strip(), "exterior", conn, blocked, needles)
 
-    cabin = _cabin_entry(airline, aircraft_type) or {}
-    airline_wide = config.cabins().get(f"{airline}|*") or {}
     slots, used = {}, set()
     for slot, (suffix, kind) in INTERIOR_SLOTS.items():
         img = _curated(cabin.get(slot)) or _curated(airline_wide.get(slot))
@@ -123,15 +126,23 @@ def fetch_asset(conn, airline, aircraft_type):
     }
 
 
-def amenities_for(airline, aircraft_type):
-    """(entry, is_typical). Exact airline|type (variant match) first, then airline|* ('Typical for')."""
+def _for_route(entry, table, airline, route):
+    """Apply the airline's `routes` overrides (airline|* -> {"AMS": {...}}) when either end of the flight matches."""
+    overrides = (table.get(f"{airline}|*") or {}).get("routes") or {}
+    match = next((overrides[airport] for airport in route if airport in overrides), None)
+    return {**entry, **match} if match else entry
+
+
+def amenities_for(airline, aircraft_type, route=()):
+    """(entry, is_typical). Exact airline|type (variant match) first, then airline|* ('Typical for').
+    `route` is the flight's (origin, destination), for the things only one route gets."""
     table = config.amenities()
     same = [k.split("|", 1)[1] for k in table if k.startswith(f"{airline}|") and not k.endswith("|*")]
     t = match_key(aircraft_type, same) if aircraft_type else None
     if t:
-        return table[f"{airline}|{t}"], False
+        return _for_route(table[f"{airline}|{t}"], table, airline, route), False
     entry = table.get(f"{airline}|*")
-    return (entry, True) if entry else ({}, False)
+    return (_for_route(entry, table, airline, route), True) if entry else ({}, False)
 
 
 def get_asset(conn, airline, aircraft_type, refresh=False):
@@ -157,7 +168,8 @@ def enrich_fare(conn, fare):
     fare["aircraft_type"], fare["aircraft_is_typical"] = t, int(typical)
     fare["asset"] = get_asset(conn, fare.get("airline_iata"), t)
     fare["asset_key"] = fare["asset"]["asset_key"]
-    fare["amenities"], fare["amenities_typical"] = amenities_for(fare.get("airline_iata"), t)
+    fare["amenities"], fare["amenities_typical"] = amenities_for(fare.get("airline_iata"), t,
+                                                                 (fare.get("origin"), fare.get("destination")))
     return fare
 
 

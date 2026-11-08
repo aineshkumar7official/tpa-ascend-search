@@ -50,6 +50,7 @@ class Settings:
                       "doi:10.17632/vgjk58vf8h.1, CC BY 4.0")
     REVIEWS_SOURCE_URL = "https://data.mendeley.com/datasets/vgjk58vf8h/1"
     POLICY_STALE_DAYS = 45
+    FARE_OPTIONS = _str("FARE_OPTIONS", "on")  # "off" skips the local-Chrome lookups of Google's fare options
 
 
 settings = Settings()
@@ -178,12 +179,29 @@ def fun_facts():
     return _public(load_json("fun_facts.json"))
 
 
+def airline_description(iata):
+    """The airline's written description, else the V6 template: where it's from and its alliance. None if neither."""
+    info = airline(iata)
+    if info.get("description"):
+        return info["description"]
+    if not info.get("hq"):
+        return None
+    group = f"part of {info['alliance']}" if info.get("alliance") else "not part of an alliance"
+    return f"{info['name']} is based in {info['hq']} and is {group}."
+
+
 def airline_name(iata):
     return airline(iata).get("name") or iata or "Unknown airline"
 
 
 def brand_color(iata):
     return airline(iata).get("brand_color", "#5B6470")
+
+
+def logo_url(iata):
+    """Google Flights' hosted logo, linked rather than stored (tpabuildv2.md "Logos").
+    Listed airlines only: gstatic answers 200 with a placeholder for unknown codes."""
+    return f"https://www.gstatic.com/flights/airline_logos/70px/{iata}.png" if iata in airlines() else None
 
 
 def resolve_airline(text, fuzzy=False):

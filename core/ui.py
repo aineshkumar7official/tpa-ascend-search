@@ -9,6 +9,7 @@ import streamlit as st
 from core import booking, config, pricing, queries, theme
 from core.config import settings
 from core.db import get_conn
+from sources import fare_options
 
 PAGES = {}  # nav label -> st.Page, filled by app.py every run before pg.run()
 esc = html.escape
@@ -102,7 +103,7 @@ def book(f, return_fare=None):
     """Exact-fare Google Flights booking link, priced for the party the user picked."""
     s = st.session_state.get("search") or {}
     party = s.get("party") or f.get("party") or f.get("travelers") or 1
-    return booking.book_url(f, party, return_fare)
+    return booking.book_url(f, party, return_fare or f.get("return_leg"))
 
 
 def aircraft_label(f):
@@ -254,11 +255,19 @@ def fare_meta(f):
     return f"{dates_text(f)} · {hm(f.get('depart_time'))} – {hm(f.get('arrive_time'))} · {duration(f.get('duration_min'))}"
 
 
-def card_actions(f, scope, arrow="↓", cabin=True):
+def open_dialog(kind, fare_id):
+    """Ask the page to open a pop-up on its next run ('cabin' or 'trend', V6 p8–9)."""
+    st.session_state["card_dialog"] = {"kind": kind, "fare_id": fare_id}
+
+
+def card_actions(f, scope, arrow="↓", cabin=True, modal=False):
     open_ = st.session_state.get(f"open_{scope}") == f["fare_id"]
     with st.container(horizontal=True, gap="small"):
         st.link_button("Book now", book(f), type="primary", help="Opens Google Flights booking options for this exact flight")
-        if cabin:
+        if modal:
+            st.button(f"Cabin experience {arrow}", key=f"cx_{scope}_{f['fare_id']}", on_click=open_dialog,
+                      args=("cabin", f["fare_id"]))
+        elif cabin:
             st.button(f"Cabin experience {'▴' if open_ else arrow}", key=f"cx_{scope}_{f['fare_id']}",
                       on_click=_toggle, args=(scope, f["fare_id"]))
 
@@ -270,71 +279,182 @@ def bags_chip(qt):
 
 
 # ---------------------------------------------------------------- V3 card pieces
+def google_fare(f, party=None, return_fare=None, wait=False):
+    """What Google shows now for this flight (sources.fare_options), or None. Cards never wait on the browser:
+    they queue the lookup and use it on the next rerun. `wait` looks it up now, for panels the user just opened."""
+    party = party or party_of()
+    ret = return_fare or f.get("return_leg")
+    hit, data = fare_options.cached(conn(), f, party, ret)
+    if hit:
+        return data
+    if not wait:
+        fare_options.enqueue(f, party, ret)
+        return None
+    if not (fare_options.available() and fare_options.lookable(f, ret)):
+        return None
+    with st.spinner("Checking this fare on Google Flights…"):
+        return fare_options.lookup(conn(), f, party, ret)
+
+
 def card_price(f, party, carry, checked, include_bags):
-    return pricing.card_price(f, carry, checked, party, include_bags)
+    return pricing.card_price(f, carry, checked, party, include_bags, google=google_fare(f, party))
+
+
+def _checked_at(data):
+    at = local_time((data or {}).get("checked_at"))
+    return at.strftime("%b %-d, %-I:%M %p") if at else ""
+
+
+def _changes(lines):
+    return f'<div class="up-sub">{esc(" · ".join(lines))}</div>' if lines else ""
+
+
+def fare_ladder(data):
+    """'This price' plus each dearer fare Google lists for this flight. Rows show only their own add-on cost (V6 p15)."""
+    base = fare_options.cheapest(data)
+    if not base:
+        return ""
+    rows = [f'<div class="up-row"><span>This price: <b>{esc(base["name"])}</b></span><span><b>{money(base["price"])}</b></span></div>'
+            + _changes(base["lines"])]
+    for u in fare_options.upgrades(data):
+        rows.append(f'<div class="up-row"><span>{esc(u["name"])}</span><span>+{money(u["extra"])}</span></div>'
+                    + _changes(u["changes"]))
+    return "".join(rows)
+
+
+def fare_source_note(data, short=False):
+    """Where the numbers came from, and how far to trust them. `short` is for the small box on a card."""
+    if short:
+        return (f"From Google Flights, checked {_checked_at(data)}." if fare_options.cheapest(data)
+                else "Fees are the airline's published ones.")
+    if fare_options.cheapest(data):
+        return f"From Google Flights for this exact flight, checked {_checked_at(data)}. Confirm on the booking page."
+    if fare_options.price(data):
+        return (f"Google Flights lists one price for this flight, checked {_checked_at(data)}, with no fare options. "
+                "Other fees are this airline's published ones. Confirm on the booking page.")
+    return "Airline-wide published fees, not specific to this flight. Confirm on the booking page."
 
 
 def _unit(f):
     return "round trip" if f.get("trip_type") == "round_trip" else "one-way"
 
 
-def headline_html(cp, after):
-    """'[$Price] one-way' / '[$Price] was ~[$Avg]' — price first (V3)."""
+def headline_html(cp, after, added=0):
+    """'[$Price] one-way' / '[$Price] was ~[$Avg]' — price first (V3). Ticked upgrades raise it: '↑ +$35' (V6 p15)."""
     est = '<span class="est">est.</span>' if cp.is_estimate else ""
-    return f'<div class="v3-price"><span class="fc-price">{money(cp.headline)}{est}</span><span class="v3-unit">{after}</span></div>'
+    up = f'<span class="v3-up">↑ +{money(added)}</span>' if added else ""
+    return (f'<div class="v3-price"><span class="fc-price">{money(cp.headline + added)}{est}</span>'
+            f'<span class="v3-unit">{after}</span>{up}</div>')
 
 
 def legs_html(f):
-    """One line for one-way; Depart/Return rows for round trips (V3 p12). Return-leg times aren't
-    stored by the scan, so the return row shows its date and leaves times to the booking page."""
+    """One line for one-way; Depart/Return rows for round trips (V3 p12). The scan looks up the return for each
+    airline's cheapest fare; any other fare shows its return date and leaves the times to the booking page."""
     times = f"{hm(f.get('depart_time'))} – {hm(f.get('arrive_time'))} · {duration(f.get('duration_min'))}"
     if f.get("trip_type") != "round_trip" or not f.get("return_date"):
         return f'<div class="fc-meta">{nice_date(f.get("depart_date"))} · {times}</div>'
+    ret = f.get("return_leg")
+    if ret:
+        ret_times = f"{hm(ret.get('depart_time'))} – {hm(ret.get('arrive_time'))} · {duration(ret.get('duration_min'))}"
+        if ret.get("airline_iata") != f.get("airline_iata") and ret.get("airline_name"):
+            ret_times += f" · {esc(ret['airline_name'])}"  # the card's airline line describes the outbound
+    else:
+        ret_times = '<span class="muted">times on booking page</span>'
     return (f'<div class="v3-legs"><span class="v3-leg">Depart</span><span>{nice_date(f.get("depart_date"))} · {times}</span>'
-            f'<span class="v3-leg">Return</span><span>{nice_date(f.get("return_date"))} · '
-            f'<span class="muted">times on booking page</span></span></div>')
+            f'<span class="v3-leg">Return</span><span>{nice_date(f.get("return_date"))} · {ret_times}</span></div>')
 
 
-def card_text(f, cp, after, route_tag=""):
-    return (headline_html(cp, after)
+def card_text(f, cp, after, route_tag="", added=0):
+    return (headline_html(cp, after, added)
             + f'<div class="v3-route"><span class="fc-route">{route_label(f)}</span>{route_tag}</div>'
             + legs_html(f)
             + f'<div class="fc-line">{airline_label(f)} · {stops_label(f)}{" · " + aircraft_label(f) if f.get("aircraft_type") else ""}</div>')
 
 
+def _upgrade_rows(f, cp):
+    return pricing.upgrade_rows(f, cp, party_of(), pricing.google_policies(f.get("airline_iata"), google_fare(f)))
+
+
+def _picked(key):
+    return st.session_state.get("upgrades", {}).get(key, frozenset())
+
+
+def card_added(f, cp, key):
+    """What this card's ticked upgrades add to its price."""
+    return pricing.upgrades_added(_upgrade_rows(f, cp), _picked(key))
+
+
+def _set_upgrade(key, row_id, widget):
+    """Ticks live outside the widgets, so closing the list doesn't drop them from the price."""
+    store = st.session_state.setdefault("upgrades", {})
+    picked = set(store.get(key, ()))
+    (picked.add if st.session_state[widget] else picked.discard)(row_id)
+    store[key] = frozenset(picked)
+
+
+def _toggle_upgrades(key):
+    st.session_state[f"upopen_{key}"] = not st.session_state.get(f"upopen_{key}")
+
+
+def _upgrade_row(r, key, picked):
+    """A tickable +$X row, or a fixed one: green tick 'Included', or an empty box with what we know instead."""
+    if r["fee"]:
+        widget = f"upg_{key}_{r['id']}"
+        on = r["id"] in picked
+        with st.container(horizontal=True, key=f"uprow_{key}_{r['id']}", vertical_alignment="center", gap="small"):
+            st.checkbox(f"**{r['label']}**" if on else r["label"], value=on, key=widget, on_change=_set_upgrade,
+                        args=(key, r["id"], widget))
+            st.markdown(f'<div class="up-val">+{money(r["fee"])}</div>', unsafe_allow_html=True)
+    elif r["included"]:
+        st.markdown(f'<div class="up-line"><span class="up-box in">✓</span><span class="up-lbl muted">{esc(r["label"])}</span>'
+                    '<span class="up-val in">Included</span></div>', unsafe_allow_html=True)
+    else:
+        st.markdown(f'<div class="up-line"><span class="up-box"></span><span class="up-lbl">{esc(r["label"])}</span>'
+                    f'<span class="up-val">{esc(r["note"])}</span></div>', unsafe_allow_html=True)
+
+
 def bags_row(f, cp, key):
-    """Cream bags box: '[Bags included / not included · $Total with bags]' + Upgrades ▾ menu."""
-    with st.container(horizontal=True, key=f"bagrow_{key}", vertical_alignment="center", gap="small"):
-        st.markdown(f'<div class="bag-chip v3{" on" if cp.included else ""}" title="{esc(cp.tooltip(money))}">'
-                    f'<span class="bag-chip-ico">{ICONS["checked"]}</span><span>{esc(cp.bags_line(money))}</span></div>',
+    """Bags box (V6 p15): 'Bags included / not included' + Upgrades ▾, opening to rows that change the card's price."""
+    rows, picked = _upgrade_rows(f, cp), _picked(key)
+    added_bag = any(r["id"] == "checked" and r["fee"] and r["id"] in picked for r in rows)
+    open_ = st.session_state.get(f"upopen_{key}", False)
+    line = cp.bags_line(added_bag)
+    state = "on" if added_bag or cp.included or cp.covers_bag else ("" if cp.bag_known else "off")
+    with st.container(key=f"faresbox_{key}", gap="small"):
+        with st.container(horizontal=True, key=f"baghead_{key}", vertical_alignment="center", gap="small"):
+            st.markdown(f'<div class="bag-chip v3 {state}" title="{esc(cp.tooltip(money))}">'
+                        f'<span class="bag-chip-ico">{ICONS["checked"]}</span><span>{esc(line)}</span></div>',
+                        unsafe_allow_html=True)
+            st.button(f"Upgrades {'▴' if open_ else '▾'}", key=f"upbtn_{key}", type="tertiary",
+                      on_click=_toggle_upgrades, args=(key,))
+        if not open_:
+            return
+        for r in rows:
+            _upgrade_row(r, key, picked)
+        data = google_fare(f)
+        if any(r["id"] in picked and r["fee"] for r in rows):
+            hint = "Price = base fare + selected upgrades."
+        elif any(r["fee"] for r in rows):
+            hint = "Choosing an upgrade updates the price shown above."
+        else:
+            hint = "Book now opens Google Flights, which shows the final bag fees."
+        ladder = fare_ladder(data)
+        more = (f'<details class="fare-more"><summary>Other fares on this flight ({len(data["options"]) - 1})</summary>{ladder}</details>'
+                if ladder and len(data["options"]) > 1 else "")
+        st.markdown(f'<div class="up-hint">{hint}</div>{more}<div class="credit">{esc(fare_source_note(data, short=True))}</div>',
                     unsafe_allow_html=True)
-        with st.popover("Upgrades"):
-            rows = []
-            ups = pricing.upgrades(f, cp.headline, party_of())
-            for u in ups:
-                if u["fee"] is None and u.get("fee_label"):
-                    val = f'<b>{esc(u["fee_label"])}</b>'
-                elif u["fee"] is None:
-                    val = '<span class="muted"><i>Not verified yet</i></span>'
-                else:
-                    val = f'+{money(u["fee"])} → <b>{money(u["total"])}</b>'
-                rows.append(f'<div class="up-row"><span>{u["label"]}</span><span>{val}</span></div>')
-            st.markdown('<div class="up-head">Upgrades for this trip</div>' + "".join(rows)
-                        + (f'<div class="credit">Estimated from {airline_label(f)}\'s published economy fees, '
-                           'for everyone on the trip. Confirm on the booking page.</div>'
-                           if any(u["fee"] is not None for u in ups)
-                           else '<div class="credit">See the booking page for prices.</div>'), unsafe_allow_html=True)
 
 
 def fare_card(f, cp, scope, highlight=False):
     """Home card (V3 p1/p12)."""
     a = f.get("asset") or {}
     key = f"{'cardhl' if highlight else 'card'}_{scope}_{f['fare_id']}"
+    row_key = f"{scope}_{f['fare_id']}"
     with st.container(key=key):
         st.markdown(
-            card_photo(a, 135) + f'<div class="card-body">{card_text(f, cp, _unit(f))}</div>',
+            card_photo(a, 135) + f'<div class="card-body">{card_text(f, cp, _unit(f), added=card_added(f, cp, row_key))}</div>',
             unsafe_allow_html=True)
-        bags_row(f, cp, f"{scope}_{f['fare_id']}")
+        bags_row(f, cp, row_key)
         card_actions(f, scope)
 
 
@@ -376,9 +496,9 @@ def _spark_mini(vals, w=64, h=18):
             f'<polyline fill="none" stroke="{theme.TOKENS["maroon"]}" stroke-width="1.6" points="{pts}"/></svg>')
 
 
-def trend_chart(days, avg=None, w=300, h=90):
+def trend_chart(days, avg=None, w=700, h=240):
     """Daily-price line chart. Hover/tap any day for '[Date] · [$Price]' and the change vs. the day before
-    (pure HTML/CSS so it works inside a card without a rerun)."""
+    (pure HTML/CSS, so it needs no rerun)."""
     if len(days) < 2:
         return '<div class="spark-empty">Daily prices appear after two days of price checks.</div>'
     vals = [p for _, p in days]
@@ -413,11 +533,11 @@ def trend_chart(days, avg=None, w=300, h=90):
         f'<div class="tc-dot" style="left:{x(i) / w * 100:.2f}%;top:{y(v) / h * 100:.2f}%"></div></div>'
         for i, v in enumerate(vals))
     last = len(vals) - 1
-    return (f'<div class="tc">{label(last)}'
+    y_axis = "".join(f"<span>{money(v)}</span>" for v in ((hi, (hi + lo) / 2, lo) if hi != lo else (hi,)))
+    return (f'<div class="tc">{label(last)}<div class="tc-grid"><div class="tc-y">{y_axis}</div>'
             f'<div class="tc-plot">{svg}<div class="tc-dot tc-last" style="left:{x(last) / w * 100:.2f}%;'
-            f'top:{y(vals[last]) / h * 100:.2f}%"></div><div class="tc-hits">{hits}</div></div>'
-            f'<div class="tc-axis"><span>{_day(days[0][0])}</span><span>Low {money(lo)} · High {money(hi)}</span>'
-            f'<span>{_day(days[-1][0])}</span></div></div>')
+            f'top:{y(vals[last]) / h * 100:.2f}%"></div><div class="tc-hits">{hits}</div></div></div>'
+            f'<div class="tc-axis"><span>{_day(days[0][0])}</span><span>{_day(days[-1][0])}</span></div></div>')
 
 
 def _drop_text(d, label):
@@ -429,54 +549,110 @@ def _drop_text(d, label):
     return f'<span class="tr-pct {cls}">{arrow} {abs(pct)}% {label}</span>'
 
 
-def trend_row(d, uid, scale=1.0, ranges=None, label="over 14 days", hint="Tap or hover for daily prices"):
-    """Collapsible trend row (V3): mini sparkline + '▼ X% over 14 days', opening to the daily chart.
-    `ranges` (e.g. (7, 14, 30)) adds day-range tabs (Airline page)."""
-    days_all = daily_points(d.get("points") or [], scale)
-    if not days_all:
-        return ('<div class="tr-box"><div class="tr-sum static"><span class="tr-txt">'
-                f'{_drop_text(d, label)}<span class="tr-hint">Price checks start with the next scan</span></span></div></div>')
-    avg = d["baseline"] * scale if d.get("baseline") else None
-    cutoff = days_all[-1][0]
+def _span_label(days):
+    """'over 5 days' from the actual price checks: a trend only covers its one departure date, so often < 14 days."""
+    n = (days[-1][0] - days[0][0]).days if days else 0
+    return f"over {n} day{'s' if n != 1 else ''}" if n else "today"
 
-    def window(n):
-        return [(dt, p) for dt, p in days_all if (cutoff - dt).days < n]
 
-    if ranges:
-        default = 14 if 14 in ranges else ranges[0]
-        tabs = "".join(f'<input type="radio" class="tr-r tr-r{n}" name="tr_{uid}" id="tr_{uid}_{n}"'
-                       f'{" checked" if n == default else ""}>' for n in ranges)
-        lbls = "".join(f'<label class="l{n}" for="tr_{uid}_{n}">{n} days</label>' for n in ranges)
-        panes = "".join(f'<div class="tr-pane p{n}">{trend_chart(window(n), avg)}</div>' for n in ranges)
-        body = f'{tabs}<div class="tr-tabs">{lbls}</div>{panes}'
-        mini = [p for _, p in window(default)]
-    else:
-        days = window(14)
-        body = trend_chart(days, avg)
-        mini = [p for _, p in days]
-    hint_txt = hint if len(days_all) >= 2 else f"{len(days_all)} day of price checks so far"
-    return (f'<details class="tr-box"><summary class="tr-sum">{_spark_mini(mini)}<span class="tr-txt">'
-            f'{_drop_text(d, label)}<span class="tr-hint">{hint_txt}</span></span><span class="tr-caret">▾</span></summary>'
-            f'<div class="tr-body">{body}<div class="credit">Lowest nonstop price seen each day for this date window'
-            f'{", for your travelers" if scale != 1 else ""}.</div></div></details>')
+def _days_within(days, n):
+    return [(dt, p) for dt, p in days if (days[-1][0] - dt).days < n]
+
+
+def trend_strip(d, f, key, scale=1.0):
+    """Deal card trend row (V6 p9): mini sparkline + '▼ X% over N days' + View price trend ›, which opens the pop-up."""
+    days = daily_points(d.get("points") or [], scale)
+    hint = "" if days else '<span class="tr-hint">Price checks start with the next scan</span>'
+    with st.container(horizontal=True, key=f"trendrow_{key}", vertical_alignment="center", gap="small"):
+        st.markdown(f'<div class="tr-sum static">{_spark_mini([p for _, p in _days_within(days, 14)])}<span class="tr-txt">'
+                    f'{_drop_text(d, _span_label(days))}{hint}</span></div>', unsafe_allow_html=True)
+        if days:
+            st.button("View price trend ›", key=f"trendbtn_{key}", type="tertiary", on_click=open_dialog,
+                      args=("trend", f["fare_id"]))
+
+
+def trend_summary(days):
+    """Price summary tiles for the pop-up (V6 p9). 'Today' only when the latest price check really was today."""
+    vals = [p for _, p in days]
+    latest, avg = days[-1], sum(vals) / len(vals)
+    low, high = min(days, key=lambda x: x[1]), max(days, key=lambda x: x[1])
+    today = local_time(datetime.now(timezone.utc).isoformat()).date()
+    span = (latest[0] - days[0][0]).days + 1
+    tiles = [("Today" if latest[0] == today else f"Latest · {_day(latest[0])}", money(latest[1]), ""),
+             (f"{span}-day average", money(avg), ""),
+             (f"Lowest · {_day(low[0])}", money(low[1]), "down"),
+             (f"Highest · {_day(high[0])}", money(high[1]), "")]
+    pct = round((latest[1] - avg) / avg * 100) if avg else 0
+    cls, arrow = ("down", "▼") if pct < 0 else (("up", "▲") if pct > 0 else ("flat", "–"))
+    return ('<div class="ts-grid">' + "".join(f'<div class="ts-tile"><div class="k">{k}</div><div class="v {c}">{v}</div></div>'
+                                              for k, v, c in tiles) + "</div>"
+            f'<div class="tr-pct {cls}" style="margin-top:.5rem">{arrow} {abs(pct)}% vs. {span}-day avg</div>')
+
+
+def _priced(f, cp, carry, checked, party):
+    """A quote at the price the card shows, for pop-up headers."""
+    return pricing.quote({**f, "price_usd": cp.fare_total, "travelers": cp.travelers}, carry, checked, party)
+
+
+@st.dialog(" ", width="large")
+def price_trend_dialog(d, cp, carry, checked, party):
+    """Price trend pop-up (V6 p9). Only compares price checks for this same departure date."""
+    f = d["fare"]
+    cabin_header(f, _priced(f, cp, carry, checked, party))
+    heading("Price trend", level=2)
+    heading("Price history", level=3)
+    days = daily_points(d.get("points") or [], cp.travelers)
+    n = st.segmented_control("Range", [7, 14, 30], default=14, format_func=lambda v: f"{v} days", key="trend_range",
+                             label_visibility="collapsed") or 14
+    shown = _days_within(days, n)
+    st.markdown(trend_chart(shown, d["baseline"] * cp.travelers if d.get("baseline") else None)
+                + '<div class="credit">Hover or tap the chart for the price on any day. Lowest nonstop price seen each day '
+                f'for this departure date{", for your travelers" if cp.travelers != 1 else ""}.</div>', unsafe_allow_html=True)
+    st.markdown('<hr class="rule">', unsafe_allow_html=True)
+    heading("Price summary", level=3)
+    if shown:
+        st.markdown(trend_summary(shown), unsafe_allow_html=True)
+    st.markdown('<hr class="rule">', unsafe_allow_html=True)
+    heading("What you get on this flight", level=3)
+    st.markdown("See the cabin, amenities and special freebies before you book.")
+    if st.button("Cabin experience", key="trend_to_cabin"):
+        open_dialog("cabin", f["fare_id"])
+        st.rerun()
+
+
+@st.dialog(" ", width="large")
+def cabin_dialog(f, cp, carry, checked, party):
+    """Cabin experience pop-up (V6 p8)."""
+    cabin_header(f, _priced(f, cp, carry, checked, party))
+    cabin_panel(f, compact=False)
+    st.markdown('<div class="credit">Credentials / disclaimers: Prices are snapshots and may have changed. '
+                'Always confirm on the airline or booking site.</div>', unsafe_allow_html=True)
+
+
+def _standout_badge(d):
+    tip = "At least 10% and $20 below this route's typical price for the same departure date"
+    return (f'<div class="mod-top"><span class="btag tag-low" title="{esc(tip)}">▼ {round(d["drop_pct"] * 100)}% · '
+            f'Stand-out deal</span><span class="mod-note">{esc(d["window_label"])}</span></div>')
 
 
 def deal_card(d, cp, scope):
-    """Ascend Deals card (V3 p2): '$Price was ~$Avg', bags + Upgrades, collapsible daily-price trend."""
+    """Ascend Deals card (V3 p2): '$Price was ~$Avg', bags + Upgrades, collapsible daily-price trend.
+    Stand-out deals (they carry a window_label) get a badge saying how far the price fell and which date window it's from."""
     f, a = d["fare"], d["fare"].get("asset") or {}
     after = _unit(f)  # until the route has a baseline, just say one-way / round trip
     if not d["tracking"] and d.get("baseline"):
         # Same basis as the headline: fare-only baseline, plus the same bag estimate when bags are included.
         was = d["baseline"] * cp.travelers + (cp.headline - cp.fare_total)
         after = f"was ~{money(was)}"
+    row_key = f"{scope}_{f['fare_id']}"
     with st.container(key=f"card_{scope}_{f['fare_id']}"):
         st.markdown(
-            card_photo(a, 125) + f'<div class="card-body">{card_text(f, cp, after)}</div>',
+            card_photo(a, 125) + f'<div class="card-body">{_standout_badge(d) if d.get("window_label") else ""}'
+            f'{card_text(f, cp, after, added=card_added(f, cp, row_key))}</div>',
             unsafe_allow_html=True)
-        bags_row(f, cp, f"{scope}_{f['fare_id']}")
-        st.markdown(f'<div class="tr-wrap">{trend_row(d, f"{scope}{f["fare_id"]}", scale=cp.travelers)}</div>',
-                    unsafe_allow_html=True)
-        card_actions(f, scope, "▾")
+        bags_row(f, cp, row_key)
+        trend_strip(d, f, row_key, scale=cp.travelers)
+        card_actions(f, scope, "▾", modal=True)
 
 
 
@@ -555,12 +731,39 @@ def typical_tag(f):
             if f.get("amenities_typical") else "")
 
 
-def cabin_panel(f, compact=True):
-    """Inline cabin panel (result rows, Home/Deals cards). compact=False is the standalone view body."""
+def fare_options_block(f, data):
+    """Cabin experience: the fares Google lists for this flight, what each changes, and where that came from."""
+    base = fare_options.cheapest(data)
+    total = base["price"] if base else fare_options.price(data)
+    body = fare_ladder(data) if base else ""
+    if not body:
+        body = f'<div class="up-row"><span>Google Flights price</span><span><b>{money(total)}</b></span></div>' if total else ""
+    return (f'<div class="fare-block"><div class="up-head">Fares &amp; upgrades on this flight</div>{body}'
+            f'<div class="credit">{esc(fare_source_note(data))}</div></div>')
+
+
+def freebie_lines(cool, fact):
+    """Freebie, then fun fact. Most facts restate the freebie ('Trading cards' / 'Delta offers trading cards'): show it once."""
+    perk = (cool or "").lower().removeprefix("free ")
+    return [x for x in (cool, None if fact and perk and perk in fact.lower() else fact) if x]
+
+
+def _carry_text(amen, data):
+    """This fare's carry-on rule from Google when it says, otherwise the airline-wide one."""
+    lines = fare_options.rules(fare_options.cheapest(data), "carry-on")
+    return lines[0] if lines else amen.get("carry_on")
+
+
+def cabin_panel(f, compact=True, came_from=None):
+    """Inline cabin panel (result rows, Home/Deals cards). compact=False is the standalone view body.
+    `came_from` ("home") tells the full view where its back button should go; without it, back to search results."""
     a, amen = f.get("asset") or {}, f.get("amenities") or {}
+    data = google_fare(f, wait=True)
+    amen = {**amen, "carry_on": _carry_text(amen, data)}
     if compact:
         with st.container(key=f"cabinpanel_{f['fare_id']}"):
             cabin_images(a)
+            st.markdown(fare_options_block(f, data), unsafe_allow_html=True)
             c1, c2, c3 = st.columns(3, gap="small")
             c1.markdown(f'<div class="amen"><div class="k">Carry-on</div>{_amen_value(amen.get("carry_on"))}</div>',
                         unsafe_allow_html=True)
@@ -574,7 +777,8 @@ def cabin_panel(f, compact=True):
                         unsafe_allow_html=True)
             page = PAGES.get(config.NAV_SEARCH)
             if page is not None:
-                st.page_link(page, label="Open full cabin experience ↗", query_params={"fare_id": f["fare_id"]})
+                params = {"fare_id": f["fare_id"], **({"from": came_from} if came_from else {})}
+                st.page_link(page, label="Open full cabin experience ↗", query_params=params)
         return
     heading("Cabin experience", level=2)
     heading("Cabin images", level=3)
@@ -588,6 +792,8 @@ def cabin_panel(f, compact=True):
                                (a.get("interior_credit"), a.get("interior_link")),
                                (a.get("food_credit"), a.get("food_link"))]), unsafe_allow_html=True)
     st.markdown('<hr class="rule">', unsafe_allow_html=True)
+    st.markdown(fare_options_block(f, data), unsafe_allow_html=True)
+    st.markdown('<hr class="rule">', unsafe_allow_html=True)
     heading(f"Amenities: specifics {typical_tag(f)}", level=3)
     c1, c2, c3, c4 = st.columns(4, gap="small")
     c1.markdown(f'<div class="amen"><div class="k">Carry-on</div>{_amen_value(amen.get("carry_on"))}</div>',
@@ -600,9 +806,16 @@ def cabin_panel(f, compact=True):
     c4.markdown(f'<div class="amen"><div class="k">Legroom</div>{_amen_value(f"{pitch} in pitch" if pitch else None)}</div>',
                 unsafe_allow_html=True)
     st.markdown('<hr class="rule">', unsafe_allow_html=True)
-    heading("Special freebies", level=3)
-    cool = amen.get("cool_thing")
-    st.markdown(esc(cool) if cool else '<span class="muted">Coming soon</span>', unsafe_allow_html=True)
+    heading("Special freebies/Fun Fact", level=3)
+    from bots.critic import pick_fun_fact
+
+    lines = [esc(x) for x in freebie_lines(amen.get("cool_thing"), pick_fun_fact(f.get("airline_iata")))]
+    st.markdown("<br>".join(lines) or '<span class="muted">Coming soon</span>', unsafe_allow_html=True)
+    photo = (config.cabins().get(f"{f.get('airline_iata')}|*") or {}).get("freebie") or {}
+    if photo.get("image_url"):
+        st.markdown(f'<div class="freebie-img" style="max-width:360px;margin-top:.5rem">'
+                    f'{image(photo["image_url"], photo.get("source_page"), amen.get("cool_thing") or "Freebie", 170)}'
+                    f'{credit(photo.get("credit"), photo.get("source_page"))}</div>', unsafe_allow_html=True)
 
 
 def cabin_header(f, qt):
@@ -855,6 +1068,7 @@ def _dest_close(prefix):
 def _dest_tap(prefix, iata):
     st.session_state[f"{prefix}_to"] = iata
     _dest_close(prefix)
+    st.session_state["_dest_picked"] = True
 
 
 def _dest_metro_tick(prefix, metro):
@@ -878,6 +1092,7 @@ def _dest_done(prefix):
     ss = st.session_state
     ss[f"{prefix}_to"] = config.selection_code(ss[f"{prefix}_to_draft"]) or ss[f"{prefix}_to"]
     _dest_close(prefix)
+    ss["_dest_picked"] = True
 
 
 def _dest_list(prefix, draft):
@@ -916,21 +1131,32 @@ def dest_picker(prefix, initial):
     with st.popover(dest_label(ss[to_key]), width="stretch", key=pop_key, on_change="rerun"):
         if is_open:  # ~110 widgets, so they only exist while the list is showing
             current = ss[to_key]
-            draft = ss.setdefault(draft_key, list(config.metro_airports(current)) if config.is_metro(current) or config.metro_for(current) else [])
-            with st.container(key=f"destpick_{prefix}"):
-                st.markdown('<div class="dest-hint">Every nonstop city from Tampa, A–Z. Cities with more than one airport '
-                            'have checkboxes: tick them all or only the ones you want. Other cities are a single tap.</div>',
-                            unsafe_allow_html=True)
-                st.text_input("Search", placeholder="Search city or airport code", key=f"{prefix}_to_q",
-                              label_visibility="collapsed")
-                with st.container(height=340, border=False, key=f"destlist_{prefix}"):
-                    _dest_list(prefix, draft)
-                clear, done = st.columns([1, 3.2], gap="small")
-                clear.button("Clear", key=f"{prefix}_to_clear", width="stretch", on_click=_dest_clear, args=(prefix,))
-                n = len(draft)
-                done.button(f"Done · {n} airport{'s' if n != 1 else ''}", key=f"{prefix}_to_done", type="primary",
-                            width="stretch", disabled=not n, on_click=_dest_done, args=(prefix,))
+            ss.setdefault(draft_key, list(config.metro_airports(current)) if config.is_metro(current) or config.metro_for(current) else [])
+            _dest_body(prefix)
     return ss[to_key]
+
+
+@st.fragment
+def _dest_body(prefix):
+    """Search box + list + Clear / Done. A fragment, so each keystroke pause (live search) reruns only the list.
+    Picking a city has to update the button and form outside it, so that triggers a full rerun."""
+    ss = st.session_state
+    if ss.pop("_dest_picked", False):
+        st.rerun()
+    draft = ss[f"{prefix}_to_draft"]
+    with st.container(key=f"destpick_{prefix}"):
+        st.markdown('<div class="dest-hint">Every nonstop city from Tampa, A–Z. Cities with more than one airport '
+                    'have checkboxes: tick them all or only the ones you want. Other cities are a single tap.</div>',
+                    unsafe_allow_html=True)
+        st.text_input("Search", placeholder="Search city or airport code", key=f"{prefix}_to_q",
+                      label_visibility="collapsed", type="search", live="200ms")
+        with st.container(height=340, border=False, key=f"destlist_{prefix}"):
+            _dest_list(prefix, draft)
+        clear, done = st.columns([1, 3.2], gap="small")
+        clear.button("Clear", key=f"{prefix}_to_clear", width="stretch", on_click=_dest_clear, args=(prefix,))
+        n = len(draft)
+        done.button(f"Done · {n} airport{'s' if n != 1 else ''}", key=f"{prefix}_to_done", type="primary",
+                    width="stretch", disabled=not n, on_click=_dest_done, args=(prefix,))
 
 
 # ================================================================ search forms
@@ -1101,9 +1327,10 @@ def search_bar_roundtrip(s):
 
 # ================================================================ results table
 def logo_tile(f):
-    if f.get("logo_url"):
-        return f'<img class="logo-img" src="{esc(f["logo_url"])}" alt="logo">'
     code = f.get("airline_iata") or "?"
+    url = f.get("logo_url") or config.logo_url(code)
+    if url:
+        return f'<img class="logo-img" src="{esc(url)}" alt="logo">'
     return f'<div class="logo-tile" style="background:{config.brand_color(code)}">{esc(code)}</div>'
 
 
@@ -1164,10 +1391,11 @@ def open_return_dialog():
 
 
 @st.dialog("Choose your return", width="large")
-def return_dialog(rets, selected, sub):
+def return_dialog(rets, selected, sub, totals):
     st.markdown(f'<div class="as-sub">{sub}</div>', unsafe_allow_html=True)
     for r in rets:
-        leg_row(r, selected["price_usd"], r["fare_id"] == selected["fare_id"], "sel_ret", "ret")
+        leg_row(r, totals[selected["fare_id"]], r["fare_id"] == selected["fare_id"], "sel_ret", "ret",
+                totals[r["fare_id"]])
     if st.session_state.pop("ret_picked", False):
         st.rerun()
 
@@ -1184,8 +1412,16 @@ def return_slot(out, ret, s):
                          on_click=open_return_dialog)
 
 
-def leg_row(f, selected_price, is_selected, sel_key, scope, reset=None):
-    """Radio-style flight row: price is the round-trip total; delta vs the selected flight."""
+def hidden_note(n):
+    """Says why results are missing when bags are picked."""
+    if n:
+        what = "1 flight" if n == 1 else f"{n} flights"
+        st.markdown(f'<div class="muted small">{what} hidden: bag fees for {"that airline" if n == 1 else "those airlines"} '
+                    "aren't verified.</div>", unsafe_allow_html=True)
+
+
+def leg_row(f, selected_total, is_selected, sel_key, scope, total, reset=None):
+    """Radio-style flight row: price is the round-trip total (with any bags); delta vs the selected flight."""
     with st.container(key=f"legrow{'on' if is_selected else ''}_{scope}_{f['fare_id']}"):
         c0, c1, c2, c3, c4, c5, c6 = st.columns([0.28, 0.45, 1.45, 1.45, 0.85, 1.0, 1.8], vertical_alignment="center")
         c0.button("●" if is_selected else "○", key=f"pick_{scope}_{f['fare_id']}", type="tertiary",
@@ -1197,10 +1433,11 @@ def leg_row(f, selected_price, is_selected, sel_key, scope, reset=None):
                     f'<div class="r-sub">{duration(f.get("duration_min"))}</div>', unsafe_allow_html=True)
         none_or_unknown = NO_AMENITIES if has_no_amenities(f.get("amenities")) else "Amenities not verified"
         c4.markdown(true_chips(f) or f'<span class="r-sub">{none_or_unknown}</span>', unsafe_allow_html=True)
-        delta = f["price_usd"] - (selected_price or f["price_usd"])
+        delta = total - selected_total
+        est = '<span class="est">est.</span>' if total != f["price_usd"] else ""
         sub = ('<div class="sel-txt">Selected</div>' if is_selected else
                f'<div class="r-sub">{"+" if delta >= 0 else "−"}{money(abs(delta))} vs. selected</div>')
-        c5.markdown(f'<div style="text-align:right"><span class="r-price">{money(f["price_usd"])}</span>{sub}</div>',
+        c5.markdown(f'<div style="text-align:right"><span class="r-price">{money(total)}{est}</span>{sub}</div>',
                     unsafe_allow_html=True)
         open_ = st.session_state.get(f"open_{scope}") == f["fare_id"]
         c6.button(f"Cabin experience {'▴' if open_ else '▾'}", key=f"cx_{scope}_{f['fare_id']}",
@@ -1239,18 +1476,20 @@ def price_buys(out, ret, qt, party):
         lines.append(_buy("no", "No Wi-Fi or power on either flight"))
     else:
         lines.append(_buy("unk", "Wi-Fi · power: not verified yet"))
+    # Same airline both ways: Google's rules for this exact pair of flights win over the airline-wide ones.
+    google = None
+    if out.get("airline_iata") == ret.get("airline_iata"):
+        google = fare_options.cheapest(fare_options.cached(conn(), out, party, ret)[1])
     seat = (pol.get("seat_selection") or {})
-    if seat.get("fee_usd") == 0:
+    seat_rule = fare_options.rules(google, "seat selection")
+    if seat_rule:
+        lines.append(_buy("yes" if seat_rule[0].lower().startswith("free") else "no", esc(seat_rule[0])))
+    elif seat.get("fee_usd") == 0:
         lines.append(_buy("yes", "Seat selection included"))
     elif seat.get("fee_usd") is not None:
         lines.append(_buy("no", f"Seat selection · +{money(seat['fee_usd'])} per seat"))
     else:
         lines.append(_buy("unk", "Seat selection: not verified yet"))
-    chg = (pol.get("change_cancel") or {}).get("text")
-    if chg:
-        lines.append(_buy("yes" if "free" in chg.lower() else "no", f"Change or cancel · {esc(chg)}"))
-    else:
-        lines.append(_buy("unk", "Change or cancel: not verified yet"))
     return "".join(lines)
 
 
@@ -1392,7 +1631,7 @@ def bundle_card(b, s, idx):
 
     out, ret, sc = b["out"], b["ret"], b["score"]
     party = party_of(s)
-    qt = pricing.rt_quote(out, ret, b["total"], s["carry_on"], s["checked"], party)
+    qt = pricing.rt_quote(out, ret, b["fare_total"], s["carry_on"], s["checked"], party)
     key = f"bundle_{idx}"
     open_ = st.session_state.get("open_bundle") == key
     score_tip = (f"Experience score {sc.total:.1f} / 10 · "
@@ -1445,11 +1684,26 @@ def airline_card(a):
                     unsafe_allow_html=True)
         if st.button("View airline", key=f"view_{a['iata']}", type="primary", width="stretch"):
             st.query_params["airline"] = a["iata"]
-            st.rerun()
+            open_at_top()
+
+
+def open_at_top():
+    """Rerun into a new view starting at the top. A rerun keeps the scroll position, so a card low in a grid would
+    otherwise open the next view partway down, with its heading off screen."""
+    st.session_state["scroll_top"] = True
+    st.rerun()
+
+
+def scroll_to_top_if_asked():
+    """Called near the top of a page; scrolls once after open_at_top(), retrying while the new view lays out."""
+    if st.session_state.pop("scroll_top", False):
+        st.html("<script>(()=>{const go=()=>{const m=document.querySelector('[data-testid=stMain]');"
+                "if(m)m.scrollTo(0,0);window.scrollTo(0,0)};go();[50,200,500,1000].forEach(t=>setTimeout(go,t))})()</script>",
+                unsafe_allow_javascript=True)
 
 
 FEE_ROWS = [("personal_item", "Personal item"), ("carry_on", "Carry-on bag"), ("first_checked", "1st checked bag"),
-            ("seat_selection", "Seat selection"), ("change_cancel", "Change / cancel"), ("loyalty_program", "Loyalty program")]
+            ("seat_selection", "Seat selection"), ("loyalty_program", "Loyalty program")]
 
 
 def policy_is_stale(policy, today=None):
@@ -1459,34 +1713,51 @@ def policy_is_stale(policy, today=None):
     return ((today or date.today()) - date.fromisoformat(checked)).days > settings.POLICY_STALE_DAYS
 
 
-def fee_table_cell(item):
-    """Full-width Change / cancel cell from rows/note; None when the policy only has plain text."""
-    rows = (item or {}).get("rows")
-    if not rows:
-        return None
-    label = f' · {esc(item["label"])}' if item.get("label") else ""
-    body = "".join(f'<div class="fee-row"><span>{esc(what)}</span><b>{esc(fee)}</b></div>' for what, fee in rows)
-    note = f'<div class="fee-note">{esc(item["note"])}</div>' if item.get("note") else ""
-    return f'<div class="fee wide"><div class="k">Change / cancel{label}</div>{body}{note}</div>'
+def airline_cabin_card(code, asset):
+    """'Cabin experience' on the airline page (V6 p10): typical for the airline, not one flight."""
+    amen = config.amenities().get(f"{code}|*") or {}
+    pitch = amen.get("legroom_pitch_in")
+    power = {True: "Power outlets", False: "No power outlets"}.get(amen.get("power"))
+    seat = " · ".join(x for x in (asset.get("seat_layout"), power) if x)
+    tile = '<div class="fee cab"><div class="k">{}</div>{}</div>'
+    cells = [tile.format("Legroom", _amen_value(f"{pitch} in pitch" if pitch else None)),
+             tile.format("Food &amp; drinks", _amen_value(amen.get("food_drinks"))),
+             tile.format("Entertainment", entertainment_html(amen)),
+             tile.format("Seat &amp; cabin", _amen_value(seat))]
+    with st.container(key=f"softcard_cabin_{code}"):
+        st.markdown('<div class="fc-top"><span class="as-h3" style="margin:0">Cabin experience</span>'
+                    '<span class="credit">Typical for this airline · economy</span></div>'
+                    f'<div class="fees-grid">{"".join(cells)}</div>', unsafe_allow_html=True)
 
 
-def fees_grid(code):
+def airline_freebie(code):
+    """'Freebie (if mentioned)' (V6 p10): no box when none is known."""
+    cool = (config.amenities().get(f"{code}|*") or {}).get("cool_thing")
+    photo = (config.cabins().get(f"{code}|*") or {}).get("freebie") or {}
+    if cool or photo.get("image_url"):
+        with st.container(key=f"softcard_fact_{code}"):
+            pic = (f'<div class="freebie-img">{image(photo["image_url"], photo.get("source_page"), cool or "Freebie", 150)}'
+                   f'{credit(photo.get("credit"), photo.get("source_page"))}</div>') if photo.get("image_url") else ""
+            st.markdown(f'<div class="credit" style="margin:0">Freebie</div><div>{esc(cool or "")}</div>{pic}',
+                        unsafe_allow_html=True)
+
+
+def fees_grid(code, sample=None):
+    """`sample` is one of the airline's fares: Google's fares for it show what upgrading costs on a real flight."""
     p = config.policies().get(code) or {}
     name = esc(config.airline_name(code))
     checked = p.get("checked")
+    data = google_fare(sample, wait=True) if sample else None
+    base = fare_options.cheapest(data)
     with st.container(key=f"softcard_fees_{code}"):
         st.markdown(f"""<div class="fc-top"><span class="as-h3" style="margin:0">Fees &amp; policies at a glance</span>
             <span class="credit">Economy fare · {('checked ' + esc(checked)) if checked else 'not yet checked'}</span></div>""",
                     unsafe_allow_html=True)
         cells = []
         for k, label in FEE_ROWS:
-            table = fee_table_cell(p.get(k))
-            if table:
-                cells.append(table)
-                continue
             text = (p.get(k) or {}).get("text")
             v = f'<div class="v">{esc(text)}</div>' if text else '<div class="v unknown">Not verified yet</div>'
-            cells.append(f'<div class="fee"><div class="k">{label}</div>{v}</div>')
+            cells.append(f'<div class="fee{" wide" if k == "loyalty_program" else ""}"><div class="k">{label}</div>{v}</div>')
         recent = p.get("recently_changed") or {}
         recent_html = (f'<div class="recent"><b>Recently changed:</b> {esc(recent["text"])}'
                        + (f' · {esc(recent["date"])}' if recent.get("date") else "") + "</div>") if recent.get("text") else \
@@ -1496,19 +1767,39 @@ def fees_grid(code):
                 f'Full policy on {name} website ↗</a></div>') if url else ""
         warn = ('<div class="credit" style="color:#B42318">Policy not checked in the last '
                 f'{settings.POLICY_STALE_DAYS} days — confirm on the airline site.</div>') if policy_is_stale(p) else ""
-        st.markdown(f'<div class="fees-grid">{"".join(cells)}</div>{recent_html}{link}{warn}', unsafe_allow_html=True)
+        ladder = ""
+        if base:
+            ladder = (f'<details class="fare-more"><summary>Example fares: {route_label(sample)}, '
+                      f'{esc(nice_date(sample.get("depart_date")) or "")}</summary>{fare_ladder(data)}'
+                      f'<div class="credit">{esc(fare_source_note(data))}</div></details>')
+        st.markdown(f'<div class="fees-grid">{"".join(cells)}</div>{ladder}{recent_html}{link}{warn}', unsafe_allow_html=True)
 
 
-def photo_library(asset):
+def airline_gallery(code):
+    """Extra photos for the airline page (cabins.json airline|* "gallery"), beyond the four library tiles."""
+    return [g for g in (config.cabins().get(f"{code}|*") or {}).get("gallery") or [] if g.get("image_url")]
+
+
+def photo_library(asset, code=None):
     tiles = [("exterior", "Exterior · livery"), ("interior", "Cabin · economy"), ("seat", "Seat / legroom"),
              ("food", "Food / perks")]
     for i in range(0, 4, 2):
         cols = st.columns(2, gap="small")
         for col, (k, label) in zip(cols, tiles[i:i + 2]):
             with col:
-                st.markdown(image(asset.get(f"{k}_url"), asset.get(f"{k}_link"), label, 105), unsafe_allow_html=True)
-    st.markdown(credits_block([(asset.get(f"{k}_credit"), asset.get(f"{k}_link")) for k, _ in tiles])
-                or '<div class="credit">Photos: none yet — add curated images in data/cabins.json</div>',
+                cls = "lib lib-fit" if k == "exterior" else "lib"
+                st.markdown(image(asset.get(f"{k}_url"), asset.get(f"{k}_link"), label, 190, cls), unsafe_allow_html=True)
+    extra = airline_gallery(code) if code else []
+    if extra:
+        st.markdown('<div class="credit" style="margin:.4rem 0 .2rem">More photos</div>', unsafe_allow_html=True)
+        for i in range(0, len(extra), 3):
+            cols = st.columns(3, gap="small")
+            for col, g in zip(cols, extra[i:i + 3]):
+                with col:
+                    st.markdown(image(g["image_url"], g.get("source_page"), "Photo", 110), unsafe_allow_html=True)
+    pairs = [(asset.get(f"{k}_credit"), asset.get(f"{k}_link")) for k, _ in tiles]
+    pairs += [(g.get("credit"), g.get("source_page")) for g in extra]
+    st.markdown(credits_block(pairs) or '<div class="credit">Photos: none yet — add curated images in data/cabins.json</div>',
                 unsafe_allow_html=True)
 
 
@@ -1543,24 +1834,52 @@ def reviews_panel(summary, code):
 STATUS_TEXT = {"current": "Year-round", "seasonal": "Seasonal", "coming_soon": "Starting soon", "suspending": "Ending soon"}
 
 
-def search_route(dest, round_trip):
-    """Run this route in Ascend Search with the saved dates, travelers and bags (V5.1 p7)."""
-    ss = st.session_state
-    s = search_state()
-    depart, ret = clamp_trip_dates(s)
+def route_search(s, dest, round_trip, fare=None, airline=None, today=None):
+    """Search params for a route row: the row's airline, trip type and flight dates, with the saved travelers and bags.
+    A row with no price, or whose flight has already left, uses the saved dates instead."""
+    today = today or date.today()
+    dates = s
+    if fare and date.fromisoformat(fare["depart_date"]) >= today:
+        dates = {"depart_date": fare["depart_date"], "return_date": fare.get("return_date")}
+    depart, ret = clamp_trip_dates(dates, today)
     mode = "one_way" if not round_trip else (s["mode"] if s["mode"] != "one_way" else "rt_bundles")
-    ss["search"] = {**s, "destination": dest, "depart_date": depart.isoformat(),
-                    "return_date": ret.isoformat() if round_trip else None, "mode": mode, "nonstop": True}
+    return {**s, "destination": dest, "depart_date": depart.isoformat(), "return_date": ret.isoformat() if round_trip else None,
+            "mode": mode, "nonstop": True, "airline": airline}
+
+
+def only_airline(fares, s):
+    """Fares for the airline this search was opened from (a route row); all of them for any other search."""
+    code = s.get("airline")
+    return [f for f in fares if f.get("airline_iata") == code] if code else fares
+
+
+def airline_notice(s):
+    """Say results are limited to one airline, with a way out. True when the user asked to see all airlines."""
+    code = s.get("airline")
+    if not code:
+        return False
+    with st.container(horizontal=True, vertical_alignment="center", gap="small", key="airlinenotice"):
+        st.markdown(f'<div class="small">Showing only <b>{esc(config.airline_name(code))}</b> flights, from Airline Matrix.</div>',
+                    unsafe_allow_html=True)
+        return st.button("Show all airlines", type="tertiary", key="all_airlines")
+
+
+def search_route(dest, round_trip, fare=None, airline=None):
+    """Open a route row in Ascend Search under exactly the row's conditions (see route_search)."""
+    ss = st.session_state
+    ss["search"] = route_search(search_state(), dest, round_trip, fare, airline)
     ss["searched"] = True
     sync_controls("cb", ss["search"])
-    for key in ("home_to", "land_to"):  # the search forms pick the new route up next time they render
+    # The search forms pick the new route up next time they render; the results start from this flight, not an old choice.
+    for key in ("home_to", "land_to", "sel_out", "sel_ret", "bundle_mixed", "bundles_shown"):
         ss.pop(key, None)
     st.switch_page(PAGES[config.NAV_SEARCH])
 
 
-def routes_panel(code, routes, priced):
-    """'Routes from TPA' (V5.1 p7): every row searches that route. Weekly frequency isn't in any source, so the
-    third column shows the carrier's service status from TPA_Nonstop_Destinations.docx, not a guessed flights/week."""
+def routes_panel(code, routes, priced, round_trip=False):
+    """'Routes from TPA' (V5.1 p7): every row opens that flight in Ascend Search. `priced` matches the trip type the page
+    is showing, so what a row says is what it opens. Weekly frequency isn't in any source, so the third column shows the
+    carrier's service status from TPA_Nonstop_Destinations.docx, not a guessed flights/week."""
     by_dest = {f["destination"]: f for f in priced}
     dests = {d["iata"]: d for d in config.destinations()}
     rows = sorted(routes, key=lambda r: (r not in by_dest, by_dest[r]["price_usd"] if r in by_dest else 0,
@@ -1570,7 +1889,8 @@ def routes_panel(code, routes, priced):
     with st.container(key=f"routespanel_{code}"):
         st.markdown(f'<div class="rp-head"><b>Routes from TPA</b><span>{len(rows)} nonstop route'
                     f'{"s" if len(rows) != 1 else ""} · {esc(config.airline_name(code))}</span></div>'
-                    '<div class="rp-hint">Select a route to search it in Ascend Search.</div>', unsafe_allow_html=True)
+                    f'<div class="rp-hint">Select a route to search it in Ascend Search. Prices are {"round trip" if round_trip else "one-way"}.</div>',
+                    unsafe_allow_html=True)
         for r in rows if show_all else rows[:5]:
             f = by_dest.get(r)
             cs = ((dests.get(r) or {}).get("carrier_status") or {}).get(code) or {}
@@ -1582,7 +1902,7 @@ def routes_panel(code, routes, priced):
                             f'<span class="muted">{esc(status)}</span>'
                             f'<span class="num">{price} <b>›</b></span></div>', unsafe_allow_html=True)
                 if st.button(f"Search TPA to {config.city(r)}", key=f"routego_{code}_{r}"):
-                    search_route(r, ss.get("airline_trip", "Round-trip") == "Round-trip")
+                    search_route(r, round_trip, f, code)
         if len(rows) > 5:
             label = "Show fewer routes ▴" if show_all else f"Show all routes ({len(rows)}) ▾"
             st.button(label, key=f"routes_btn_{code}", type="tertiary",
@@ -1604,7 +1924,7 @@ def _deal_tile(key, tag, note, f, cp, highlight=False):
     """One 'Deals on [airline]' card (V5.1 p7): tag + note, price, route, dates and times, airline, aircraft, bags."""
     with st.container(key=f"{'tilehl' if highlight else 'tile'}_{key}"):
         st.markdown(f'<div class="mod-top"><span class="mod-tag">{tag}</span><span class="mod-note">{note}</span></div>'
-                    + headline_html(cp, _unit(f))
+                    + headline_html(cp, _unit(f), card_added(f, cp, key))
                     + f'<div class="v3-route"><span class="fc-route">{route_label(f)}</span></div>'
                     + f'<div class="fc-meta">{fare_meta(f)}</div>'
                     + f'<div class="fc-line">{airline_label(f)} · {stops_label(f)}</div>'
@@ -1616,17 +1936,54 @@ def _deal_tile(key, tag, note, f, cp, highlight=False):
                         unsafe_allow_html=True)
 
 
+def same_flight(deals):
+    """All three deal slots are one flight (V6 p16): the fare shown is identical, so one card says it all."""
+    fares = [deals.get(slot) for slot, *_ in DEAL_SLOTS]
+    if not all(fares):
+        return None
+    ids = {(f.get("flight_numbers"), f.get("depart_date"), f.get("return_date")) for f in fares}
+    return fares[0] if len(ids) == 1 and None not in next(iter(ids))[:1] else None
+
+
+def _best_deal(code, f, cp):
+    """One full-width card tagged BEST DEAL (V6 p17)."""
+    key = f"best_{code}"
+    with st.container(key=f"tilehl_{key}"):
+        left, right = st.columns(2, gap="medium")
+        left.markdown('<div class="mod-top"><span class="mod-tag">Best deal</span></div>'
+                      + headline_html(cp, _unit(f), card_added(f, cp, key))
+                      + f'<div class="v3-route"><span class="fc-route">{route_label(f)}</span></div>'
+                      + f'<div class="fc-meta">{fare_meta(f)}</div>'
+                      + f'<div class="fc-line">{airline_label(f)} · {stops_label(f)}</div>'
+                      + f'<div class="fc-line">Aircraft: {aircraft_label(f) or "Not listed"}</div>', unsafe_allow_html=True)
+        with right:
+            bags_row(f, cp, key)
+            with st.container(horizontal=True, vertical_alignment="center", gap="small"):
+                card_actions(f, f"mod_{key}", cabin=False)
+                st.markdown('<div class="credit" style="margin:0">Opens Google Flights to confirm the fare.</div>',
+                            unsafe_allow_html=True)
+
+
 def deal_cards(code, deals):
     """Cheapest flight / Nonstop flight / Cheapest nonstop flight. An empty slot keeps its box with a placeholder."""
     s = search_state()
     party = party_of(s)
     carry, checked = s["carry_on"], s["checked"]
+    best = same_flight(deals)
+    if best:
+        cp = card_price(best, party, carry, checked, bool(carry or checked))
+        if cp.included or not (carry or checked):
+            _best_deal(code, best, cp)
+            return
     for col, (slot, tag, note, empty) in zip(st.columns(3, gap="small"), DEAL_SLOTS):
         with col:
             f = deals[slot]
             key = f"{slot}_{code}"
-            if f:
-                _deal_tile(key, tag, note, f, pricing.card_price(f, carry, checked, party, bool(carry or checked)),
-                           highlight=slot == "cheapest_nonstop")
+            cp = card_price(f, party, carry, checked, bool(carry or checked)) if f else None
+            if f and (cp.included or not (carry or checked)):
+                _deal_tile(key, tag, note, f, cp, highlight=slot == "cheapest_nonstop")
+            elif f:
+                _empty_module(key, tag, "Bag fees aren't verified for this flight",
+                              "Remove your bags to see the fare, or check the airline's booking page.")
             else:
                 _empty_module(key, tag, empty, "Check back soon or search another date in Ascend Search.")

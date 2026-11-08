@@ -10,3 +10,6 @@ data/*.log
 # Large or third-party source files, kept locally
 *Wireframes*.pdf
 Frontier Airlines/
+
+# Raw hand-picked photos; import_cabin_images.py copies them into static/airlines/
+Ascend Search Images/

@@ -1,52 +1,127 @@
 {
-  "_note": "Keyed airline|aircraft_type, with airline|* fallback ('Typical for [airline]'). Chips render only for true values; missing keys render nothing. legroom_pitch_in from the airline's published seat pitch. cool_thing in your own words.",
+  "_note": "Keyed airline|aircraft_type, with airline|* fallback ('Typical for [airline]'). Chips render only for true values; missing keys render nothing. legroom_pitch_in from the airline's published seat pitch. cool_thing in your own words. routes (on airline|* only): overrides for flights to or from one airport, e.g. Delta's Amsterdam meal. food_drinks format when snacks, drinks and more to buy: 'Free snacks (names, if known)/soft drinks, buy on board also available'.",
   "DL|*": {
-    "carry_on": "Included",
-    "food_drinks": null,
+    "carry_on": "Free",
+    "food_drinks": "Free snacks (Cheez-It, Biscoff, Sun Chips)/soft drinks, buy on board also available",
     "wifi": true,
     "seatback_screen": true,
     "stream_to_device": null,
     "power": true,
     "legroom_pitch_in": "31",
-    "cool_thing": "Trading cards"
+    "cool_thing": "Trading cards",
+    "routes": {
+      "AMS": {
+        "food_drinks": "Choice of appetizer, entree, dessert and beverage options"
+      }
+    }
   },
   "WN|*": {
     "carry_on": "Free",
-    "food_drinks": null,
+    "food_drinks": "Free snacks (graham crackers, Oreo cookies, pretzels)/soft drinks, buy on board also available",
     "wifi": true,
     "seatback_screen": false,
     "stream_to_device": true,
-    "power": null,
+    "power": true,
     "legroom_pitch_in": "31–32",
     "cool_thing": "Trading cards"
   },
   "B6|*": {
-    "carry_on": "Included on Main Base (unconfirmed)",
-    "food_drinks": null,
+    "carry_on": "Included",
+    "food_drinks": "Free snacks (Chifles plantain chips, Biscoff, Goldfish, granola bars)/soft drinks, buy on board also available",
     "wifi": true,
     "seatback_screen": true,
     "stream_to_device": null,
     "power": true,
     "legroom_pitch_in": "32",
-    "cool_thing": null
+    "cool_thing": "Trading cards"
   },
   "AA|*": {
     "carry_on": "Free",
-    "food_drinks": "Free snacks and drinks; more to buy",
+    "food_drinks": "Free snacks (cookies, pretzels, Goldfish, Biscoff)/soft drinks, buy on board also available",
     "wifi": true,
     "seatback_screen": false,
     "stream_to_device": true,
     "power": true,
     "legroom_pitch_in": "30–31",
-    "cool_thing": "Trading cards"
+    "cool_thing": "Free trading cards"
   },
   "UA|*": {
-    "carry_on": "Included on Economy; Basic unconfirmed",
-    "food_drinks": null,
+    "carry_on": "Free. Basic: not included domestic, short-haul; included transatlantic, transpacific.",
+    "food_drinks": "Free snacks (pretzels, chocolate waffles)/drinks",
     "wifi": true,
     "seatback_screen": null,
     "stream_to_device": null,
-    "power": null,
+    "power": true,
+    "legroom_pitch_in": "30–31",
+    "cool_thing": "Trading cards"
+  },
+  "UA|Boeing 737": {
+    "carry_on": "Free. Basic: not included domestic, short-haul; included transatlantic, transpacific.",
+    "food_drinks": "Free snacks (pretzels, chocolate waffles)/drinks",
+    "wifi": true,
+    "seatback_screen": null,
+    "stream_to_device": null,
+    "power": true,
+    "legroom_pitch_in": "30–31",
+    "cool_thing": "Trading cards"
+  },
+  "UA|737-700": {
+    "carry_on": "Free. Basic: not included domestic, short-haul; included transatlantic, transpacific.",
+    "food_drinks": "Free snacks (pretzels, chocolate waffles)/drinks",
+    "wifi": true,
+    "seatback_screen": true,
+    "stream_to_device": null,
+    "power": true,
+    "legroom_pitch_in": "30–31",
+    "cool_thing": "Trading cards"
+  },
+  "UA|737 MAX 8": {
+    "carry_on": "Free. Basic: not included domestic, short-haul; included transatlantic, transpacific.",
+    "food_drinks": "Free snacks (pretzels, chocolate waffles)/drinks",
+    "wifi": true,
+    "seatback_screen": true,
+    "stream_to_device": null,
+    "power": true,
+    "legroom_pitch_in": "30–31",
+    "cool_thing": "Trading cards"
+  },
+  "UA|737 MAX 9": {
+    "carry_on": "Free. Basic: not included domestic, short-haul; included transatlantic, transpacific.",
+    "food_drinks": "Free snacks (pretzels, chocolate waffles)/drinks",
+    "wifi": true,
+    "seatback_screen": true,
+    "stream_to_device": null,
+    "power": true,
+    "legroom_pitch_in": "30–31",
+    "cool_thing": "Trading cards"
+  },
+  "UA|A321neo": {
+    "carry_on": "Free. Basic: not included domestic, short-haul; included transatlantic, transpacific.",
+    "food_drinks": "Free snacks (pretzels, chocolate waffles)/drinks",
+    "wifi": true,
+    "seatback_screen": true,
+    "stream_to_device": null,
+    "power": true,
+    "legroom_pitch_in": "30–31",
+    "cool_thing": "Trading cards"
+  },
+  "UA|737-800": {
+    "carry_on": "Free. Basic: not included domestic, short-haul; included transatlantic, transpacific.",
+    "food_drinks": "Free snacks (pretzels, chocolate waffles)/drinks",
+    "wifi": true,
+    "seatback_screen": null,
+    "stream_to_device": true,
+    "power": true,
+    "legroom_pitch_in": "30–31",
+    "cool_thing": "Trading cards"
+  },
+  "UA|737-900": {
+    "carry_on": "Free. Basic: not included domestic, short-haul; included transatlantic, transpacific.",
+    "food_drinks": "Free snacks (pretzels, chocolate waffles)/drinks",
+    "wifi": true,
+    "seatback_screen": null,
+    "stream_to_device": true,
+    "power": true,
     "legroom_pitch_in": "30–31",
     "cool_thing": "Trading cards"
   },
@@ -61,7 +136,7 @@
     "cool_thing": null
   },
   "F9|*": {
-    "carry_on": "Fee; included with Standard",
+    "carry_on": "Fee on Basic, included with Standard; max 35 lb",
     "food_drinks": "Buy from Fly Bar",
     "wifi": false,
     "seatback_screen": false,
@@ -72,7 +147,7 @@
   },
   "AS|*": {
     "carry_on": "Free",
-    "food_drinks": "Free snacks and drinks; more to buy",
+    "food_drinks": "Free snacks (chips, cookies, pistachios, gummies)/soft drinks, buy on board also available",
     "wifi": true,
     "seatback_screen": false,
     "stream_to_device": true,
@@ -81,8 +156,8 @@
     "cool_thing": "Trading cards"
   },
   "SY|*": {
-    "carry_on": "$30 online, $45 by check-in, $50 airport",
-    "food_drinks": null,
+    "carry_on": "$34 during booking, $50 before or at check-in; max 35 lb",
+    "food_drinks": "Free snacks/soft drinks, buy on board also available",
     "wifi": false,
     "seatback_screen": false,
     "stream_to_device": true,
@@ -91,8 +166,8 @@
     "cool_thing": null
   },
   "MX|*": {
-    "carry_on": "$35 on Nice; included on Nicer, Nicest",
-    "food_drinks": "Buy on board: meals, snacks, drinks",
+    "carry_on": "$35 on Nice; included on Nicer, Nicest; max 35 lb",
+    "food_drinks": "Buy on board",
     "wifi": true,
     "seatback_screen": false,
     "stream_to_device": true,
@@ -111,38 +186,38 @@
     "cool_thing": null
   },
   "AC|*": {
-    "carry_on": "Not included on Basic",
-    "food_drinks": "Free snacks and drinks; more to buy",
+    "carry_on": "Not included on Basic; included on Standard and above",
+    "food_drinks": "Free snacks (oat bars, pretzels, cookies)/soft drinks, buy on board also available",
     "wifi": true,
     "seatback_screen": true,
     "stream_to_device": null,
-    "power": false,
+    "power": true,
     "legroom_pitch_in": "29",
     "cool_thing": null
   },
   "AM|*": {
     "carry_on": "Free",
-    "food_drinks": "Free snacks and drinks",
+    "food_drinks": "Free snacks (chips, cookies)/drinks",
     "wifi": true,
     "seatback_screen": true,
     "stream_to_device": null,
     "power": true,
     "legroom_pitch_in": "30",
-    "cool_thing": "2024 anniversary collector cards, mainly at events"
+    "cool_thing": "Limited 90th anniversary trading cards"
   },
   "AV|*": {
-    "carry_on": "Included on Basic, 10 kg (unconfirmed)",
-    "food_drinks": "Free snack and drink; more to buy",
+    "carry_on": "Not included on Basic; included on Light and above; 10 kg",
+    "food_drinks": "To buy: snacks, water, juice, coffee",
     "wifi": null,
     "seatback_screen": null,
     "stream_to_device": true,
     "power": true,
     "legroom_pitch_in": "28",
-    "cool_thing": null
+    "cool_thing": "Free stopover when connecting through Bogotá, with hotel, tour and dining discounts"
   },
   "XP|*": {
     "carry_on": "$54–$75",
-    "food_drinks": "Water available",
+    "food_drinks": "No complimentary snacks or drinks; water on request",
     "wifi": false,
     "seatback_screen": false,
     "stream_to_device": false,
@@ -151,8 +226,8 @@
     "cool_thing": null
   },
   "BA|*": {
-    "carry_on": "Included",
-    "food_drinks": null,
+    "carry_on": "Free on every fare, including Basic",
+    "food_drinks": "Snacks, starter, main, dessert; hot, cold and alcoholic drinks",
     "wifi": true,
     "seatback_screen": true,
     "stream_to_device": null,
@@ -168,41 +243,41 @@
     "stream_to_device": true,
     "power": true,
     "legroom_pitch_in": "32",
-    "cool_thing": null
+    "cool_thing": "Free Seven Fathoms Rum Punch"
   },
   "CM|*": {
-    "carry_on": "Free, 10 kg",
-    "food_drinks": null,
+    "carry_on": "Free on every fare, 10 kg",
+    "food_drinks": "Snacks and non-alcoholic drinks",
     "wifi": null,
-    "seatback_screen": null,
+    "seatback_screen": false,
     "stream_to_device": null,
-    "power": null,
+    "power": true,
     "legroom_pitch_in": "30–32",
     "cool_thing": null
   },
   "4Y|*": {
-    "carry_on": "1 included, 8 kg",
-    "food_drinks": null,
+    "carry_on": "Free, 8 kg",
+    "food_drinks": "Hot meal: appetizer, main, dessert; more to buy",
     "wifi": true,
     "seatback_screen": true,
     "stream_to_device": null,
     "power": true,
     "legroom_pitch_in": "31",
-    "cool_thing": null
+    "cool_thing": "Free Discover cookies for dessert"
   },
   "WK|*": {
-    "carry_on": null,
-    "food_drinks": null,
-    "wifi": null,
+    "carry_on": "Free, 8 kg",
+    "food_drinks": "Free water, soft and hot drinks; meal with salad, main, dessert, apero",
+    "wifi": false,
     "seatback_screen": true,
     "stream_to_device": null,
-    "power": null,
+    "power": true,
     "legroom_pitch_in": "31",
     "cool_thing": "Pre-arrival Biberli, a Swiss ginger biscuit"
   },
   "PD|*": {
-    "carry_on": "Not included on Basic",
-    "food_drinks": null,
+    "carry_on": "Not included on Basic; 1 free on Standard and above",
+    "food_drinks": "Free snacks (shortbread, nuts)/soft drinks, buy on board also available",
     "wifi": true,
     "seatback_screen": false,
     "stream_to_device": true,
@@ -212,22 +287,22 @@
   },
   "VS|*": {
     "carry_on": "1 included, 10 kg",
-    "food_drinks": null,
+    "food_drinks": "Free three-course meal, snacks, soft and alcoholic drinks",
     "wifi": true,
     "seatback_screen": true,
     "stream_to_device": null,
     "power": true,
     "legroom_pitch_in": "31",
-    "cool_thing": null
+    "cool_thing": "'Mile High' afternoon tea on day flights from the UK"
   },
   "WS|*": {
-    "carry_on": "Not included on UltraBasic",
-    "food_drinks": "Free snack and drink; more to buy",
+    "carry_on": "1 free on Econo and above. UltraBasic: none on U.S., Canada flights.",
+    "food_drinks": "Free snack (sweet or salty)/soft drinks, buy on board also available",
     "wifi": true,
     "seatback_screen": false,
     "stream_to_device": true,
     "power": true,
     "legroom_pitch_in": "29–30",
-    "cool_thing": null
+    "cool_thing": "Trading cards"
   }
 }

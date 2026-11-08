@@ -1,5 +1,9 @@
 {
   "_note": "representative_tails are UNVERIFIED starting points. Confirm each on planespotters.net shows the current livery before relying on it.",
+  "WK": {
+    "default_type": "Airbus A350-900",
+    "representative_tails": {}
+  },
   "DL": {
     "default_type": "Boeing 737-900ER",
     "representative_tails": {

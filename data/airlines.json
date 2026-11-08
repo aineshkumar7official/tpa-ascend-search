@@ -1,5 +1,5 @@
 {
-  "_note": "description: 2-3 sentences in YOUR words (fare style, cabin, what's included). null renders 'Description coming soon'.",
+  "_note": "description: 2-3 sentences in YOUR words (fare style, cabin, what's included). null renders 'Description coming soon'. hq, alliance: from TPA_Airline_Fees_and_Policies.pdf (alliance null = independent); stored, not shown yet.",
   "DL": {
     "name": "Delta Air Lines",
     "brand_color": "#003366",
@@ -7,7 +7,9 @@
       "Delta"
     ],
     "website": "https://www.delta.com",
-    "description": null
+    "description": null,
+    "hq": "Atlanta",
+    "alliance": "SkyTeam"
   },
   "WN": {
     "name": "Southwest Airlines",
@@ -16,7 +18,9 @@
       "Southwest"
     ],
     "website": "https://www.southwest.com",
-    "description": null
+    "description": null,
+    "hq": "Dallas",
+    "alliance": null
   },
   "B6": {
     "name": "JetBlue",
@@ -26,7 +30,9 @@
       "Jetblue"
     ],
     "website": "https://www.jetblue.com",
-    "description": null
+    "description": null,
+    "hq": "New York",
+    "alliance": null
   },
   "AA": {
     "name": "American Airlines",
@@ -35,7 +41,9 @@
       "American"
     ],
     "website": "https://www.aa.com",
-    "description": null
+    "description": null,
+    "hq": "Fort Worth",
+    "alliance": "oneworld"
   },
   "UA": {
     "name": "United Airlines",
@@ -44,7 +52,9 @@
       "United"
     ],
     "website": "https://www.united.com",
-    "description": null
+    "description": null,
+    "hq": "Chicago",
+    "alliance": "Star Alliance"
   },
   "NK": {
     "name": "Spirit Airlines",
@@ -62,7 +72,9 @@
       "Frontier"
     ],
     "website": "https://www.flyfrontier.com",
-    "description": null
+    "description": null,
+    "hq": "Denver",
+    "alliance": null
   },
   "AS": {
     "name": "Alaska Airlines",
@@ -71,7 +83,9 @@
       "Alaska"
     ],
     "website": "https://www.alaskaair.com",
-    "description": null
+    "description": null,
+    "hq": "Seattle",
+    "alliance": "oneworld"
   },
   "SY": {
     "name": "Sun Country Airlines",
@@ -80,7 +94,9 @@
       "Sun Country"
     ],
     "website": "https://www.suncountry.com",
-    "description": null
+    "description": null,
+    "hq": "Minneapolis",
+    "alliance": null
   },
   "MX": {
     "name": "Breeze Airways",
@@ -89,7 +105,9 @@
       "Breeze"
     ],
     "website": "https://www.flybreeze.com",
-    "description": null
+    "description": null,
+    "hq": "Cottonwood Heights, UT",
+    "alliance": null
   },
   "G4": {
     "name": "Allegiant Air",
@@ -105,7 +123,9 @@
     "brand_color": "#D22630",
     "aliases": [],
     "website": "https://www.aircanada.com",
-    "description": null
+    "description": null,
+    "hq": "Toronto",
+    "alliance": "Star Alliance"
   },
   "AM": {
     "name": "Aeroméxico",
@@ -114,14 +134,18 @@
       "Aeromexico"
     ],
     "website": "https://www.aeromexico.com",
-    "description": null
+    "description": null,
+    "hq": "Mexico City",
+    "alliance": "SkyTeam"
   },
   "AV": {
     "name": "Avianca",
     "brand_color": "#DA291C",
     "aliases": [],
     "website": "https://www.avianca.com",
-    "description": null
+    "description": null,
+    "hq": "Bogotá",
+    "alliance": "Star Alliance"
   },
   "XP": {
     "name": "Avelo Airlines",
@@ -130,21 +154,27 @@
       "Avelo"
     ],
     "website": "https://www.aveloair.com",
-    "description": null
+    "description": null,
+    "hq": "Houston",
+    "alliance": null
   },
   "BA": {
     "name": "British Airways",
     "brand_color": "#075AAA",
     "aliases": [],
     "website": "https://www.britishairways.com",
-    "description": null
+    "description": null,
+    "hq": "London",
+    "alliance": "oneworld"
   },
   "KX": {
     "name": "Cayman Airways",
     "brand_color": "#00843D",
     "aliases": [],
     "website": "https://www.caymanairways.com",
-    "description": null
+    "description": null,
+    "hq": "George Town, Cayman Islands",
+    "alliance": null
   },
   "CM": {
     "name": "Copa Airlines",
@@ -153,7 +183,9 @@
       "Copa"
     ],
     "website": "https://www.copaair.com",
-    "description": null
+    "description": null,
+    "hq": "Panama City",
+    "alliance": "Star Alliance"
   },
   "4Y": {
     "name": "Discover Airlines",
@@ -162,7 +194,9 @@
       "Discover"
     ],
     "website": "https://www.discover-airlines.com",
-    "description": null
+    "description": null,
+    "hq": "Frankfurt",
+    "alliance": null
   },
   "WK": {
     "name": "Edelweiss Air",
@@ -171,7 +205,9 @@
       "Edelweiss"
     ],
     "website": "https://www.flyedelweiss.com",
-    "description": null
+    "description": null,
+    "hq": "Zurich",
+    "alliance": null
   },
   "PD": {
     "name": "Porter Airlines",
@@ -180,14 +216,18 @@
       "Porter"
     ],
     "website": "https://www.flyporter.com",
-    "description": null
+    "description": null,
+    "hq": "Toronto",
+    "alliance": null
   },
   "VS": {
     "name": "Virgin Atlantic",
     "brand_color": "#DA0530",
     "aliases": [],
     "website": "https://www.virginatlantic.com",
-    "description": null
+    "description": null,
+    "hq": "Crawley, UK",
+    "alliance": "SkyTeam"
   },
   "WS": {
     "name": "WestJet",
@@ -196,6 +236,8 @@
       "Westjet"
     ],
     "website": "https://www.westjet.com",
-    "description": null
+    "description": null,
+    "hq": "Calgary",
+    "alliance": null
   }
 }

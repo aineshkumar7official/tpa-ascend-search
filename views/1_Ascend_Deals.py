@@ -1,4 +1,4 @@
-"""Ascend Deals — Wireframes V4 p2. Routes whose price dropped most vs their 14-day median."""
+"""Ascend Deals — Wireframes V4 p2. Stand-out price drops first, then the fares for the chosen filters."""
 from datetime import date, timedelta
 
 import streamlit as st
@@ -8,7 +8,7 @@ from core import config, pricing, queries, ui
 
 ui.chrome(config.NAV_DEALS)
 queries.mark_alerts_seen(ui.conn())
-ui.heading("Ascend deals from TPA", "Routes whose price dropped the most compared with their recent average.")
+ui.heading("Ascend deals from TPA", "Stand-out price drops first, then every route for the dates you pick.")
 
 s = ui.search_state()
 with st.container(key="panel_filters"):
@@ -53,28 +53,57 @@ if window_label == "Custom":
         from bots import pipeline
 
         with st.status("Searching live fares…", expanded=False) as status:
-            res = pipeline.run_live_chain(params, ui.conn(), progress=status.update)
+            res = pipeline.run_live_chain(params, ui.conn(), progress=lambda msg: status.update(label=msg))
             status.update(label=f"{len(res['fares'])} nonstop flights found", state="complete")
         if res["error"]:
             st.warning(res["error"])
+        quotes = [(f, pricing.quote(f, carry, checked, party)) for f in res["fares"]]
+        shown = sorted(((f, qt) for f, qt in quotes if qt.bags_total is not None), key=lambda x: x[1].total)
         with st.container(key="restable_deals"):
-            for f in res["fares"]:
-                ui.result_row(f, pricing.quote(f, carry, checked, party), scope="dealres")
+            for f, qt in shown:
+                ui.result_row(f, qt, scope="dealres")
+        ui.hidden_note(len(quotes) - len(shown))
 else:
     window_id = queries.window_for_pill(window_label)
-    items = ui.q("deals", window_id, trip_type, None if region == "All regions" else region)
-    if not items:
+    region_arg = None if region == "All regions" else region
+    items = ui.q("deals", window_id, trip_type, region_arg, carry, checked, party)
+    standouts = ui.q("standout_deals", trip_type, region_arg, carry, checked, party)
+
+    def render(d):
+        ui.deal_card(d, ui.card_price(d["fare"], party, carry, checked, bool(carry or checked)), "deals")
+
+    ui.heading(f"Stand-out deals · {trip_label}", f"At least {queries.STANDOUT_MIN_DROP:.0%} and "
+               f"&#36;{queries.STANDOUT_MIN_SAVINGS_USD} below the route's typical price for the same departure date. "
+               "Includes all date windows.", level=2)
+    if standouts:
+        ui.card_grid(standouts, render)
+    else:
+        st.markdown(f'<div class="muted">No {trip_label.lower()} stand-out deals right now: no route has dropped enough yet.</div>',
+                    unsafe_allow_html=True)
+    st.write("")
+    ui.heading(f"{window_label} fares · {trip_label}", level=2)
+    if not items and ui.q("deals", window_id, trip_type, region_arg):
+        st.info("No deals with these bags: bag fees aren't verified for the airlines in this window.")
+    elif not items:
         st.info("No fares for this window yet. Deals appear after the background scans run.")
     else:
-        def render(d):
-            ui.deal_card(d, pricing.card_price(d["fare"], carry, checked, party, bool(carry or checked)), "deals")
-
-        ui.card_grid(items, render)
-        opened = next((d["fare"] for d in items if d["fare"]["fare_id"] == st.session_state.get("open_deals")), None)
-        if opened:
-            ui.heading(f"Cabin experience · {ui.airline_label(opened)} to {config.city(opened['destination'])}", level=3)
-            ui.cabin_panel(opened)
+        featured = {d["fare"]["fare_id"] for d in standouts}  # already shown above, so don't show them twice
+        rest = [d for d in items if d["fare"]["fare_id"] not in featured]
+        if rest:
+            ui.card_grid(rest, render)
+        else:
+            st.markdown('<div class="muted">All of these are in Stand-out deals above.</div>', unsafe_allow_html=True)
+    # Opened by a card button on the previous run. Popped, so any later rerun doesn't reopen it.
+    dialog = st.session_state.pop("card_dialog", None)
+    opened = dialog and next((d for d in standouts + items if d["fare"]["fare_id"] == dialog["fare_id"]), None)
+    if opened:
+        cp = ui.card_price(opened["fare"], party, carry, checked, bool(carry or checked))
+        if dialog["kind"] == "trend":
+            ui.price_trend_dialog(opened, cp, carry, checked, party)
+        else:
+            ui.cabin_dialog(opened["fare"], cp, carry, checked, party)
     st.markdown(f'<div class="credit" style="margin-top:1rem">Routes with fewer than {MIN_POINTS} price checks show '
-                '“Tracking — trend available soon” instead of a % drop.</div>', unsafe_allow_html=True)
+                '“Tracking — trend available soon” instead of a % drop. Trends only compare prices for the same '
+                'departure date, so a route goes back to Tracking when its date moves forward.</div>', unsafe_allow_html=True)
 
 ui.footer()

@@ -7,11 +7,17 @@ from bots.enricher import amenities_for
 from bots.scouter import BASELINE_DAYS, MIN_POINTS
 from core import config
 from core.dates import WINDOWS
+from core.pricing import distinct_mix, quote
 from sources import flights_serpapi
 
 # Deals pill label -> window_id. "Custom" is live-only and never stored.
 WINDOW_PILLS = {"Weekend": "wkend+2", "Midweek": "mid+4", "Long weekend": "wkend+6", "Custom": None}
 TRIP_PILLS = {"One-way": "one_way", "Round-trip": "round_trip"}
+
+# A stand-out deal is at least this far below the route's typical price for the same departure date.
+# Both are required: 10% of a $30 fare is noise, and $20 off a $900 fare isn't much of a deal.
+STANDOUT_MIN_DROP = 0.10
+STANDOUT_MIN_SAVINGS_USD = 20
 
 
 def window_for_pill(label):
@@ -65,9 +71,12 @@ def review_summary(conn, key):
 def hydrate(conn, fare):
     """Attach asset, review summary and amenities to a fare dict (DB row)."""
     f = dict(fare)
+    if f.get("return_leg"):
+        f["return_leg"] = json.loads(f["return_leg"])
     f["asset"] = asset(conn, f.get("asset_key"))
     f["review"] = review_summary(conn, f.get("review_key"))
-    f["amenities"], f["amenities_typical"] = amenities_for(f.get("airline_iata"), f.get("aircraft_type"))
+    f["amenities"], f["amenities_typical"] = amenities_for(f.get("airline_iata"), f.get("aircraft_type"),
+                                                           (f.get("origin"), f.get("destination")))
     f.setdefault("travelers", 1)
     return f
 
@@ -119,7 +128,7 @@ def nonstop_candidates(conn, trip_type="one_way"):
     if not scan:
         return []
     return _ready(conn, """
-        SELECT f.* FROM fares f
+        SELECT f.*, MAX(f.return_leg IS NOT NULL) AS has_return FROM fares f
         JOIN (SELECT destination, airline_iata, MIN(price_usd) p FROM fares
               WHERE scan_id=? AND trip_type=? AND scan_mode='nonstop' AND stops=0 AND status='ready_to_publish'
               GROUP BY destination, airline_iata) m
@@ -129,18 +138,27 @@ def nonstop_candidates(conn, trip_type="one_way"):
         (scan["scan_id"], trip_type, scan["scan_id"], trip_type))
 
 
+def cheapest_mix(conn, trip_type="one_way", n=3):
+    """Home cards: the cheapest nonstops in the latest scan with no airline and no city repeated."""
+    return distinct_mix(nonstop_candidates(conn, trip_type), n)  # candidates are already cheapest first
+
+
 # ---------------------------------------------------------------- Deals
-def history(conn, dest, trip_type, window_id, days=BASELINE_DAYS, until=None):
+def history(conn, dest, trip_type, window_id, depart_date, days=BASELINE_DAYS, until=None):
+    """Price checks for one departure date. Windows roll forward, and prices for different dates aren't comparable."""
     until = until or datetime.utcnow().isoformat()
     since = (datetime.fromisoformat(until[:19]) - timedelta(days=days)).isoformat()
     return [dict(r) for r in conn.execute(
         """SELECT scanned_at, min_price FROM price_history
-           WHERE destination=? AND trip_type=? AND window_id=? AND nonstop_only=1 AND scanned_at>=?
-           ORDER BY scanned_at""", (dest, trip_type, window_id, since))]
+           WHERE destination=? AND trip_type=? AND window_id=? AND depart_date=? AND nonstop_only=1 AND scanned_at>=?
+           ORDER BY scanned_at""", (dest, trip_type, window_id, depart_date, since))]
 
 
-def deals(conn, window_id, trip_type, region=None):
-    """Latest min price per destination vs the median of the previous 14 days.
+def deals(conn, window_id, trip_type, region=None, carry_on=0, checked=0, party=1):
+    """Latest min price per destination vs the median of up to 14 days of checks for the same departure date.
+
+    With bags picked, each destination's fare is the cheapest total with bags, and fares whose bag fees
+    are unknown are left out.
 
     Returns dicts: fare (hydrated), trend (list of prices, 14 days), baseline, drop_pct, tracking (bool),
     points ([(scanned_at, price)], 30 days, for the price-trend chart).
@@ -151,8 +169,12 @@ def deals(conn, window_id, trip_type, region=None):
         return []
     rows = conn.execute(
         """SELECT * FROM fares WHERE scan_id=? AND window_id=? AND trip_type=? AND scan_mode='nonstop'
-           AND stops=0 AND status='ready_to_publish' ORDER BY price_usd""",
+           AND stops=0 AND status='ready_to_publish' ORDER BY price_usd, return_leg IS NULL""",
         (scan["scan_id"], window_id, trip_type)).fetchall()
+    if carry_on or checked:
+        quotes = [(r, quote(dict(r), carry_on, checked, party)) for r in rows]
+        priced = sorted((x for x in quotes if x[1].bags_total is not None), key=lambda x: x[1].total)
+        rows = [r for r, _ in priced]
     best = {}
     for r in rows:
         best.setdefault(r["destination"], r)
@@ -162,7 +184,7 @@ def deals(conn, window_id, trip_type, region=None):
         if region and d.get("region") != region:
             continue
         # 30 days for the chart's 7/14/30-day views; the baseline and `trend` stay on the last 14.
-        hist30 = history(conn, dest, trip_type, window_id, days=30, until=scan["scanned_at"])
+        hist30 = history(conn, dest, trip_type, window_id, r["depart_date"], days=30, until=scan["scanned_at"])
         cutoff = (datetime.fromisoformat(scan["scanned_at"][:19]) - timedelta(days=BASELINE_DAYS)).isoformat()
         hist = [h for h in hist30 if h["scanned_at"] >= cutoff]
         prev = [h["min_price"] for h in hist if h["scanned_at"] < scan["scanned_at"]]
@@ -177,6 +199,28 @@ def deals(conn, window_id, trip_type, region=None):
     ranked = sorted((x for x in out if not x["tracking"]), key=lambda x: -(x["drop_pct"] or 0))
     tracking = sorted((x for x in out if x["tracking"]), key=lambda x: x["fare"]["price_usd"])
     return ranked + tracking
+
+
+def is_standout(deal):
+    if deal["tracking"] or not deal["baseline"]:
+        return False
+    return (deal["drop_pct"] >= STANDOUT_MIN_DROP
+            and deal["baseline"] - deal["fare"]["price_usd"] >= STANDOUT_MIN_SAVINGS_USD)
+
+
+def standout_deals(conn, trip_type, region=None, carry_on=0, checked=0, party=1):
+    """Stand-out deals of one trip type across every date window, biggest drop first.
+
+    Each is a `deals()` dict plus window_label, for showing which window it came from.
+    """
+    out = []
+    for window_label, window_id in WINDOW_PILLS.items():
+        if window_id is None:  # Custom is live-only, so it has no price history
+            continue
+        for d in deals(conn, window_id, trip_type, region, carry_on, checked, party):
+            if is_standout(d):
+                out.append({**d, "window_label": window_label})
+    return sorted(out, key=lambda d: -d["drop_pct"])
 
 
 # ---------------------------------------------------------------- Airline Matrix
@@ -194,7 +238,7 @@ def _current_nonstops(conn, airline, trip_type, scan):
                       AND status='ready_to_publish' AND scanned_at>=?)
         SELECT * FROM mine
         WHERE scanned_at=(SELECT MAX(scanned_at) FROM mine newer WHERE newer.destination=mine.destination)
-        ORDER BY price_usd""", (airline, trip_type, _recent_cutoff(scan)))
+        ORDER BY price_usd, return_leg IS NULL""", (airline, trip_type, _recent_cutoff(scan)))
 
 
 def airline_routes(conn, airline):
@@ -246,13 +290,13 @@ def airline_review(conn, airline):
     return review_summary(conn, f"{airline}|*")
 
 
-def route_prices(conn, airline):
-    """Cheapest one-way nonstop per destination in the latest scan, cheapest first ('Routes from TPA')."""
+def route_prices(conn, airline, trip_type="one_way"):
+    """Cheapest nonstop per destination in the latest scan, cheapest first ('Routes from TPA')."""
     scan = latest_scan(conn)
     if not scan:
         return []
     seen = {}
-    for f in _current_nonstops(conn, airline, "one_way", scan):
+    for f in _current_nonstops(conn, airline, trip_type, scan):
         seen.setdefault(f["destination"], f)
     return list(seen.values())
 

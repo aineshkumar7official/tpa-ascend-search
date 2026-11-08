@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS fares (
   duration_min    INTEGER,
   via_airports    TEXT,                       -- for one-stop fares, e.g. "ATL"
   segments        TEXT,                       -- JSON [{from,to,date,flight}] -> exact-fare Book now link
+  return_leg      TEXT,                       -- JSON return flight for round trips, priced the same as this fare
   search_url      TEXT,
   booking_options TEXT,                       -- cached SerpApi booking options (JSON)
   source          TEXT NOT NULL,
@@ -51,6 +52,7 @@ CREATE TABLE IF NOT EXISTS price_history (
   scanned_at   TEXT NOT NULL,
   min_price    REAL NOT NULL,
   nonstop_only INTEGER NOT NULL DEFAULT 1,
+  depart_date  TEXT,                          -- windows roll forward; trends compare one departure date only
   PRIMARY KEY (destination, trip_type, window_id, scanned_at)
 );
 
@@ -195,7 +197,16 @@ def connect(path=None):
 
 
 # Columns added after a DB may already exist: (table, column, type).
-MIGRATIONS = [("fares", "segments", "TEXT")]
+MIGRATIONS = [("fares", "segments", "TEXT"), ("price_history", "depart_date", "TEXT"), ("fares", "return_leg", "TEXT")]
+
+# Run once, in the same transaction that adds the column. Rows whose fares were already pruned stay NULL
+# and so never count toward a trend.
+BACKFILLS = {("price_history", "depart_date"): """
+    UPDATE price_history SET depart_date=(
+      SELECT f.depart_date FROM fares f
+      WHERE f.destination=price_history.destination AND f.trip_type=price_history.trip_type
+        AND f.window_id=price_history.window_id AND f.scanned_at=price_history.scanned_at
+        AND f.scan_mode='nonstop' AND f.stops=0 LIMIT 1)"""}
 
 
 def init_schema(conn):
@@ -203,7 +214,11 @@ def init_schema(conn):
     for table, col, typ in MIGRATIONS:
         cols = {r[1] for r in conn.execute(f"PRAGMA table_info({table})")}
         if col not in cols:
+            conn.execute("BEGIN IMMEDIATE")
             conn.execute(f"ALTER TABLE {table} ADD COLUMN {col} {typ}")
+            if (table, col) in BACKFILLS:
+                conn.execute(BACKFILLS[table, col])
+            conn.commit()
     conn.commit()
 
 
@@ -214,7 +229,7 @@ def cache_get(conn, key, max_age_days=None):
         return False, None
     if max_age_days is not None:
         age = datetime.now(timezone.utc) - datetime.fromisoformat(row["fetched_at"])
-        if age.days >= max_age_days:
+        if age.total_seconds() / 86400 >= max_age_days:
             return False, None
     return True, json.loads(row["value"]) if row["value"] else None
 
