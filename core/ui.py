@@ -232,7 +232,14 @@ def stale_banner():
 
 
 # ================================================================ images + credits
+def asset_src(url):
+    """Local files are stored as "/app/static/...". On Streamlit Cloud the app runs under a "/~/+/" prefix, where that
+    absolute path returns the app's HTML instead of the image; the relative "app/static/..." works there and locally."""
+    return url[1:] if url and url.startswith("/app/static/") else url
+
+
 def image(url, link=None, label="Photo", height=160, cls=""):
+    url = asset_src(url)
     if not url:
         return f'<div class="img-ph {cls}" style="height:{height}px">[{esc(label)}]</div>'
     tag = f'<img class="img-tile {cls}" style="height:{height}px" src="{esc(url)}" alt="{esc(label)}" loading="lazy">'
@@ -1364,7 +1371,7 @@ def search_bar_roundtrip(s):
 # ================================================================ results table
 def logo_tile(f):
     code = f.get("airline_iata") or "?"
-    url = f.get("logo_url") or config.logo_url(code)
+    url = asset_src(f.get("logo_url") or config.logo_url(code))
     if url:
         return f'<img class="logo-img" src="{esc(url)}" alt="logo">'
     return f'<div class="logo-tile" style="background:{config.brand_color(code)}">{esc(code)}</div>'
