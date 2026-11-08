@@ -11,6 +11,7 @@ import logging
 import os
 import shutil
 import tempfile
+import time
 from pathlib import Path
 
 import requests
@@ -64,27 +65,39 @@ def _cleanup(keep):
             p.unlink(missing_ok=True)
 
 
-def sync():
-    """Point settings.DB_PATH at the newest scan. Returns the commit sha in use, or None when sync is off or failed
-    (the app then keeps using whatever database it already has)."""
+CHECK_EVERY = 600            # seconds between checks of the data branch
+_state = {"checked_at": 0.0, "path": None, "sha": None}
+
+
+def sync(force=False):
+    """Point settings.DB_PATH at the newest scan. Checks GitHub at most every CHECK_EVERY seconds, but re-applies the
+    downloaded path on every call: when Streamlit reloads changed modules after a deploy, settings goes back to its
+    default (an empty database), and this puts it right on the next page load. Returns the commit sha in use, or None
+    when sync is off or has never worked (the app then keeps using whatever database it already has)."""
     if not enabled():
         return None
-    try:
-        sha = latest_sha()
-        dest = Path(settings.DB_DIR) / f"ascend-{sha[:12]}.db"
-        if not dest.exists():
-            log.info("downloading database for data commit %s", sha[:12])
-            _download(sha, dest)
-        settings.DB_PATH = str(dest)
-        _cleanup(dest)
-        last_error["text"] = None
-        return sha
-    except Exception as e:  # network, token or missing branch: keep serving the current data
-        log.warning("database sync failed: %s", e)
-        last_error["text"] = (f"GitHub said {e.response.status_code}: check GITHUB_TOKEN (read-only Contents on "
-                              f"{settings.DATA_REPO}) and DATA_REPO" if isinstance(e, requests.HTTPError)
-                              else f"{type(e).__name__}: {e}")
-        return None
+    now = time.monotonic()
+    if force or not _state["path"] or now - _state["checked_at"] >= CHECK_EVERY:
+        _state["checked_at"] = now
+        try:
+            sha = latest_sha()
+            dest = Path(settings.DB_DIR) / f"ascend-{sha[:12]}.db"
+            if not dest.exists():
+                log.info("downloading database for data commit %s", sha[:12])
+                _download(sha, dest)
+            _state.update(path=str(dest), sha=sha)
+            _cleanup(dest)
+            last_error["text"] = None
+        except Exception as e:  # network, token or missing branch: keep serving the current data
+            log.warning("database sync failed: %s", e)
+            last_error["text"] = (f"GitHub said {e.response.status_code}: check GITHUB_TOKEN (read-only Contents on "
+                                  f"{settings.DATA_REPO}) and DATA_REPO" if isinstance(e, requests.HTTPError)
+                                  else f"{type(e).__name__}: {e}")
+            if not _state["path"]:
+                _state["checked_at"] = 0.0  # never worked yet: try again on the next page load
+    if _state["path"]:
+        settings.DB_PATH = _state["path"]
+    return _state["sha"]
 
 
 def status():

@@ -106,3 +106,37 @@ def test_database_sync_is_off_without_settings(monkeypatch):
     monkeypatch.setattr(settings, "DATA_REPO", "")
     monkeypatch.setattr(settings, "GITHUB_TOKEN", "")
     assert not remote_db.enabled() and remote_db.sync() is None
+
+
+def test_sync_reapplies_the_database_after_a_reload(monkeypatch, tmp_path):
+    """Streamlit reloads changed modules on deploy and settings.DB_PATH goes back to the empty default. The next page
+    load must point it at the downloaded database again, without waiting for the 10-minute check."""
+    monkeypatch.setattr(settings, "DATA_REPO", "me/repo")
+    monkeypatch.setattr(settings, "GITHUB_TOKEN", "t")
+    monkeypatch.setattr(settings, "DB_DIR", str(tmp_path))
+    monkeypatch.setattr(remote_db, "_state", {"checked_at": 0.0, "path": None, "sha": None})
+    calls = []
+    monkeypatch.setattr(remote_db, "latest_sha", lambda: calls.append(1) or "abc123def4567890")
+    monkeypatch.setattr(remote_db, "_download", lambda sha, dest: dest.write_bytes(b"db"))
+    assert remote_db.sync() == "abc123def4567890"
+    downloaded = settings.DB_PATH
+    assert downloaded.endswith("ascend-abc123def456.db")
+    monkeypatch.setattr(settings, "DB_PATH", "data/ascend.db")   # what a module reload does
+    assert remote_db.sync() == "abc123def4567890" and settings.DB_PATH == downloaded
+    assert len(calls) == 1                                        # no extra GitHub call within 10 minutes
+
+
+def test_sync_failure_is_retried_and_explained(monkeypatch, tmp_path):
+    import requests
+
+    monkeypatch.setattr(settings, "DATA_REPO", "me/repo")
+    monkeypatch.setattr(settings, "GITHUB_TOKEN", "bad")
+    monkeypatch.setattr(remote_db, "_state", {"checked_at": 0.0, "path": None, "sha": None})
+    resp = requests.Response()
+    resp.status_code = 401
+
+    def fail():
+        raise requests.HTTPError(response=resp)
+    monkeypatch.setattr(remote_db, "latest_sha", fail)
+    assert remote_db.sync() is None and "401" in remote_db.status()
+    assert remote_db._state["checked_at"] == 0.0                 # tries again on the next page load
