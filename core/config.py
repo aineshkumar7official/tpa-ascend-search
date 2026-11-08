@@ -37,10 +37,22 @@ def _env(name):
             return ""  # scripts, tests, GitHub Actions: no Streamlit secrets
         import streamlit as st
 
-        v = st.secrets.get(name)
+        v = _find_secret(st.secrets.to_dict(), name)
         return "" if v is None else str(v)
     except Exception:
         return ""
+
+
+def _find_secret(table, name):
+    """A secret at the top level, or inside any [section] (in case it was pasted under a heading)."""
+    if name in table:
+        return table[name]
+    for v in table.values():
+        if isinstance(v, dict):
+            found = _find_secret(v, name)
+            if found is not None:
+                return found
+    return None
 
 
 def _int(name, default):
@@ -83,6 +95,15 @@ class Settings:
 
 
 settings = Settings()
+
+# Settings the deployed app re-reads on every check, so secrets saved in Streamlit Cloud apply without a reboot.
+LIVE_SETTINGS = {"DATA_REPO": "", "DATA_BRANCH": "data", "GITHUB_TOKEN": "", "LIVE_SERPAPI": "on",
+                 "FARE_OPTIONS": "on", "LIVE_SEARCH_DAILY_CAP": 0}
+
+
+def refresh_settings():
+    for name, default in LIVE_SETTINGS.items():
+        setattr(settings, name, (_int if isinstance(default, int) else _str)(name, default))
 
 
 @lru_cache(maxsize=None)
