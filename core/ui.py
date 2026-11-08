@@ -145,7 +145,10 @@ def sync_db():
     if not remote_db.enabled():
         return
     sha = _latest_data()
-    if sha and sha != _db_seen["sha"]:
+    if not sha:
+        _latest_data.clear()  # don't remember a failure for 10 minutes: retry on the next page load
+        return
+    if sha != _db_seen["sha"]:
         _db_seen["sha"] = sha
         q.clear()
 

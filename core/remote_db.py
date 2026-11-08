@@ -20,6 +20,7 @@ from core.config import settings
 log = logging.getLogger(__name__)
 
 API = "https://api.github.com"
+last_error = {"text": None}  # why the latest sync failed, shown when the app has no prices
 FILE = "ascend.db.gz"
 
 
@@ -76,7 +77,22 @@ def sync():
             _download(sha, dest)
         settings.DB_PATH = str(dest)
         _cleanup(dest)
+        last_error["text"] = None
         return sha
     except Exception as e:  # network, token or missing branch: keep serving the current data
         log.warning("database sync failed: %s", e)
+        last_error["text"] = (f"GitHub said {e.response.status_code}: check GITHUB_TOKEN (read-only Contents on "
+                              f"{settings.DATA_REPO}) and DATA_REPO" if isinstance(e, requests.HTTPError)
+                              else f"{type(e).__name__}: {e}")
         return None
+
+
+def status():
+    """One line for operators when the app has no prices: is sync configured, and did it work?"""
+    if not settings.DATA_REPO and not settings.GITHUB_TOKEN:
+        return "Price data isn't connected: DATA_REPO and GITHUB_TOKEN aren't set in the app's secrets."
+    if not enabled():
+        return f"Price data isn't connected: {'GITHUB_TOKEN' if settings.DATA_REPO else 'DATA_REPO'} isn't set in the app's secrets."
+    if last_error["text"]:
+        return f"Price data couldn't be loaded ({last_error['text']})."
+    return None
