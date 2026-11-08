@@ -1,11 +1,75 @@
 {
   "_note": "Starter facts - rewrite these in your own aviation voice.",
-  "WN": ["Southwest flies an all-Boeing 737 fleet, which simplifies pilot training and maintenance."],
-  "DL": ["Atlanta is Delta's largest hub."],
-  "B6": ["JetBlue's first flight in February 2000 was from New York JFK to Fort Lauderdale."],
-  "AA": ["American Airlines is headquartered in Fort Worth, Texas, next to its DFW hub."],
-  "UA": ["United's hubs include Denver, Chicago O'Hare, Houston and Newark."],
-  "NK": ["Spirit's bright yellow livery is one of the easiest to spot on a ramp."],
-  "F9": ["Frontier is known for painting a different animal on each aircraft's tail."],
-  "SY": ["Sun Country is based in Minneapolis-St. Paul."]
+  "WN": [
+    "Southwest flies an all-Boeing 737 fleet, which simplifies pilot training and maintenance.",
+    "Southwest offers trading cards."
+  ],
+  "DL": [
+    "Atlanta is Delta's largest hub.",
+    "Delta offers trading cards."
+  ],
+  "B6": [
+    "JetBlue's first flight in February 2000 was from New York JFK to Fort Lauderdale.",
+    "JetBlue offers trading cards."
+  ],
+  "AA": [
+    "American Airlines is headquartered in Fort Worth, Texas, next to its DFW hub.",
+    "American offers free trading cards."
+  ],
+  "UA": [
+    "United's hubs include Denver, Chicago O'Hare, Houston and Newark.",
+    "United offers trading cards."
+  ],
+  "NK": [
+    "Spirit's bright yellow livery is one of the easiest to spot on a ramp."
+  ],
+  "F9": [
+    "Frontier is known for painting a different animal on each aircraft's tail.",
+    "Frontier offers trading cards."
+  ],
+  "SY": [
+    "Sun Country is based in Minneapolis-St. Paul."
+  ],
+  "AM": [
+    "Aeromexico has a limited collection of 90th anniversary trading cards."
+  ],
+  "AC": [
+    "You can buy an Air Canada Business Class meal in economy for $17.95."
+  ],
+  "AS": [
+    "Alaska offers trading cards."
+  ],
+  "XP": [
+    "Avelo is a new airline, with its first flight back in 2021."
+  ],
+  "AV": [
+    "Connecting through Bogotá lets you add a free stopover for discounts on hotels, tours and dining."
+  ],
+  "MX": [
+    "Breeze offers trading cards."
+  ],
+  "BA": [
+    "British Airways' entertainment system features Paramount+ and Audible, and its latest safety video is inspired by British royalty."
+  ],
+  "KX": [
+    "Passengers can get a free Seven Fathoms Rum Punch on all flights."
+  ],
+  "CM": [
+    "Copa used to be owned by United, and their branding is really similar."
+  ],
+  "4Y": [
+    "Discover Airlines provides free Discover cookies for dessert."
+  ],
+  "WK": [
+    "Edelweiss serves a pre-arrival Biberli, a Swiss ginger biscuit."
+  ],
+  "PD": [
+    "All snacks on Porter come from Canadian brands."
+  ],
+  "VS": [
+    "Virgin Atlantic's 'Mile High' afternoon tea extends to Economy: on day flights from the UK, a second meal with finger sandwiches, a warm scone with jam and clotted cream, and tea. Swizzels Love Hearts candies are also a quirky part of the brand."
+  ],
+  "WS": [
+    "WestJet offers trading cards."
+  ]
 }

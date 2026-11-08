@@ -8,5 +8,6 @@ vaderSentiment
 python-dotenv
 rapidfuzz               # fuzzy route/airline matching in reviews
 feedparser              # airline news RSS
+playwright              # sources/fare_options.py reads Google's fare options with local Chrome
 pytest
 python-docx             # scripts/import_destinations_docx.py

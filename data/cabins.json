@@ -1,14 +1,101 @@
 {
-  "_note": "Per airline|aircraft_type: cabin/seat/food images ONLY from CC BY, CC BY-SA, CC0 or public-domain files; copy the credit verbatim. Missing image_url -> Commons search, then gray placeholder. airline|* fills any slot an aircraft entry leaves empty. Local files live in static/ and use /app/static/... URLs.",
-  "DL|Airbus A321": {
+  "_note": "Per airline|aircraft_type: exterior/cabin/seat/food images. airline|* fills any slot an aircraft entry leaves empty, and also holds 'freebie' (Freebie box photo) and 'gallery' (extra airline-page photos). Photos from 'Ascend Search Images/' are imported by scripts/import_cabin_images.py; credits marked 'source to be confirmed' need their source and permission checked (TODO_VERIFY.md). Missing image_url -> Planespotters (exterior only) or Commons search, then gray placeholder. Local files live in static/ and use /app/static/... URLs.",
+  "WK|*": {
+    "exterior": {
+      "image_url": "/app/static/airlines/WK/exterior.jpg",
+      "credit": "Photo: Sandro Koechli, CC0, via Wikimedia Commons",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Edelweiss_Air_Airbus_A350-941_HB-IHF_ZRH_2025.jpg"
+    },
     "cabin": {
-      "image_url": null,
-      "credit": null,
+      "image_url": "/app/static/airlines/WK/edelweiss-a350-economy-class-cabin-overview.jpg",
+      "credit": "Photo: Edelweiss",
       "source_page": null
     },
     "seat": {
-      "image_url": null,
-      "credit": null,
+      "image_url": "/app/static/airlines/WK/edelweiss-a350-economy-class-seats.jpg",
+      "credit": "Photo: Edelweiss",
+      "source_page": null
+    },
+    "food": {
+      "image_url": "/app/static/airlines/WK/foodonboardeconomy-009.jpg",
+      "credit": "Photo: Edelweiss",
+      "source_page": null
+    },
+    "gallery": [
+      {
+        "image_url": "/app/static/airlines/WK/food-onboard-biberli.jpg",
+        "credit": "Photo: Edelweiss",
+        "source_page": null
+      }
+    ]
+  },
+  "SY|*": {
+    "exterior": {
+      "image_url": "/app/static/airlines/SY/exterior.jpg",
+      "credit": "Photo: Siyuan He, public domain, via Wikimedia Commons",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Sun_Country_Airlines_B737-800.jpg"
+    },
+    "cabin": {
+      "image_url": "/app/static/airlines/SY/sun-country-aircraft-rear-1.jpg",
+      "credit": "Photo: Sun Country Airlines",
+      "source_page": null
+    },
+    "seat": {
+      "image_url": "/app/static/airlines/SY/sun-country-aircraft-front.jpg",
+      "credit": "Photo: Sun Country Airlines",
+      "source_page": null
+    },
+    "food": {
+      "image_url": "/app/static/airlines/SY/images.jpg",
+      "credit": "Photo: Sun Country Airlines",
+      "source_page": null
+    }
+  },
+  "AC|Boeing 737 MAX 8": {
+    "exterior": {
+      "image_url": "/app/static/airlines/AC/737MAX8.jpg",
+      "credit": "Photo: 4300streetcar, CC BY 4.0, via Wikimedia Commons",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Air_Canada_Boeing_737-8_MAX_C-GEPB_on_final_approach_to_Boston_July_2022.jpg"
+    },
+    "cabin": {
+      "image_url": "/app/static/airlines/AC/air-canada-737-max-8-economy-class-review-6.jpg",
+      "credit": "Photo: source to be confirmed",
+      "source_page": null
+    },
+    "seat": {
+      "image_url": "/app/static/airlines/AC/air-canada-737-max-8-economy-class-review-12.jpg",
+      "credit": "Photo: source to be confirmed",
+      "source_page": null
+    }
+  },
+  "BA|Boeing 787-10": {
+    "exterior": {
+      "image_url": "/app/static/airlines/BA/787-10.jpg",
+      "credit": "Photo: Mitchul Hope, CC BY-SA 2.0, via Wikimedia Commons",
+      "source_page": "https://commons.wikimedia.org/wiki/File:British_Airways_G-ZBLF_(Greenliner_Livery)_Boeing_787-10_Dreamliner_London_Heathrow_Airport_(LHR_EGLL)_(52677894688).jpg"
+    }
+  },
+  "DL|Airbus A321neo": {
+    "exterior": {
+      "image_url": "/app/static/airlines/DL/A321neo.jpg",
+      "credit": "Photo: 4300streetcar, CC BY 4.0, via Wikimedia Commons",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Delta_Air_Lines_Airbus_A321neo_N541DE_on_final_approach_to_Boston_March_2025_1.jpg"
+    },
+    "cabin": {
+      "image_url": "/app/static/airlines/DL/dal-a321-neo-438-jpg.jpg",
+      "credit": "Photo: Delta Air Lines",
+      "source_page": null
+    }
+  },
+  "DL|Airbus A321": {
+    "cabin": {
+      "image_url": "/app/static/airlines/DL/a321-interior-2-jpg.jpg",
+      "credit": "Photo: Delta Air Lines",
+      "source_page": null
+    },
+    "seat": {
+      "image_url": "/app/static/airlines/DL/a321-interior-3-jpg.jpg",
+      "credit": "Photo: Delta Air Lines",
       "source_page": null
     },
     "food": {
@@ -20,8 +107,8 @@
   },
   "DL|Boeing 737-900ER": {
     "cabin": {
-      "image_url": null,
-      "credit": null,
+      "image_url": "/app/static/airlines/DL/delta-737-900-economy-class-review-57.jpg",
+      "credit": "Photo: source to be confirmed",
       "source_page": null
     },
     "seat": {
@@ -79,8 +166,8 @@
       "source_page": null
     },
     "seat": {
-      "image_url": null,
-      "credit": null,
+      "image_url": "/app/static/airlines/B6/jetblue-a320-seat-back-screens.jpg",
+      "credit": "Photo: JetBlue",
       "source_page": null
     },
     "food": {
@@ -146,8 +233,8 @@
   },
   "UA|Boeing 737-900ER": {
     "cabin": {
-      "image_url": null,
-      "credit": null,
+      "image_url": "/app/static/airlines/UA/united-airlines-737-900-economy-class-review-5.jpg",
+      "credit": "Photo: source to be confirmed",
       "source_page": null
     },
     "seat": {
@@ -218,13 +305,13 @@
   },
   "AS|Boeing 737-900ER": {
     "cabin": {
-      "image_url": null,
-      "credit": null,
+      "image_url": "/app/static/airlines/AS/18-nov-2023-as1219-lax-sea-n459as-b737-900er-02.jpg",
+      "credit": "Photo: source to be confirmed",
       "source_page": null
     },
     "seat": {
-      "image_url": null,
-      "credit": null,
+      "image_url": "/app/static/airlines/AS/16-nov-2023-as1214-sea-lax-n214ak-b737-900er-03.jpg",
+      "credit": "Photo: source to be confirmed",
       "source_page": null
     },
     "food": {
@@ -254,13 +341,13 @@
   },
   "MX|Airbus A220-300": {
     "cabin": {
-      "image_url": null,
-      "credit": null,
+      "image_url": "/app/static/airlines/MX/62a243414d337600198685bf.jpg",
+      "credit": "Photo: source to be confirmed",
       "source_page": null
     },
     "seat": {
-      "image_url": null,
-      "credit": null,
+      "image_url": "/app/static/airlines/MX/images.jpg",
+      "credit": "Photo: source to be confirmed",
       "source_page": null
     },
     "food": {
@@ -305,5 +392,423 @@
       "source_page": null
     },
     "layout": null
+  },
+  "AM|Boeing 737 MAX 8": {
+    "cabin": {
+      "image_url": "/app/static/airlines/AM/aeromexico-737-max-cabin.jpg",
+      "credit": "Photo: Aeroméxico",
+      "source_page": null
+    }
+  },
+  "AM|*": {
+    "cabin": {
+      "image_url": "/app/static/airlines/AM/aeromexico-737-max-cabin.jpg",
+      "credit": "Photo: Aeroméxico",
+      "source_page": null
+    },
+    "seat": {
+      "image_url": "/app/static/airlines/AM/still-i.jpg",
+      "credit": "Photo: Aeroméxico",
+      "source_page": null
+    },
+    "food": {
+      "image_url": "/app/static/airlines/AM/61a542351f8b8c00195ab333.jpg",
+      "credit": "Photo: source to be confirmed",
+      "source_page": null
+    }
+  },
+  "AC|*": {
+    "cabin": {
+      "image_url": "/app/static/airlines/AC/air-canada-737-max-8-economy-class-review-6.jpg",
+      "credit": "Photo: source to be confirmed",
+      "source_page": null
+    },
+    "seat": {
+      "image_url": "/app/static/airlines/AC/air-canada-737-max-8-economy-class-review-12.jpg",
+      "credit": "Photo: source to be confirmed",
+      "source_page": null
+    },
+    "food": {
+      "image_url": "/app/static/airlines/AC/fb-snack-trio.jpg",
+      "credit": "Photo: Air Canada",
+      "source_page": null
+    }
+  },
+  "AS|*": {
+    "cabin": {
+      "image_url": "/app/static/airlines/AS/18-nov-2023-as1219-lax-sea-n459as-b737-900er-02.jpg",
+      "credit": "Photo: source to be confirmed",
+      "source_page": null
+    },
+    "seat": {
+      "image_url": "/app/static/airlines/AS/16-nov-2023-as1214-sea-lax-n214ak-b737-900er-03.jpg",
+      "credit": "Photo: source to be confirmed",
+      "source_page": null
+    },
+    "food": {
+      "image_url": "/app/static/airlines/AS/snack-basket-flat-lay-02.jpg",
+      "credit": "Photo: Alaska Airlines",
+      "source_page": null
+    },
+    "freebie": {
+      "image_url": "/app/static/airlines/AS/20250319-as-legend-fulton0409-9f11b1.jpg",
+      "credit": "Photo: Alaska Airlines",
+      "source_page": null
+    }
+  },
+  "AA|*": {
+    "seat": {
+      "image_url": "/app/static/airlines/AA/aa-04-21-library-narrowbody-main-cabin-004001.jpg",
+      "credit": "Photo: American Airlines",
+      "source_page": null
+    },
+    "food": {
+      "image_url": "/app/static/airlines/AA/american-airlines-in-flight-snack-in-economy-class-from-mia-.jpg",
+      "credit": "Photo: source to be confirmed",
+      "source_page": null
+    },
+    "freebie": {
+      "image_url": "/app/static/airlines/AA/041526-trading-cards-set-front.jpg",
+      "credit": "Photo: American Airlines",
+      "source_page": null
+    }
+  },
+  "XP|*": {
+    "cabin": {
+      "image_url": "/app/static/airlines/XP/avelo-boeing-ng-737-800-interior.jpg",
+      "credit": "Photo: Avelo Airlines",
+      "source_page": null
+    },
+    "seat": {
+      "image_url": "/app/static/airlines/XP/avelo-boeing-ng-737-800-interior-3.jpg",
+      "credit": "Photo: Avelo Airlines",
+      "source_page": null
+    }
+  },
+  "AV|*": {
+    "cabin": {
+      "image_url": "/app/static/airlines/AV/pasted-2026-11-07-at-18-29-11.jpg",
+      "credit": "Photo: Avianca",
+      "source_page": null
+    },
+    "seat": {
+      "image_url": "/app/static/airlines/AV/pasted-2026-11-07-at-18-28-38.jpg",
+      "credit": "Photo: Avianca",
+      "source_page": null
+    },
+    "food": {
+      "image_url": "/app/static/airlines/AV/screenshot-2026-11-07-at-18-27-31.jpg",
+      "credit": "Photo: Avianca",
+      "source_page": null
+    }
+  },
+  "MX|*": {
+    "cabin": {
+      "image_url": "/app/static/airlines/MX/62a243414d337600198685bf.jpg",
+      "credit": "Photo: source to be confirmed",
+      "source_page": null
+    },
+    "food": {
+      "image_url": "/app/static/airlines/MX/images-1.jpg",
+      "credit": "Photo: source to be confirmed",
+      "source_page": null
+    },
+    "freebie": {
+      "image_url": "/app/static/airlines/MX/20260220-143134-1.jpg",
+      "credit": "Photo: source to be confirmed",
+      "source_page": null
+    },
+    "seat": {
+      "image_url": "/app/static/airlines/MX/images.jpg",
+      "credit": "Photo: source to be confirmed",
+      "source_page": null
+    }
+  },
+  "BA|*": {
+    "cabin": {
+      "image_url": "/app/static/airlines/BA/130705nm-newaircraft-0029-640x427.jpg",
+      "credit": "Photo: British Airways",
+      "source_page": null
+    },
+    "seat": {
+      "image_url": "/app/static/airlines/BA/britishairways-21686666131362-700x467.jpg",
+      "credit": "Photo: British Airways",
+      "source_page": null
+    },
+    "food": {
+      "image_url": "/app/static/airlines/BA/images.jpg",
+      "credit": "Photo: source to be confirmed",
+      "source_page": null
+    }
+  },
+  "KX|*": {
+    "cabin": {
+      "image_url": "/app/static/airlines/KX/images.jpg",
+      "credit": "Photo: Cayman Airways",
+      "source_page": null
+    },
+    "food": {
+      "image_url": "/app/static/airlines/KX/images-1.jpg",
+      "credit": "Photo: Cayman Airways",
+      "source_page": null
+    }
+  },
+  "CM|*": {
+    "cabin": {
+      "image_url": "/app/static/airlines/CM/copa-737-economy-extra-legroom-seats.jpg",
+      "credit": "Photo: source to be confirmed",
+      "source_page": null
+    },
+    "seat": {
+      "image_url": "/app/static/airlines/CM/images.jpg",
+      "credit": "Photo: Copa Airlines",
+      "source_page": null
+    }
+  },
+  "DL|Boeing 737": {
+    "cabin": {
+      "image_url": "/app/static/airlines/DL/738-cabin-view.jpg",
+      "credit": "Photo: source to be confirmed",
+      "source_page": null
+    },
+    "seat": {
+      "image_url": "/app/static/airlines/DL/images-1.jpg",
+      "credit": "Photo: source to be confirmed",
+      "source_page": null
+    }
+  },
+  "DL|Airbus A330-900neo": {
+    "cabin": {
+      "image_url": "/app/static/airlines/DL/a330-900neo-interior7-jpg.jpg",
+      "credit": "Photo: Delta Air Lines",
+      "source_page": null
+    }
+  },
+  "DL|*": {
+    "cabin": {
+      "image_url": "/app/static/airlines/DL/738-cabin-view.jpg",
+      "credit": "Photo: source to be confirmed",
+      "source_page": null
+    },
+    "seat": {
+      "image_url": "/app/static/airlines/DL/images-1.jpg",
+      "credit": "Photo: source to be confirmed",
+      "source_page": null
+    },
+    "food": {
+      "image_url": "/app/static/airlines/DL/fandb-snacks-1.jpg",
+      "credit": "Photo: Delta Air Lines",
+      "source_page": null
+    },
+    "freebie": {
+      "image_url": "/app/static/airlines/DL/tal-delta-trading-cards-spread-dtltcs1223-31d806f3f73b4b61ab.jpg",
+      "credit": "Photo: source to be confirmed",
+      "source_page": null
+    },
+    "gallery": [
+      {
+        "image_url": "/app/static/airlines/DL/737-800-9.jpg",
+        "credit": "Photo: source to be confirmed",
+        "source_page": null
+      }
+    ]
+  },
+  "4Y|*": {
+    "cabin": {
+      "image_url": "/app/static/airlines/4Y/discover-airlines-intercont-eco.jpg",
+      "credit": "Photo: Discover Airlines",
+      "source_page": null
+    },
+    "seat": {
+      "image_url": "/app/static/airlines/4Y/discover-airlines-economy-legroom.jpg",
+      "credit": "Photo: Discover Airlines",
+      "source_page": null
+    },
+    "food": {
+      "image_url": "/app/static/airlines/4Y/img.jpg",
+      "credit": "Photo: Discover Airlines",
+      "source_page": null
+    },
+    "gallery": [
+      {
+        "image_url": "/app/static/airlines/4Y/images.jpg",
+        "credit": "Photo: Discover Airlines",
+        "source_page": null
+      }
+    ]
+  },
+  "B6|Airbus A220-300": {
+    "cabin": {
+      "image_url": "/app/static/airlines/B6/jetblue-core-cabin-a220.jpg",
+      "credit": "Photo: JetBlue",
+      "source_page": null
+    }
+  },
+  "B6|*": {
+    "cabin": {
+      "image_url": "/app/static/airlines/B6/jetblue-core-cabin-lighting.jpg",
+      "credit": "Photo: JetBlue",
+      "source_page": null
+    },
+    "seat": {
+      "image_url": "/app/static/airlines/B6/jetblue-core-seatings.jpg",
+      "credit": "Photo: JetBlue",
+      "source_page": null
+    },
+    "food": {
+      "image_url": "/app/static/airlines/B6/snack-service.jpg",
+      "credit": "Photo: JetBlue",
+      "source_page": null
+    },
+    "gallery": [
+      {
+        "image_url": "/app/static/airlines/B6/jetblue-core-rows.jpg",
+        "credit": "Photo: JetBlue",
+        "source_page": null
+      },
+      {
+        "image_url": "/app/static/airlines/B6/jetblue-core-seatback.jpg",
+        "credit": "Photo: JetBlue",
+        "source_page": null
+      }
+    ]
+  },
+  "PD|*": {
+    "cabin": {
+      "image_url": "/app/static/airlines/PD/porter-images-4.jpg",
+      "credit": "Photo: Porter Airlines",
+      "source_page": null
+    },
+    "seat": {
+      "image_url": "/app/static/airlines/PD/onboard-4.jpg",
+      "credit": "Photo: Porter Airlines",
+      "source_page": null
+    },
+    "food": {
+      "image_url": "/app/static/airlines/PD/onboard-1.jpg",
+      "credit": "Photo: Porter Airlines",
+      "source_page": null
+    },
+    "gallery": [
+      {
+        "image_url": "/app/static/airlines/PD/onboard-2.jpg",
+        "credit": "Photo: Porter Airlines",
+        "source_page": null
+      },
+      {
+        "image_url": "/app/static/airlines/PD/onboard-3.jpg",
+        "credit": "Photo: Porter Airlines",
+        "source_page": null
+      }
+    ]
+  },
+  "WN|*": {
+    "cabin": {
+      "image_url": "/app/static/airlines/WN/swainterior-1.jpg",
+      "credit": "Photo: Southwest Airlines",
+      "source_page": null
+    },
+    "seat": {
+      "image_url": "/app/static/airlines/WN/southwest-offers-premium-seating-with-extra-legroom-options.jpg",
+      "credit": "Photo: Southwest Airlines",
+      "source_page": null
+    },
+    "food": {
+      "image_url": "/app/static/airlines/WN/snacks-september-2026.jpg",
+      "credit": "Photo: Southwest Airlines",
+      "source_page": null
+    },
+    "freebie": {
+      "image_url": "/app/static/airlines/WN/libertyone-tradingcardfinal-front.jpg",
+      "credit": "Photo: Southwest Airlines",
+      "source_page": null
+    },
+    "gallery": [
+      {
+        "image_url": "/app/static/airlines/WN/southwest-launches-new-commercial-initiatives-to-enhance-cus.jpg",
+        "credit": "Photo: Southwest Airlines",
+        "source_page": null
+      },
+      {
+        "image_url": "/app/static/airlines/WN/swainterior-2.jpg",
+        "credit": "Photo: Southwest Airlines",
+        "source_page": null
+      },
+      {
+        "image_url": "/app/static/airlines/WN/southwest-unveils-plan-for-even-better-carrier.jpg",
+        "credit": "Photo: Southwest Airlines",
+        "source_page": null
+      }
+    ]
+  },
+  "UA|*": {
+    "cabin": {
+      "image_url": "/app/static/airlines/UA/united-next-737-800-interior.jpg",
+      "credit": "Photo: source to be confirmed",
+      "source_page": null
+    },
+    "seat": {
+      "image_url": "/app/static/airlines/UA/images.jpg",
+      "credit": "Photo: source to be confirmed",
+      "source_page": null
+    },
+    "food": {
+      "image_url": "/app/static/airlines/UA/pasted-2026-11-07-at-18-58-50.jpg",
+      "credit": "Photo: United Airlines",
+      "source_page": null
+    },
+    "freebie": {
+      "image_url": "/app/static/airlines/UA/images-2.jpg",
+      "credit": "Photo: source to be confirmed",
+      "source_page": null
+    },
+    "gallery": [
+      {
+        "image_url": "/app/static/airlines/UA/united-airlines-737-800-economy-review-lax-san-30.jpg",
+        "credit": "Photo: SANspotter",
+        "source_page": null
+      },
+      {
+        "image_url": "/app/static/airlines/UA/images-1.jpg",
+        "credit": "Photo: source to be confirmed",
+        "source_page": null
+      }
+    ]
+  },
+  "VS|*": {
+    "cabin": {
+      "image_url": "/app/static/airlines/VS/images.jpg",
+      "credit": "Photo: source to be confirmed",
+      "source_page": null
+    },
+    "seat": {
+      "image_url": "/app/static/airlines/VS/pasted-2026-11-07-at-19-04-02.jpg",
+      "credit": "Photo: source to be confirmed",
+      "source_page": null
+    },
+    "food": {
+      "image_url": "/app/static/airlines/VS/mile-high-tea-breakfast.jpg",
+      "credit": "Photo: source to be confirmed",
+      "source_page": null
+    },
+    "gallery": [
+      {
+        "image_url": "/app/static/airlines/VS/images-1.jpg",
+        "credit": "Photo: source to be confirmed",
+        "source_page": null
+      }
+    ]
+  },
+  "WS|*": {
+    "seat": {
+      "image_url": "/app/static/airlines/WS/westjet-737-700-san-ycc-trip-report-08.jpg",
+      "credit": "Photo: SANspotter",
+      "source_page": null
+    },
+    "food": {
+      "image_url": "/app/static/airlines/WS/screenshot-2026-11-07-at-19-02-54.jpg",
+      "credit": "Photo: source to be confirmed",
+      "source_page": null
+    }
   }
 }

@@ -96,6 +96,9 @@ a {{ color: var(--link); }}
 .img-ph {{ background: var(--image-ph); color: var(--muted); display: flex; align-items: center; justify-content: center;
   font-size: .8rem; text-align: center; border-radius: 8px; width: 100%; }}
 .img-tile {{ width: 100% !important; object-fit: cover !important; border-radius: 8px; display: block; background: var(--image-ph); }}
+/* Photo library: square tiles. The plane photo fits inside its square (whole aircraft visible), the rest fill it. */
+.img-tile.lib, .img-ph.lib {{ aspect-ratio: 1 / 1; height: auto !important; }}
+.img-tile.lib-fit {{ object-fit: contain !important; background: #fff; border: 1px solid var(--border); }}
 .card-img {{ border-radius: 0 !important; height: 190px; }}
 .card-img.img-ph {{ border-radius: 0; }}
 .credit {{ color: var(--muted); font-size: .72rem; margin-top: .25rem; line-height: 1.3; }}
@@ -242,6 +245,16 @@ label p {{ font-weight: 600 !important; font-size: .82rem !important; }}
 [data-testid="stLayoutWrapper"]:has(> [class*="st-key-tile"]) {{ flex: 1 1 auto; }}
 [class*="st-key-card"], [class*="st-key-tile"] {{ height: 100%; flex: 1 1 auto; justify-content: flex-start; }}
 [class*="st-key-card"] > :last-child:not(:first-child), [class*="st-key-tile"] > :last-child:not(:first-child) {{ margin-top: auto; }}
+/* A row with an open dropdown (Cabin experience, Fare & upgrades, Price trend) stops stretching, so the other cards in it
+   keep exactly the layout they had: only the opened card grows. */
+[data-testid="stHorizontalBlock"]:has(> [data-testid="stColumn"] :is([class*="st-key-cxpanel"], .up-total, [class*="st-key-trendbox"] .tc)) {{
+  align-items: flex-start; }}
+[data-testid="stHorizontalBlock"]:has(> [data-testid="stColumn"] :is([class*="st-key-cxpanel"], .up-total, [class*="st-key-trendbox"] .tc))
+  > [data-testid="stColumn"] :is([class*="st-key-card"], [class*="st-key-tile"]) {{ height: auto; flex: 0 0 auto; }}
+[data-testid="stHorizontalBlock"]:has(> [data-testid="stColumn"] :is([class*="st-key-cxpanel"], .up-total, [class*="st-key-trendbox"] .tc))
+  > [data-testid="stColumn"] :is([class*="st-key-card"], [class*="st-key-tile"]) > :last-child {{ margin-top: 0; }}
+[data-testid="stHorizontalBlock"]:has(> [data-testid="stColumn"] :is([class*="st-key-cxpanel"], .up-total, [class*="st-key-trendbox"] .tc))
+  > [data-testid="stColumn"] :is([data-testid="stVerticalBlock"], [data-testid="stLayoutWrapper"]) {{ flex: 0 0 auto; }}
 /* Fixed text heights so cards match across rows too. */
 .fc-route, .mx-name {{ white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }}
 .fc-top > :last-child, .badge-drop, .badge-track {{ flex-shrink: 0; white-space: nowrap; }}
@@ -357,7 +370,6 @@ table.cmp td .chip {{ font-size: .7rem; }}
 .v3-price .est {{ font-size: .75rem; color: var(--muted); }}
 .v3-unit {{ color: var(--muted); font-size: .85rem; font-weight: 500; white-space: nowrap; display: inline-flex;
   align-items: baseline; gap: .45rem; }}
-.tr-wrap {{ margin-bottom: .25rem; }}
 .v3-route {{ display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-top: .1rem; }}
 .v3-route .fc-route {{ font-size: 1.02rem; }}
 .v3-legs {{ display: grid; grid-template-columns: auto 1fr; column-gap: .6rem; row-gap: .05rem; font-size: .83rem;
@@ -367,44 +379,81 @@ table.cmp td .chip {{ font-size: .7rem; }}
 .mod-note {{ color: var(--muted); font-size: .68rem; white-space: nowrap; }}
 .mod-tag {{ background: var(--cream); color: var(--maroon); font-size: .66rem; font-weight: 700; letter-spacing: .02em;
   text-transform: uppercase; border-radius: 6px; padding: .15rem .5rem; white-space: nowrap; flex-shrink: 0; }}
-/* bags box + Upgrades */
-[class*="st-key-bagrow"] {{ background: #FFFDF8; border: 1px solid #EBDCC6; border-radius: 10px; padding: .4rem .5rem !important;
-  flex-wrap: nowrap !important; justify-content: space-between; }}
-[class*="st-key-bagrow"] [data-testid="stElementContainer"]:has(.bag-chip) {{ flex: 1 1 auto; min-width: 0; width: auto !important; }}
+/* bags box + Upgrades (V6 p15) */
+[class*="st-key-faresbox"] {{ background: #FFFDF8; border: 1px solid #EBDCC6; border-radius: 10px; padding: .4rem .55rem !important; }}
+[class*="st-key-baghead"] {{ flex-wrap: nowrap !important; justify-content: space-between; }}
+[class*="st-key-baghead"] [data-testid="stElementContainer"]:has(.bag-chip) {{ flex: 1 1 auto; min-width: 0; width: auto !important; }}
+[class*="st-key-baghead"] [data-testid="stElementContainer"]:has(button) {{ flex: 0 0 auto; width: auto !important; }}
+[class*="st-key-baghead"] button, [class*="st-key-trendrow"] button {{ min-height: 0 !important; padding: .1rem .15rem !important; white-space: nowrap; }}
+[class*="st-key-baghead"] button p {{ color: var(--maroon) !important; font-weight: 700; font-size: .8rem; text-decoration: none !important; }}
 .bag-chip.v3 {{ margin: 0; white-space: normal; line-height: 1.25; border-radius: 12px; padding: .3rem .65rem .3rem .55rem;
   font-size: .73rem; }}
 .bag-chip.v3.on {{ background: #E8F2EA; }}
-[class*="st-key-bagrow"] [data-testid="stPopover"] {{ flex: 0 0 auto; width: auto !important; }}
-[class*="st-key-bagrow"] [data-testid="stPopover"] button {{ background: transparent !important; border: 0 !important;
-  min-height: 0; padding: .2rem .2rem !important; }}
-[class*="st-key-bagrow"] [data-testid="stPopover"] button p {{ color: var(--maroon) !important; font-weight: 700; font-size: .8rem; }}
-[class*="st-key-bagrow"] [data-testid="stPopover"] button svg {{ color: var(--maroon); }}
+.bag-chip.v3.off {{ background: var(--panel); }}
+[class*="st-key-uprow"] {{ flex-wrap: nowrap !important; justify-content: space-between; }}
+[class*="st-key-uprow"] [data-testid="stElementContainer"] {{ width: auto !important; flex: 0 1 auto; }}
+[class*="st-key-uprow"] [data-testid="stCheckbox"] label {{ align-items: center; }}
+[class*="st-key-uprow"] [data-testid="stCheckbox"] p {{ font-size: .84rem; }}
+.up-line {{ display: flex; align-items: center; gap: .5rem; font-size: .84rem; line-height: 1.25; }}
+.up-box {{ flex: 0 0 auto; width: 16px; height: 16px; border: 1px solid #C9CDD3; border-radius: 4px; background: #fff;
+  color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: .68rem; font-weight: 800; }}
+.up-box.in {{ background: #1E7B34; border-color: #1E7B34; }}
+.up-lbl {{ flex: 1 1 auto; min-width: 0; }}
+.up-val {{ font-size: .82rem; font-weight: 700; text-align: right; white-space: nowrap; }}
+.up-val.in {{ color: #1E7B34; }}
+.up-hint {{ color: var(--muted); font-size: .73rem; line-height: 1.3; }}
+.v3-up {{ color: #B42318; font-weight: 700; font-size: .8rem; white-space: nowrap; }}
+.fare-more {{ margin-top: .3rem; font-size: .78rem; }}
+.fare-more summary {{ cursor: pointer; color: var(--maroon); font-weight: 700; }}
+.fare-more .up-row {{ font-size: .78rem; padding: .3rem 0; }}
+.fare-more .up-sub {{ font-size: .7rem; padding-bottom: .25rem; }}
 .up-head {{ font-weight: 700; font-size: .9rem; margin-bottom: .35rem; }}
 .up-row {{ display: flex; justify-content: space-between; gap: 1rem; font-size: .85rem; padding: .4rem 0;
   border-top: 1px solid var(--border); white-space: nowrap; }}
-/* collapsible price trend */
-.tr-box {{ border: 1px solid var(--border); border-radius: 10px; background: #fff; }}
-.tr-sum {{ list-style: none; display: flex; align-items: center; gap: .6rem; padding: .45rem .65rem; cursor: pointer; }}
-.tr-sum::-webkit-details-marker {{ display: none; }}
-.tr-sum.static {{ cursor: default; }}
+.up-row > span:first-child {{ white-space: normal; }}
+.up-sub {{ color: var(--muted); font-size: .75rem; line-height: 1.35; padding-bottom: .4rem; max-width: 26rem; }}
+.fare-block {{ margin: .6rem 0; }}
+.fare-block .credit {{ margin-top: .3rem; }}
+/* card price-trend row + pop-up (V6 p9) */
+[class*="st-key-trendrow"] {{ border: 1px solid var(--border); border-radius: 10px; background: #fff; padding: .3rem .55rem !important;
+  flex-wrap: nowrap !important; justify-content: space-between; }}
+[class*="st-key-trendrow"] [data-testid="stElementContainer"] {{ width: auto !important; flex: 0 1 auto; min-width: 0; }}
+[class*="st-key-trendrow"] [data-testid="stElementContainer"]:has(button) {{ flex: 0 0 auto; }}
+[class*="st-key-trendrow"] button p {{ font-size: .72rem !important; color: var(--muted) !important; text-decoration: none !important;
+  white-space: nowrap; overflow: visible; text-overflow: clip; }}
+[class*="st-key-trendrow"] button > div, [class*="st-key-trendrow"] [data-testid="stMarkdownContainer"]:has(> p) {{ overflow: visible; }}
+.tr-sum {{ display: flex; align-items: center; gap: .45rem; }}
+[class*="st-key-trendrow"] .tr-mini {{ width: 44px; }}
+[class*="st-key-trendrow"] .tr-pct {{ white-space: nowrap; font-size: .74rem; }}
 .tr-mini {{ flex-shrink: 0; }}
+.tc-grid {{ display: grid; grid-template-columns: auto 1fr; column-gap: .55rem; }}
+.tc-y {{ display: flex; flex-direction: column; justify-content: space-between; color: var(--muted); font-size: .72rem; padding: .35rem 0; }}
+.tc-axis {{ padding-left: 2.6rem; }}
+.ts-grid {{ display: grid; grid-template-columns: repeat(4, 1fr); gap: .5rem; }}
+.ts-tile {{ background: var(--panel); border-radius: 8px; padding: .5rem .7rem; }}
+.ts-tile .k {{ color: var(--muted); font-size: .74rem; }}
+.ts-tile .v {{ font-weight: 700; font-size: 1rem; }}
+.ts-tile .v.down {{ color: #1E7B34; }}
+/* pop-ups: maroon band with a labeled Close */
+[data-testid="stDialog"] [role="dialog"] {{ background: var(--page-bg); overflow-x: hidden; }}
+[data-testid="stDialog"] [role="dialog"] > h2 {{ background: var(--maroon); border-radius: .75rem .75rem 0 0; min-height: 64px;
+  margin-bottom: .9rem; }}
+[data-testid="stDialog"] [role="dialog"] > h2, [data-testid="stDialog"] [role="dialog"] > h2 * {{ color: #fff !important; }}
+[data-testid="stDialog"] button[aria-label="Close"] {{ z-index: 2; border: 1px solid #fff; border-radius: 8px; width: auto; height: auto;
+  padding: .3rem .6rem; gap: .35rem; display: inline-flex; align-items: center; background: transparent; }}
+[data-testid="stDialog"] button[aria-label="Close"]::before {{ content: "Close"; font-size: .85rem; font-weight: 700; color: #fff; }}
+[data-testid="stDialog"] button[aria-label="Close"] svg, [data-testid="stDialog"] button[aria-label="Close"] svg path {{ color: #fff; fill: #fff; }}
+[data-testid="stDialog"] .tc-plot {{ height: 240px; }}
+[data-testid="stDialog"] .tc-cur {{ background: var(--page-bg); }}
+@media (max-width: 760px) {{ .ts-grid {{ grid-template-columns: 1fr 1fr; }} }}
+.fee.cab {{ padding: .5rem .6rem; min-height: 72px; }}
+.fee.cab .chip {{ font-size: .72rem; margin: .15rem .2rem 0 0; }}
 .tr-txt {{ display: flex; flex-direction: column; line-height: 1.25; min-width: 0; flex: 1; }}
 .tr-pct {{ font-weight: 700; font-size: .8rem; }}
 .tr-pct.down, .tc-delta.down {{ color: #1E7B34; }}
 .tr-pct.up, .tc-delta.up {{ color: var(--maroon); }}
 .tr-pct.flat, .tc-delta.flat {{ color: var(--muted); }}
 .tr-hint {{ color: var(--muted); font-size: .72rem; }}
-.tr-caret {{ color: var(--muted); font-size: .8rem; transition: transform .15s; }}
-details[open] > .tr-sum .tr-caret {{ transform: rotate(180deg); }}
-.tr-body {{ padding: 0 .65rem .55rem; }}
-.tr-r {{ display: none; }}
-.tr-tabs {{ display: flex; gap: .3rem; margin: .1rem 0 .5rem; }}
-.tr-tabs label {{ border: 1px solid var(--border); border-radius: 999px; padding: .12rem .55rem; font-size: .72rem;
-  cursor: pointer; background: #fff; font-weight: 500 !important; }}
-.tr-pane {{ display: none; }}
-.tr-r7:checked ~ .p7, .tr-r14:checked ~ .p14, .tr-r30:checked ~ .p30 {{ display: block; }}
-.tr-r7:checked ~ .tr-tabs .l7, .tr-r14:checked ~ .tr-tabs .l14, .tr-r30:checked ~ .tr-tabs .l30 {{
-  background: var(--tan); border-color: var(--tan); font-weight: 700 !important; }}
 .tc {{ position: relative; }}
 .tc-cur {{ height: 2.6rem; background: #fff; }}
 .tc-cur b {{ font-size: .95rem; }}
@@ -470,16 +519,9 @@ table.cmp tr {{ background: transparent !important; }}
 .stTextInput input:disabled {{ color: var(--ink) !important; -webkit-text-fill-color: var(--ink); opacity: 1; cursor: default; }}
 [data-testid="stTextInput"] [data-testid="stWidgetLabel"], [data-testid="stTextInput"] [data-testid="stWidgetLabel"] p {{
   color: var(--ink) !important; opacity: 1 !important; }}
-/* Dropdown-style popovers: label on the left, chevron on the right. The Upgrades link keeps its natural width. */
+/* Dropdown-style popovers: label on the left, chevron on the right. */
 [data-testid="stPopoverButton"] > div {{ width: 100%; justify-content: space-between; }}
 [data-testid="stPopoverButton"] > div > div:first-child {{ flex: 1 1 auto; min-width: 0; justify-content: flex-start; text-align: left; }}
-[class*="st-key-bagrow"] [data-testid="stElementContainer"]:has([data-testid="stPopover"]) {{ flex: 0 0 auto; width: auto !important; }}
-[class*="st-key-bagrow"] [data-testid="stPopover"], [class*="st-key-bagrow"] [data-testid="stPopover"] > div,
-[class*="st-key-bagrow"] [data-testid="stPopoverButton"] {{ width: max-content !important; min-width: max-content; }}
-[class*="st-key-bagrow"] [data-testid="stPopoverButton"] > div {{ width: auto; gap: .2rem; }}
-[class*="st-key-bagrow"] [data-testid="stPopoverButton"] > div > div:first-child {{ flex: 0 0 auto; width: max-content; }}
-[class*="st-key-bagrow"] [data-testid="stPopoverButton"] [data-testid="stMarkdownContainer"],
-[class*="st-key-bagrow"] [data-testid="stPopoverButton"] p {{ overflow: visible; text-overflow: clip; white-space: nowrap; }}
 label p {{ font-size: .88rem !important; }}
 .stp-label {{ font-size: .88rem; }}
 [data-testid="stBaseButton-primary"], [data-testid="stBaseLinkButton-primary"],
@@ -571,9 +613,8 @@ label p {{ font-size: .8rem !important; }}
 .credit {{ font-size: .68rem; }}
 .bag-chip.v3 {{ font-size: .68rem; padding: .2rem .5rem .2rem .45rem; }}
 .card-photo .credit {{ font-size: .62rem; padding: .7rem .6rem .2rem; }}
-[class*="st-key-bagrow"] {{ padding: .22rem .4rem !important; }}
-[class*="st-key-bagrow"] [data-testid="stPopover"] button p {{ font-size: .74rem !important; }}
-.tr-sum {{ padding: .28rem .55rem; }}
+[class*="st-key-faresbox"] {{ padding: .22rem .4rem !important; }}
+[class*="st-key-baghead"] button p {{ font-size: .74rem !important; }}
 .tr-pct {{ font-size: .74rem; }}
 .tr-hint {{ font-size: .66rem; }}
 .chip {{ font-size: .7rem; padding: .1rem .45rem; margin: 0 .2rem .15rem 0; }}
@@ -586,6 +627,71 @@ label p {{ font-size: .8rem !important; }}
 .fee .k {{ font-size: .68rem; }}
 .recent {{ padding: .3rem .55rem; font-size: .76rem; }}
 a.linkish {{ font-size: .84rem; }}
+
+/* ---------- V7: Fare & upgrades, Cabin experience and Price trend dropdowns ---------- */
+.up-base {{ justify-content: space-between; padding-top: .15rem; }}
+.up-base .up-lbl {{ font-weight: 500; }}
+.up-sec {{ color: var(--maroon); font-weight: 700; font-size: .7rem; letter-spacing: .05em; text-transform: uppercase; margin-top: .1rem; }}
+.up-total {{ display: flex; justify-content: space-between; font-weight: 700; font-size: .88rem;
+  border-top: 1px solid var(--border); padding-top: .35rem; margin-top: .1rem; }}
+.bag-chip.v3.cx {{ background: var(--cream); }}
+[class*="st-key-faresbox"], [class*="st-key-trendbox"], [class*="st-key-cabinpanel"], [class*="st-key-farepanel"],
+[class*="st-key-bundledetail"], [class*="st-key-softcard_cabin"], [class*="st-key-card_"], [class*="st-key-resrow"],
+[class*="st-key-legrow"], [class*="st-key-bundlerow"] {{ overflow: visible !important; }}
+[class*="st-key-faresbox"] [data-testid="stMarkdownContainer"], [class*="st-key-cabinpanel"] [data-testid="stMarkdownContainer"],
+[class*="st-key-bundledetail"] [data-testid="stMarkdownContainer"], [class*="st-key-softcard_cabin"] [data-testid="stMarkdownContainer"],
+[class*="st-key-legrow"] [data-testid="stMarkdownContainer"] {{ overflow: visible; }}
+.cx-grid {{ display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; margin-top: .35rem; }}
+.cx-grid.stacked {{ grid-template-columns: 1fr 1fr; gap: .4rem; }}
+.cx-grid.stacked .amen-ent {{ grid-column: 1 / -1; }}
+.cx-grid .amen {{ background: var(--panel); min-height: 0; }}
+.cx-grid.stacked .amen {{ padding: .4rem .5rem; }}
+.cx-grid .amen .v {{ font-size: .84rem; line-height: 1.3; }}
+.cx-grid.stacked .amen .v {{ font-size: .76rem; }}
+.cx-grid .unknown {{ color: var(--muted); font-weight: 500; font-style: italic; }}
+.cx-grid .amen-ent .chip {{ margin: .25rem .25rem 0 0; }}
+.freebie-box {{ margin-top: .45rem; border: 1px solid #E9D49E; background: #FFFAEB; border-radius: 10px; padding: .4rem .6rem; }}
+.freebie-box .k {{ color: var(--muted); font-size: .72rem; }}
+.freebie-box .v {{ font-weight: 700; font-size: .84rem; }}
+.cx-typical {{ margin-top: .3rem; }}
+/* entertainment chip pop-ups (V7 p20): hover, or tap/focus on touch screens */
+.chip.ent {{ position: relative; cursor: help; outline: none; }}
+.chip.ent:focus-visible {{ box-shadow: 0 0 0 2px var(--maroon); }}
+.chip-pop {{ display: none; position: absolute; z-index: 60; top: calc(100% + 6px); left: 0; min-width: 210px; max-width: 260px;
+  grid-template-columns: auto 1fr; gap: .2rem .7rem; background: #fff; border: 1.5px solid var(--maroon); border-radius: 10px;
+  padding: .45rem .6rem; box-shadow: 0 6px 18px rgba(0,0,0,.12); font-size: .76rem; font-weight: 400; white-space: normal;
+  color: var(--ink); line-height: 1.3; text-align: left; }}
+.chip-pop .k {{ color: var(--muted); }}
+.chip-pop .v {{ font-weight: 700; }}
+.chip-pop .v.unknown {{ font-weight: 500; font-style: italic; color: var(--muted); }}
+.chip.ent:hover .chip-pop, .chip.ent:focus .chip-pop {{ display: grid; }}
+.chip.ent:hover, .chip.ent:focus {{ z-index: 61; }}
+/* row buttons under results (V7 p10) */
+[class*="st-key-rowbtns"] {{ margin-top: .1rem; }}
+[class*="st-key-rowbtns"] button {{ min-height: 32px; padding: .15rem .8rem; white-space: nowrap; }}
+[class*="st-key-farepanel"] {{ background: var(--panel); border-radius: 10px; padding: .6rem .8rem !important; }}
+[class*="st-key-farepanel"] .bag-chip.v3 {{ align-self: flex-start; }}
+/* price trend dropdown on deal cards (V7 p4) */
+[class*="st-key-trendbox"] {{ border: 1px solid var(--border); border-radius: 10px; background: #fff; padding: .3rem .55rem !important; }}
+[class*="st-key-trendbox"] [class*="st-key-trendrow"] {{ border: 0; padding: 0 !important; background: transparent; }}
+[class*="st-key-trendbox"] [class*="st-key-trendrow"] button p {{ font-size: .9rem !important; color: var(--maroon) !important; }}
+[class*="st-key-trendbox"] .tr-hint {{ display: block; }}
+[class*="st-key-trendbox"] .tc-cur {{ height: 2.8rem; }}
+[class*="st-key-trendbox"] .tc-y {{ font-size: .64rem; }}
+[class*="st-key-trendbox"] .tc-axis {{ padding-left: 2.2rem; font-size: .68rem; color: var(--muted); }}
+.tr-lohi {{ color: var(--muted); font-size: .72rem; margin-top: .15rem; text-align: center; }}
+.cx-imgs-h {{ font-weight: 700; font-size: .9rem; margin: .1rem 0 .3rem; }}
+[class*="st-key-cxpanel"] .cx-imgs-h {{ font-size: .8rem; }}
+.cx-imgs {{ display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .4rem; }}
+.cx-imgs img, .cx-imgs .img-ph {{ width: 100%; object-fit: cover; border-radius: 8px; display: block; }}
+[class*="st-key-cxpanel"] .img-ph {{ font-size: .62rem; }}
+[class*="st-key-cxpanel"] {{ border: 1px solid #EBDCC6; background: #FFFDF8; border-radius: 10px; padding: .45rem .55rem !important;
+  overflow: visible !important; }}
+[class*="st-key-cxpanel"] [data-testid="stMarkdownContainer"] {{ overflow: visible; }}
+[class*="st-key-btnrow"] {{ flex-wrap: wrap; }}
+.up-box.none {{ visibility: hidden; }}
+.cmp-sub {{ color: var(--muted); font-size: .68rem; font-weight: 400; }}
+@media (max-width: 760px) {{ .cx-grid {{ grid-template-columns: 1fr; }} .cx-grid.stacked {{ grid-template-columns: 1fr; }} }}
 
 @media (max-width: 760px) {{
   .as-footer .cols {{ grid-template-columns: 1fr; }}

@@ -188,6 +188,29 @@ def rt_quote(out, ret, total_price, carry_on=0, checked=0, party=1, policies=Non
                           carry_on=carry_on, checked=checked, note=note, items=items)
 
 
+def leg_totals(fares, carry_on=0, checked=0, party=1, out=None, policies=None):
+    """{fare_id: round-trip total with bags} for the leg rows. Fares whose bag fees are unknown are left out.
+
+    With `out`, fares are returns priced against that outbound; without it, outbounds assume the same airline back."""
+    totals = {}
+    for f in fares:
+        q = rt_quote(out or f, f, f["price_usd"], carry_on, checked, party, policies)
+        if q.bags_total is not None:
+            totals[f["fare_id"]] = q.total
+    return totals
+
+
+def bundles_with_bags(bundles, carry_on=0, checked=0, party=1, policies=None):
+    """Bundles with `total` including bags, so tags and sorting use the real price (`fare_total` keeps the fare).
+    Bundles whose bag fees are unknown are left out."""
+    priced = []
+    for b in bundles:
+        q = rt_quote(b["out"], b["ret"], b["total"], carry_on, checked, party, policies)
+        if q.bags_total is not None:
+            priced.append({**b, "fare_total": b["total"], "total": q.total})
+    return priced
+
+
 # ---------------------------------------------------------------- V3 card pricing + upgrades
 DEFAULT_CARD_BAGS = (1, 1)  # carry-on, checked used for "[$Total] with bags" when none are picked
 
@@ -200,7 +223,8 @@ class CardPrice:
     bags: tuple                     # (carry_on, checked) the with-bags total is for
     included: bool                  # headline includes those bags
     travelers: int
-    fees_apply: bool = False        # airline charges for bags, amount unknown (policy fee_label)
+    bag_known: bool = False         # we know something about the checked-bag fee (an amount or a label)
+    covers_bag: bool = False        # the fare itself includes a checked bag
 
     @property
     def headline(self):
@@ -210,32 +234,73 @@ class CardPrice:
     def is_estimate(self):
         return self.included and self.with_bags != self.fare_total
 
-    def bags_line(self, money=lambda v: f"${v:,.0f}"):
-        what = bags_text(*self.bags)
-        if self.included:
-            return f"Bags included · {what}"
-        if self.with_bags is None:
-            return "Bags not included" if self.fees_apply else "Bags not included · bag fees not verified yet"
-        return f"Bags not included · {money(self.with_bags)} with bags"
+    def bags_line(self, checked_added=False):
+        """The bag tag (V6 p15). It never quotes a separate with-bags total: the big price is the only price."""
+        if checked_added:
+            return "1 checked bag added"
+        if self.included or self.covers_bag:
+            return "Bags included"
+        return "Bags not included" if self.bag_known else "Bag info unavailable"
 
     def tooltip(self, money=lambda v: f"${v:,.0f}"):
-        if self.with_bags is None:
-            return ("Bags cost extra, so the price is fare only. See the booking page for bag prices." if self.fees_apply
-                    else "Bag fees for this airline aren't verified yet, so the price is fare only.")
+        """Only when the headline has bags added, so the estimate can be explained."""
+        if not self.is_estimate:
+            return ""
         return (f"Fare {money(self.fare_total)} + bags ~{money(self.with_bags - self.fare_total)} "
                 f"for {bags_text(*self.bags)} (trip total, estimated)")
 
 
-def card_price(fare, carry_on=0, checked=0, party=1, include_bags=False, policies=None):
+def google_policies(airline, google, policies=None):
+    """Airline policies with this flight's cheapest Google fare laid over the airline-wide fees.
+
+    Google's bag fee is already the whole-trip price per passenger, so it isn't doubled on a round trip.
+    Where Google gives no amount, the airline-wide figure stays."""
+    pols = policies if policies is not None else config.policies()
+    base = ((google or {}).get("options") or [None])[0]
+    if not base or not airline:
+        return pols
+    policy = {**(pols.get(airline) or {})}
+    if base.get("first_bag") is not None:
+        policy["first_checked"] = {**(policy.get("first_checked") or {}), "fee_usd": base["first_bag"], "each_way": False}
+    if base.get("carry_on") == "free":
+        policy["carry_on"] = {**(policy.get("carry_on") or {}), "fee_usd": 0, "each_way": False}
+    elif base.get("carry_on") == "none":
+        policy["carry_on"] = {**(policy.get("carry_on") or {}), "fee_usd": None}
+    lines = " ".join(base.get("lines") or []).lower()
+    seat = {**(policy.get("seat_selection") or {})}
+    if "free seat selection" in lines:
+        seat.update(fee_usd=0)
+    elif "no seat selection" in lines:
+        seat.update(fee_usd=None, fee_label="Not on this fare")
+    elif "seat selection for a fee" in lines and seat.get("fee_usd") is None:
+        seat["fee_label"] = seat.get("fee_label") or "Requires fee"
+    policy["seat_selection"] = seat
+    if "extra legroom available for a fee" in lines:
+        legroom = {**(policy.get("extra_legroom") or {})}
+        if legroom.get("fee_usd") is None:
+            legroom["fee_label"] = legroom.get("fee_label") or "Requires fee"
+        policy["extra_legroom"] = legroom
+    return {**pols, airline: policy}
+
+
+def card_price(fare, carry_on=0, checked=0, party=1, include_bags=False, policies=None, google=None):
     """Card price. The with-bags total uses the picked bags, or 1 carry-on + 1 checked when none are picked.
-    `include_bags` puts that total in the headline (only when the fees are known)."""
+    `include_bags` puts that total in the headline (only when the fees are known).
+    `google` (sources.fare_options) is what Google shows now for this flight and party: its price replaces the
+    scanned one and its bag fees replace the airline-wide ones."""
+    if (google or {}).get("airline_price"):
+        fare = {**fare, "price_usd": google["airline_price"], "travelers": Party.coerce(party).size}
+    if google:
+        policies = google_policies(fare.get("airline_iata"), google, policies)
     bags = (carry_on, checked) if (carry_on or checked) else DEFAULT_CARD_BAGS
     q = quote(fare, bags[0], bags[1], party, policies)
     with_bags = q.total if q.bags_total is not None else None
     policy = (policies if policies is not None else config.policies()).get(fare.get("airline_iata") or "") or {}
+    bag = policy.get("first_checked") or {}
     return CardPrice(fare_total=q.fare_total, with_bags=with_bags, bags=bags,
                      included=bool(include_bags and with_bags is not None), travelers=q.travelers,
-                     fees_apply=bool((policy.get("first_checked") or {}).get("fee_label")))
+                     bag_known=bag.get("fee_usd") is not None or bool(bag.get("fee_label")),
+                     covers_bag=bag.get("fee_usd") == 0)
 
 
 def extra_fee(airline, key, trip_type, party, policies=None):
@@ -264,13 +329,54 @@ def upgrades(fare, base_total, party=1, policies=None):
         else:
             fee = extra_fee(airline, key, trip, party, pols)
         item = policy.get("first_checked" if key == "checked" else key) or {}
-        out.append({"label": label, "fee": fee, "total": None if fee is None else base_total + fee,
+        out.append({"key": key, "label": label, "fee": fee, "total": None if fee is None else base_total + fee,
                     "fee_label": item.get("fee_label")})
     return out
 
 
+CHECK_GOOGLE = "Check on Google Flights"
+_VAGUE_LABELS = {"Requires fee", "May require fee"}  # say nothing a traveler can act on
+
+
+def upgrade_rows(fare, cp, party=1, policies=None):
+    """The card's Upgrades list (V6 p15): [{id, label, fee, note, included}].
+
+    A row with a `fee` can be ticked. `included` is already in the price and can't be added again. Otherwise `note`
+    says what we know instead: a range or "from" price, or to check on Google Flights."""
+    rows = []
+    for u in upgrades(fare, cp.headline, party, policies):
+        is_bag = u["key"] == "checked"
+        included = u["fee"] == 0 or (is_bag and cp.included and cp.bags[1] > 0)
+        note = None
+        if u["fee"] is None and not included:
+            note = u["fee_label"] if u["fee_label"] and u["fee_label"] not in _VAGUE_LABELS else CHECK_GOOGLE
+        rows.append({"id": u["key"], "label": "Checked bag" if is_bag and (included or note == CHECK_GOOGLE) else u["label"],
+                     "fee": None if included else u["fee"], "note": note, "included": included})
+    return rows
+
+
+def upgrades_added(rows, picked):
+    """What the ticked rows add to the card's price. Rows that can't be ticked never count."""
+    return sum(r["fee"] for r in rows if r["id"] in picked and r["fee"])
+
+
+def distinct_mix(items, n=3, fare_of=lambda x: x):
+    """First n items (pass them best first) with no airline and no city repeated. Airports in one
+    metro (JFK/LGA/EWR) count as one city. Fares with no known airline are skipped."""
+    out, airlines, cities = [], set(), set()
+    for item in items:
+        f = fare_of(item)
+        airline, city = f.get("airline_iata"), config.metro_for(f["destination"]) or f["destination"]
+        if airline and airline not in airlines and city not in cities:
+            airlines.add(airline)
+            cities.add(city)
+            out.append(item)
+    return out[:n]
+
+
 def cheapest_with_bags(fares, carry_on=0, checked=0, party=1, n=3, policies=None):
-    """Home with 'Bags included' on: [(fare, CardPrice)] ranked by the with-bags total, one per destination.
+    """Home with 'Bags included' on: [(fare, CardPrice)] ranked by the with-bags total, each with its own
+    airline and city.
     Fares whose bag fees aren't verified are left out (their bags-included price is unknown)."""
     priced = []
     for f in fares:
@@ -278,9 +384,4 @@ def cheapest_with_bags(fares, carry_on=0, checked=0, party=1, n=3, policies=None
         if cp.included:
             priced.append((f, cp))
     priced.sort(key=lambda x: (x[1].headline, x[0].get("depart_date") or ""))
-    out, seen = [], set()
-    for f, cp in priced:
-        if f["destination"] not in seen:
-            seen.add(f["destination"])
-            out.append((f, cp))
-    return out[:n]
+    return distinct_mix(priced, n, fare_of=lambda x: x[0])

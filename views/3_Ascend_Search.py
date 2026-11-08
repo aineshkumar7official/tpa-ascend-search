@@ -74,7 +74,14 @@ def _change():
 fare_id = st.query_params.get("fare_id")
 if fare_id:
     f = queries.fare_by_id(ui.conn(), fare_id)
-    if st.button("← Back to results", type="tertiary"):
+    origin = st.query_params.get("from") or ""
+    back = {"home": (config.NAV_HOME, "home", None), "deals": (config.NAV_DEALS, "deals", None)}.get(origin)
+    if origin.startswith("airline:"):
+        code = origin.split(":", 1)[1]
+        back = (config.NAV_MATRIX, config.airline_name(code), {"airline": code})
+    if st.button(f"← Back to {back[1]}" if back else "← Back to results", type="tertiary"):
+        if back:
+            st.switch_page(ui.PAGES[back[0]], query_params=back[2])
         del st.query_params["fare_id"]
         st.rerun()
     if not f:
@@ -97,6 +104,13 @@ if not ss.get("searched"):
 params = _params(s)
 mode = s["mode"]
 
+
+def show_airline_notice():
+    if ui.airline_notice(s):
+        s["airline"] = None
+        st.rerun()
+
+
 # ---------------------------------------------------------------- one-way (p8)
 if mode == "one_way":
     controls, update, change = ui.search_bar_compact(s)
@@ -106,9 +120,12 @@ if mode == "one_way":
     if update:
         s.update(controls)  # bags re-price; a party change re-runs the search (cache key includes party)
         st.rerun()
+    show_airline_notice()
     with st.spinner("Searching live fares…"):
         res = live(params)
-    fares = list(res["fares"])
+    res = {**res, "fares": ui.only_airline(res["fares"], s)}
+    quotes = {f["fare_id"]: pricing.quote(f, s["carry_on"], s["checked"], party) for f in res["fares"]}
+    fares = [f for f in res["fares"] if quotes[f["fare_id"]].bags_total is not None]  # picked bags need a known fee
     if res["error"]:
         st.warning(res["error"])
     head = st.columns([3, 1], vertical_alignment="center")
@@ -116,7 +133,6 @@ if mode == "one_way":
     head[0].markdown(f'<div class="as-h2">{len(fares)} {kind} found</div>', unsafe_allow_html=True)
     with head[1]:
         sort = ui.inline_choice("Sort", ["Price", "Time"], "Price", "res_sort", st.pills)
-    quotes = {f["fare_id"]: pricing.quote(f, s["carry_on"], s["checked"], party) for f in fares}
     if sort == "Price":
         fares.sort(key=lambda f: quotes[f["fare_id"]].total)  # stable: ties keep source order
     else:
@@ -129,6 +145,7 @@ if mode == "one_way":
                     col.markdown(f'<div class="rt-head">{label}</div>', unsafe_allow_html=True)
             for f in fares:
                 ui.result_row(f, quotes[f["fare_id"]])
+    ui.hidden_note(len(res["fares"]) - len(fares))
     if not fares or not s["nonstop"]:
         st.write("")
         st.markdown(f'<div class="muted">{"No nonstops for these dates?" if s["nonstop"] else "Showing flights with stops."}</div>',
@@ -145,12 +162,17 @@ if ui.search_bar_roundtrip(s):
     _change()
     st.rerun()
 
+show_airline_notice()
 with st.spinner("Searching live round-trip fares…"):
     res = live(params)
-outbounds = list(res["fares"])
+res = {**res, "fares": ui.only_airline(res["fares"], s)}
+out_totals = pricing.leg_totals(res["fares"], s["carry_on"], s["checked"], party)
+outbounds = [f for f in res["fares"] if f["fare_id"] in out_totals]  # picked bags need a known fee
+hidden_outbounds = len(res["fares"]) - len(outbounds)
 if res["error"]:
     st.warning(res["error"])
 if not outbounds:
+    ui.hidden_note(hidden_outbounds)
     st.markdown('<div class="muted">No nonstops for these dates?</div>', unsafe_allow_html=True)
     if st.toggle("Include flights with stops", value=not s["nonstop"]) == s["nonstop"]:
         s["nonstop"] = not s["nonstop"]
@@ -172,11 +194,15 @@ if mode == "rt_legs":
                         f"TPA → {city} · {ui.nice_date(s['depart_date'])} · prices shown are the round-trip total",
                         "choose-outbound")
         for f in outbounds:
-            ui.leg_row(f, out["price_usd"], f["fare_id"] == out["fare_id"], "sel_out", "out", reset="sel_ret")
+            ui.leg_row(f, out_totals[out["fare_id"]], f["fare_id"] == out["fare_id"], "sel_out", "out",
+                       out_totals[f["fare_id"]], reset="sel_ret")
+        ui.hidden_note(hidden_outbounds)
         st.write("")
         with st.spinner("Pricing return flights for your outbound…"):
             rres = returns_for(params, _lean(out))
-        rets = rres["fares"]
+        rres = {**rres, "fares": ui.only_airline(rres["fares"], s)}
+        ret_totals = pricing.leg_totals(rres["fares"], s["carry_on"], s["checked"], party, out=out)
+        rets = [r for r in rres["fares"] if r["fare_id"] in ret_totals]
         ret = None
         if rets:
             rby = {r["fare_id"]: r for r in rets}
@@ -187,14 +213,15 @@ if mode == "rt_legs":
         if rres["error"]:
             st.warning(rres["error"])
         ui.return_slot(out, ret, s)
-        if not rets and not rres["error"]:
+        ui.hidden_note(len(rres["fares"]) - len(rets))
+        if not rets and not rres["fares"] and not rres["error"]:
             st.markdown('<div class="muted">No nonstop returns with this outbound — pick another outbound.</div>',
                         unsafe_allow_html=True)
     with right:
         ui.roundtrip_summary(out, ret, s)
     if ss.pop("ret_dialog", False) and rets:
         ui.return_dialog(rets, ret, f"{config.city(out['destination'])} → TPA · {ui.nice_date(s['return_date'])} · "
-                                    "prices shown are the round-trip total")
+                                    "prices shown are the round-trip total", ret_totals)
     ui.footer()
     st.stop()
 
@@ -204,7 +231,9 @@ with st.spinner(f"Pricing complete round trips for {len(picks)} outbound flights
     bres = bundles_for(params, [_lean(f) for f in picks])
 if bres["error"]:
     st.warning(bres["error"])
-bundles = [{**b, "out": _rehydrate(b["out"], outbounds)} for b in bres["bundles"]]
+bundles = pricing.bundles_with_bags([{**b, "out": _rehydrate(b["out"], outbounds)} for b in bres["bundles"]],
+                                    s["carry_on"], s["checked"], party)
+ui.hidden_note(hidden_outbounds)
 
 head = st.columns([2.2, 2.4, 1.6], vertical_alignment="center")
 with head[1]:

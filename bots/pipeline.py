@@ -2,9 +2,11 @@
 
     python -m bots.pipeline --once               # one full scan cycle
     python -m bots.pipeline --dry-run --limit 2  # hit real sources for 2 destinations, print rows, no writes
+    python -m bots.pipeline --routes             # price Airline Matrix routes that have no recent fare
 """
 import argparse
 import random
+import threading
 import time
 import hashlib
 import json
@@ -15,6 +17,7 @@ from bots import critic, enricher, scouter
 from core import config
 from core.config import settings
 from core.db import get_conn
+from core.dates import today_local
 from core.db import utcnow
 from core.pricing import Party
 from sources import flights_fast, flights_serpapi, news
@@ -41,6 +44,8 @@ def run_background_cycle(conn=None, limit=None, dry_run=False):
         print(f"\n{len(rows)} rows (dry run, nothing written)")
         return None
     scan_id = scouter.scan(conn, limit=limit)
+    if not limit and scouter.route_scan_due(conn):
+        scouter.scan_routes(conn)
     enriched = enricher.run(conn)
     reviewed = critic.run(conn)
     carriers = sorted({c for d in config.destinations() for c in d.get("carriers", [])})
@@ -50,14 +55,37 @@ def run_background_cycle(conn=None, limit=None, dry_run=False):
     return scan_id
 
 
+LIVE_CAP_MESSAGE = ("Live search has reached today's limit on this free demo. Prices on Home, Ascend Deals and "
+                    "Airline Matrix still update every few hours, and Book now opens the search on Google Flights.")
+_live_used = {}  # {local date: Google requests made by live search today} for this server process
+_live_lock = threading.Lock()
+
+
+def take_live_request():
+    """Count one live Google request against settings.LIVE_SEARCH_DAILY_CAP. False once today's cap is used up."""
+    cap = settings.LIVE_SEARCH_DAILY_CAP
+    if cap <= 0:
+        return True
+    day = today_local().isoformat()
+    with _live_lock:
+        for old in [d for d in _live_used if d != day]:
+            del _live_used[old]
+        if _live_used.get(day, 0) >= cap:
+            return False
+        _live_used[day] = _live_used.get(day, 0) + 1
+        return True
+
+
 def live_search(conn, origin, dest, depart, ret=None, nonstop=True, party=1):
-    """Scouter (live): fast-flights first, SerpApi fallback if the quota allows. No `fares` writes."""
+    """Scouter (live): fast-flights first, SerpApi fallback if allowed here and the quota allows. No `fares` writes."""
+    if not take_live_request():
+        return [], None, LIVE_CAP_MESSAGE
     try:
         return flights_fast.search(origin, dest, depart, ret, nonstop, party), "fast_flights", None
     except flights_fast.SearchFailed as e:
         log.warning("live fast-flights failed: %s", e)
     unavailable = "Live search unavailable — try again later"
-    if not flights_serpapi.available():
+    if not flights_serpapi.available() or settings.LIVE_SERPAPI == "off":
         return [], None, unavailable
     try:
         return flights_serpapi.search(conn, origin, dest, depart, ret, nonstop, party), "serpapi", None
@@ -119,6 +147,8 @@ def run_return_chain(params, outbound, conn=None):
     """Return choices for a chosen outbound, each priced as the full round-trip total."""
     conn = conn or get_conn()
     party = Party.coerce(params.get("party"))
+    if not take_live_request():
+        return {"fares": [], "error": LIVE_CAP_MESSAGE}
     try:
         rows = flights_fast.search_returns(outbound, party, params.get("nonstop", True))
     except flights_fast.SearchFailed as e:
@@ -179,13 +209,19 @@ def main():
     ap.add_argument("--dry-run", action="store_true", help="print scan rows without writing to the DB")
     ap.add_argument("--limit", type=int, help="only scan the first N destinations")
     ap.add_argument("--news", action="store_true", help="refresh airline news headlines")
+    ap.add_argument("--routes", action="store_true", help="price Airline Matrix routes that have no recent fare")
     args = ap.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
     logging.getLogger("primp").setLevel(logging.WARNING)
-    if not (args.once or args.dry_run or args.news):
-        ap.error("pass --once, --dry-run or --news")
+    if not (args.once or args.dry_run or args.news or args.routes):
+        ap.error("pass --once, --dry-run, --news or --routes")
     if args.news:
         refresh_news()
+    if args.routes:
+        conn = get_conn()
+        scouter.scan_routes(conn)
+        enricher.run(conn)
+        critic.run(conn)
     if args.once or args.dry_run:
         run_background_cycle(limit=args.limit, dry_run=args.dry_run)
 

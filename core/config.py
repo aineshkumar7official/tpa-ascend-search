@@ -26,13 +26,29 @@ DISCLAIMER_SHORT = "Prices are snapshots and may have changed. Always confirm on
 STUDENT_LINE = "Student project · USF"
 
 
+def _env(name):
+    """Environment variable, else a Streamlit Cloud secret of the same name (the deployed app's settings)."""
+    if os.getenv(name) is not None:
+        return os.getenv(name)
+    if not (ROOT / ".streamlit" / "secrets.toml").exists() and not os.getenv("STREAMLIT_SHARING_MODE") \
+            and not Path("/mount/src").exists():
+        return ""  # no secrets anywhere: skip importing Streamlit (scripts, tests, GitHub Actions)
+    try:
+        import streamlit as st
+
+        v = st.secrets.get(name)
+        return "" if v is None else str(v)
+    except Exception:
+        return ""
+
+
 def _int(name, default):
-    raw = os.getenv(name, "").split("#")[0].strip()
+    raw = _env(name).split("#")[0].strip()
     return int(raw) if raw else default
 
 
 def _str(name, default):
-    raw = os.getenv(name, "").split(" #")[0].strip()
+    raw = _env(name).split(" #")[0].strip()
     return raw or default
 
 
@@ -50,6 +66,19 @@ class Settings:
                       "doi:10.17632/vgjk58vf8h.1, CC BY 4.0")
     REVIEWS_SOURCE_URL = "https://data.mendeley.com/datasets/vgjk58vf8h/1"
     POLICY_STALE_DAYS = 45
+    FARE_OPTIONS = _str("FARE_OPTIONS", "on")  # "off" skips the local-Chrome lookups of Google's fare options
+    DB_DIR = str(ROOT / "data")
+    # Deployed app (core/remote_db.py): read the database the scan workflow pushes to this repo's data branch.
+    DATA_REPO = _str("DATA_REPO", "")          # "owner/repo"
+    DATA_BRANCH = _str("DATA_BRANCH", "data")
+    GITHUB_TOKEN = _str("GITHUB_TOKEN", "")    # fine-grained, read-only "Contents" on that repo
+    # Quota protection. Scans: SerpApi only when Google blocks fast-flights, at most SERPAPI_SCAN_DAILY searches a day,
+    # and never into the last SERPAPI_RESERVE of the monthly budget (kept for testing and the demo).
+    SERPAPI_SCAN_DAILY = _int("SERPAPI_SCAN_DAILY", 6)
+    SERPAPI_RESERVE = _int("SERPAPI_RESERVE", 50)
+    # Live search: "off" never spends SerpApi from the app (the public server), only free fast-flights.
+    LIVE_SERPAPI = _str("LIVE_SERPAPI", "on")
+    LIVE_SEARCH_DAILY_CAP = _int("LIVE_SEARCH_DAILY_CAP", 0)  # Google requests per day for live search; 0 = no cap
 
 
 settings = Settings()
@@ -178,12 +207,29 @@ def fun_facts():
     return _public(load_json("fun_facts.json"))
 
 
+def airline_description(iata):
+    """The airline's written description, else the V6 template: where it's from and its alliance. None if neither."""
+    info = airline(iata)
+    if info.get("description"):
+        return info["description"]
+    if not info.get("hq"):
+        return None
+    group = f"part of {info['alliance']}" if info.get("alliance") else "not part of an alliance"
+    return f"{info['name']} is based in {info['hq']} and is {group}."
+
+
 def airline_name(iata):
     return airline(iata).get("name") or iata or "Unknown airline"
 
 
 def brand_color(iata):
     return airline(iata).get("brand_color", "#5B6470")
+
+
+def logo_url(iata):
+    """Google Flights' hosted logo, linked rather than stored (tpabuildv2.md "Logos").
+    Listed airlines only: gstatic answers 200 with a placeholder for unknown codes."""
+    return f"https://www.gstatic.com/flights/airline_logos/70px/{iata}.png" if iata in airlines() else None
 
 
 def resolve_airline(text, fuzzy=False):

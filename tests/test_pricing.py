@@ -73,12 +73,12 @@ def test_card_price_bags_line_and_toggle():
     f = {"price_usd": 100, "airline_iata": "XX", "trip_type": "one_way"}
     off = card_price(f, 0, 0, 1, False, POL)            # no bags picked -> 1 carry-on + 1 checked reference
     assert off.headline == 100 and off.with_bags == 135
-    assert off.bags_line() == "Bags not included · $135 with bags"
+    assert off.bags_line() == "Bags not included"       # never a separate "total with bags" (V6 p15)
     on = card_price(f, 0, 0, 1, True, POL)
-    assert on.headline == 135 and on.is_estimate and on.bags_line() == "Bags included · 1 carry-on + 1 checked"
+    assert on.headline == 135 and on.is_estimate and on.bags_line() == "Bags included"
     unknown = card_price({**f, "airline_iata": "ZZ"}, 1, 0, 1, True, POL)
     assert unknown.headline == 100 and not unknown.included
-    assert unknown.bags_line() == "Bags not included · bag fees not verified yet"
+    assert unknown.bags_line() == "Bag info unavailable"
 
 
 def test_upgrades_scale_and_unknowns():
@@ -94,7 +94,64 @@ def test_bags_line_when_fees_apply_without_amount():
     pol = {"XX": {"first_checked": {"fee_usd": None, "fee_label": "Requires fee"}}}
     cp = card_price({"price_usd": 100, "airline_iata": "XX", "trip_type": "one_way"}, 0, 0, 1, False, pol)
     assert cp.with_bags is None and cp.bags_line() == "Bags not included"
-    assert "verified" not in cp.tooltip()
+    assert cp.tooltip() == ""
+
+
+# ---- V6 p15: the five bag states
+V6_POL = {"XX": {"carry_on": {"fee_usd": 0}, "first_checked": {"fee_usd": 35}, "seat_selection": {"fee_usd": 18},
+                 "extra_legroom": {"fee_usd": 45}},
+          "IN": {"carry_on": {"fee_usd": 0}, "first_checked": {"fee_usd": 0}, "seat_selection": {"fee_usd": 18},
+                 "extra_legroom": {"fee_usd": 45}},
+          "RG": {"first_checked": {"fee_usd": None, "fee_label": "$55–$99"}, "seat_selection": {"fee_label": "Requires fee"}},
+          "NO": {}}
+
+
+def _v6_rows(code, include=False):
+    from core.pricing import upgrade_rows
+
+    f = {"price_usd": 159, "airline_iata": code, "trip_type": "one_way"}
+    cp = card_price(f, 0, 0, 1, include, V6_POL)
+    return cp, {r["id"]: r for r in upgrade_rows(f, cp, 1, V6_POL)}
+
+
+def test_state_1_and_2_not_included_then_ticked():
+    from core.pricing import upgrades_added
+
+    cp, rows = _v6_rows("XX")
+    assert cp.bags_line() == "Bags not included" and cp.headline == 159
+    assert (rows["checked"]["label"], rows["checked"]["fee"], rows["checked"]["included"]) == ("Add checked bag", 35, False)
+    assert upgrades_added(rows.values(), {"checked"}) == 35 and cp.bags_line(checked_added=True) == "1 checked bag added"
+
+
+def test_state_3_and_4_fare_covers_the_bag():
+    from core.pricing import upgrades_added
+
+    cp, rows = _v6_rows("IN")
+    assert cp.bags_line() == "Bags included"
+    assert rows["checked"]["included"] and rows["checked"]["label"] == "Checked bag" and rows["checked"]["fee"] is None
+    assert upgrades_added(rows.values(), {"checked", "seat_selection", "extra_legroom"}) == 63   # the bag can't add again
+
+
+def test_home_toggle_counts_as_included():
+    cp, rows = _v6_rows("XX", include=True)
+    assert cp.headline == 194 and cp.bags_line() == "Bags included" and rows["checked"]["included"]
+
+
+def test_state_5_no_bag_data():
+    from core.pricing import CHECK_GOOGLE, upgrades_added
+
+    cp, rows = _v6_rows("NO")
+    assert cp.bags_line() == "Bag info unavailable"
+    assert all(r["note"] == CHECK_GOOGLE and r["fee"] is None for r in rows.values())
+    assert rows["checked"]["label"] == "Checked bag" and upgrades_added(rows.values(), set(rows)) == 0
+
+
+def test_ranges_stay_informative_but_cant_be_ticked():
+    from core.pricing import CHECK_GOOGLE
+
+    cp, rows = _v6_rows("RG")
+    assert cp.bags_line() == "Bags not included" and rows["checked"]["note"] == "$55–$99" and rows["checked"]["fee"] is None
+    assert rows["seat_selection"]["note"] == CHECK_GOOGLE      # "Requires fee" says nothing a traveler can act on
 
 
 def test_upgrades_fee_label_without_amount():
@@ -112,7 +169,34 @@ def test_bags_included_reranks_by_total_and_drops_unknown_fees():
         {"fare_id": "2", "destination": "ATL", "price_usd": 80, "airline_iata": "XX", "trip_type": "one_way"},  # 80+0+35=115
         {"fare_id": "3", "destination": "JFK", "price_usd": 10, "airline_iata": "ZZ", "trip_type": "one_way"},  # unknown fees
         {"fare_id": "4", "destination": "BOS", "price_usd": 95, "airline_iata": "XX", "trip_type": "one_way"},  # 130
+        {"fare_id": "5", "destination": "BOS", "price_usd": 60, "airline_iata": "YY", "trip_type": "one_way"},  # 60+50+40=150
     ]
     out = cheapest_with_bags(fares, 0, 0, 1, 3, pol)
-    assert [f["fare_id"] for f, _ in out] == ["2", "4"]          # ATL via XX beats cheaper-fare YY; ZZ dropped
-    assert [cp.headline for _, cp in out] == [115, 130] and all(cp.included for _, cp in out)
+    # XX to ATL beats cheaper-fare YY; 4 repeats XX and 1 repeats ATL; ZZ's fees are unknown.
+    assert [f["fare_id"] for f, _ in out] == ["2", "5"]
+    assert [cp.headline for _, cp in out] == [115, 150] and all(cp.included for _, cp in out)
+
+
+# ---- bags picked: hide fares with unknown fees, add the fee to the price
+def test_one_bag_two_travelers_adds_one_fee_to_scaled_fare():
+    q = quote({"price_usd": 100, "airline_iata": "YY", "trip_type": "one_way"}, 1, 0, Party(2), POL)
+    assert q.fare_total == 200 and q.bags_total == 50 and q.total == 250 and q.per_traveler == 125
+
+
+def test_leg_totals_add_fees_and_leave_out_unknown():
+    from core.pricing import leg_totals
+    fares = [{"fare_id": "a", "price_usd": 300, "airline_iata": "XX"},
+             {"fare_id": "b", "price_usd": 200, "airline_iata": "ZZ"}]
+    assert leg_totals(fares, 0, 1, 2, policies=POL) == {"a": 370}
+    assert leg_totals(fares, 0, 0, 2, policies=POL) == {"a": 300, "b": 200}      # no bags: nothing hidden
+    ret = [{"fare_id": "r", "price_usd": 300, "airline_iata": "YY"}]
+    assert leg_totals(ret, 0, 1, 2, out=fares[0], policies=POL) == {"r": 375}    # mixed airlines: 35 + 40
+    assert leg_totals(ret, 0, 1, 2, out=fares[1], policies=POL) == {}
+
+
+def test_bundles_with_bags_reprices_and_leaves_out_unknown():
+    from core.pricing import bundles_with_bags
+    xx, zz = {"airline_iata": "XX"}, {"airline_iata": "ZZ"}
+    out = bundles_with_bags([{"out": xx, "ret": xx, "total": 300}, {"out": zz, "ret": zz, "total": 100}],
+                            0, 1, 2, POL)
+    assert [(b["total"], b["fare_total"]) for b in out] == [(370, 300)]
