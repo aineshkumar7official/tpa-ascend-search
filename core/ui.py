@@ -142,6 +142,7 @@ def _latest_data():
 
 def sync_db():
     """Deployed app: use the database from the latest scan, and drop cached query results when it changes."""
+    config.refresh_settings()  # secrets saved in Streamlit Cloud apply without a reboot
     if not remote_db.enabled():
         return
     sha = _latest_data()
