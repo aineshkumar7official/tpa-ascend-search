@@ -1,6 +1,7 @@
 """Reusable page pieces. Pages only assemble these; all raw HTML lives here (CSS in theme.py)."""
 import html
 import unicodedata
+from contextlib import nullcontext
 from dataclasses import replace
 from datetime import date, datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
@@ -134,24 +135,18 @@ def airline_label(f):
 _db_seen = {"sha": None}
 
 
-@st.cache_data(ttl=600, show_spinner="Loading the latest prices…")
-def _latest_data():
-    """At most every 10 minutes: switch to the newest scan on the data branch (deployed app only)."""
-    return remote_db.sync()
-
-
 def sync_db():
-    """Deployed app: use the database from the latest scan, and drop cached query results when it changes."""
+    """Deployed app: use the database from the latest scan, and drop cached query results when it changes.
+    Runs on every page load; remote_db only asks GitHub every 10 minutes."""
     config.refresh_settings()  # secrets saved in Streamlit Cloud apply without a reboot
     if not remote_db.enabled():
         return
-    sha = _latest_data()
-    if not sha:
-        _latest_data.clear()  # don't remember a failure for 10 minutes: retry on the next page load
-        return
-    if sha != _db_seen["sha"]:
+    first = remote_db._state["path"] is None
+    with st.spinner("Loading the latest prices…") if first else nullcontext():
+        sha = remote_db.sync()
+    if sha and (first or sha != _db_seen["sha"]):
         _db_seen["sha"] = sha
-        q.clear()
+        q.clear()  # results cached before this database (e.g. from an empty one) are wrong now
 
 
 def chrome(active):
