@@ -30,10 +30,11 @@ def _env(name):
     """Environment variable, else a Streamlit Cloud secret of the same name (the deployed app's settings)."""
     if os.getenv(name) is not None:
         return os.getenv(name)
-    if not (ROOT / ".streamlit" / "secrets.toml").exists() and not os.getenv("STREAMLIT_SHARING_MODE") \
-            and not Path("/mount/src").exists():
-        return ""  # no secrets anywhere: skip importing Streamlit (scripts, tests, GitHub Actions)
     try:
+        from streamlit import runtime
+
+        if not runtime.exists():
+            return ""  # scripts, tests, GitHub Actions: no Streamlit secrets
         import streamlit as st
 
         v = st.secrets.get(name)

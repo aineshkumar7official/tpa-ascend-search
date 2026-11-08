@@ -43,7 +43,7 @@ def home():
         st.info("No bags-included prices yet: bag fees aren't verified for the airlines in the latest scan. "
                 "Add them to `data/airline_policies.json` (see TODO_VERIFY.md), or remove your bags and turn off **Bags included**.")
     elif not fares:
-        st.info("No prices yet — the first background scan fills this in "
+        st.info(ui.remote_db.status() or "No prices yet — the first background scan fills this in "
                 "(`python -m bots.pipeline --once`).")
     else:
         def render(item):
