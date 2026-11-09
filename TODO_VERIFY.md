@@ -12,8 +12,8 @@ Restart Streamlit after editing any `data/*.json` file (loaders are cached).
 
 **Dropped because the new PDF doesn't say it:** Alaska "Starlink coming soon" (Wi-Fi line).
 
-## Fees & Policies entry (2026-11-07)
-`TPA_Airline_Fees_and_Policies.pdf` is entered for 21 airlines: bags, seats, loyalty, food, entertainment, fun facts, policy links, HQ and alliance. It replaces the Review Draft wherever both cover a field. `checked` stays null on all of them (the card says "not yet checked") because the PDF says its figures still need confirming on each airline's site.
+## Fees & Policies entry (2026-11-07, superseded by the Nov 9 update above)
+The Nov 7 PDF (`TPA_Airline_Fees_and_Policies.pdf`, since removed from the repo) was entered for 21 airlines: bags, seats, loyalty, food, entertainment, fun facts, policy links, HQ and alliance. It replaces the Review Draft wherever both cover a field. `checked` stays null on all of them (the card says "not yet checked") because the PDF says its figures still need confirming on each airline's site.
 
 **Not in the PDF, still empty:** Spirit (NK), Allegiant (G4). Neither has a TPA route in `destinations.json`, so decide whether they should stay listed.
 
