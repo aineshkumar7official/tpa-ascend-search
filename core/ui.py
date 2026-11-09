@@ -1187,19 +1187,19 @@ def _dest_body(prefix):
     if ss.pop("_dest_picked", False):
         st.rerun()
     draft = ss[f"{prefix}_to_draft"]
-    with st.container(key=f"destpick_{prefix}"):
-        st.markdown('<div class="dest-hint">Every nonstop city from Tampa, A–Z. Cities with more than one airport '
-                    'have checkboxes: tick them all or only the ones you want. Other cities are a single tap.</div>',
-                    unsafe_allow_html=True)
+    with st.container(key=f"destpick_{prefix}", gap="small"):
+        st.markdown('<div class="dest-hint">Every nonstop city from Tampa, A–Z. Tap a city, or tick airports '
+                    'for cities with more than one.</div>', unsafe_allow_html=True)
         st.text_input("Search", placeholder="Search city or airport code", key=f"{prefix}_to_q",
                       label_visibility="collapsed", type="search", live="200ms")
-        with st.container(height=340, border=False, key=f"destlist_{prefix}"):
+        with st.container(height=250, border=False, key=f"destlist_{prefix}"):
             _dest_list(prefix, draft)
-        clear, done = st.columns([1, 3.2], gap="small")
-        clear.button("Clear", key=f"{prefix}_to_clear", width="stretch", on_click=_dest_clear, args=(prefix,))
-        n = len(draft)
-        done.button(f"Done · {n} airport{'s' if n != 1 else ''}", key=f"{prefix}_to_done", type="primary",
-                    width="stretch", disabled=not n, on_click=_dest_done, args=(prefix,))
+        # Pinned to the bottom of the pop-up (theme.py), so Done never needs a scroll to reach.
+        with st.container(horizontal=True, gap="small", key=f"destfoot_{prefix}"):
+            st.button("Clear", key=f"{prefix}_to_clear", on_click=_dest_clear, args=(prefix,))
+            n = len(draft)
+            st.button(f"Done · {n} airport{'s' if n != 1 else ''}", key=f"{prefix}_to_done", type="primary",
+                      width="stretch", disabled=not n, on_click=_dest_done, args=(prefix,))
 
 
 # ================================================================ search forms
