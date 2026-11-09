@@ -3,6 +3,15 @@
 The app shows "Not verified yet", "Coming soon" or a gray placeholder tile until these are filled.
 Restart Streamlit after editing any `data/*.json` file (loaders are cached).
 
+## Fees & Policies update (2026-11-09)
+`TPA_Airline_Fees_and_Policies_21_Airlines.pdf` (Notion Airline Verification Tracker, all 21 verified Nov 7, 2026) is entered over the Nov 7 entry below: bag sizes and weights, seat rules, food, entertainment and fun facts. `checked` is now `2026-11-07` on all 21, so the card says "checked 2026-11-07".
+
+**Flagged † "not checked in the last 45 days" in Notion:** Avianca, British Airways, Copa, Frontier, Porter, Southwest, Sun Country, Virgin Atlantic, WestJet. They carry `recheck: true`, which keeps the red "confirm on the airline site" line on their airline page. Remove it once each one is re-checked.
+
+**Still from the Review Draft (the 21-airline PDF gives no amount):** Breeze carry-on $35 and first bag $35–$41 on Nice; Porter seats from C$12.
+
+**Dropped because the new PDF doesn't say it:** Alaska "Starlink coming soon" (Wi-Fi line).
+
 ## Fees & Policies entry (2026-11-07)
 `TPA_Airline_Fees_and_Policies.pdf` is entered for 21 airlines: bags, seats, loyalty, food, entertainment, fun facts, policy links, HQ and alliance. It replaces the Review Draft wherever both cover a field. `checked` stays null on all of them (the card says "not yet checked") because the PDF says its figures still need confirming on each airline's site.
 

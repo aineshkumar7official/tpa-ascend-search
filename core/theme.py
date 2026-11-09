@@ -95,7 +95,7 @@ a {{ color: var(--link); }}
 /* ---------- image tiles ---------- */
 .img-ph {{ background: var(--image-ph); color: var(--muted); display: flex; align-items: center; justify-content: center;
   font-size: .8rem; text-align: center; border-radius: 8px; width: 100%; }}
-.img-tile {{ width: 100% !important; object-fit: cover !important; border-radius: 8px; display: block; background: var(--image-ph); }}
+.img-tile {{ width: 100% !important; object-fit: cover !important; object-position: center center; border-radius: 8px; display: block; background: var(--image-ph); }}
 /* Photo library: square tiles. The plane photo fits inside its square (whole aircraft visible), the rest fill it. */
 .img-tile.lib, .img-ph.lib {{ aspect-ratio: 1 / 1; height: auto !important; }}
 .img-tile.lib-fit {{ object-fit: contain !important; background: #fff; border: 1px solid var(--border); }}
@@ -631,7 +631,20 @@ label p {{ font-size: .8rem !important; }}
 .step-h {{ margin: .3rem 0 .25rem; }}
 .step-n {{ width: 26px; height: 26px; font-size: .85rem; }}
 .news li, .routes li {{ font-size: .8rem; margin-bottom: .15rem; }}
-.mx-img {{ height: 115px; }}
+.mx-img {{ height: 150px; }}
+/* Airline Matrix photo collage (V8 p7). Each photo fills its cell, cropped around its center. */
+.mx-collage {{ display: grid; gap: 2px; height: 150px; background: #fff; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }}
+.mx-collage.n1 {{ grid-template-columns: 1fr; grid-template-rows: 1fr; }}
+.mx-collage.n2 {{ grid-template-rows: 1fr; }}
+.mx-collage.n3 {{ grid-template-columns: 1.4fr 1fr; }}
+.mx-collage.n3 > :first-child {{ grid-row: span 2; }}
+.mx-cell {{ display: block; min-width: 0; min-height: 0; overflow: hidden; background: var(--image-ph); }}
+.mx-cell img {{ display: block; width: 100%; height: 100%; object-fit: cover; object-position: center center; }}
+.mx-cell {{ position: relative; }}
+.mx-cell .mx-fill {{ display: none; }}
+/* 3 photos: the large cell is taller than a plane photo, so show the whole plane, centered, over a blurred fill */
+.mx-collage.n3 .mx-ext .mx-fill {{ display: block; position: absolute; inset: 0; filter: blur(12px); transform: scale(1.15); }}
+.mx-collage.n3 .mx-ext img:not(.mx-fill) {{ position: relative; object-fit: contain; }}
 [class*="st-key-tileempty"] {{ padding: .7rem .85rem !important; height: auto; }}
 .fee .v {{ font-size: .8rem; }}
 .fee .k {{ font-size: .68rem; }}

@@ -74,8 +74,8 @@ else:
         ui.deal_card(d, ui.card_price(d["fare"], party, carry, checked, bool(carry or checked)), "deals")
 
     ui.heading(f"Stand-out deals · {trip_label}", f"At least {queries.STANDOUT_MIN_DROP:.0%} and "
-               f"&#36;{queries.STANDOUT_MIN_SAVINGS_USD} below the route's typical price for the same departure date. "
-               "Includes all date windows.", level=2)
+               f"&#36;{queries.STANDOUT_MIN_SAVINGS_USD} below the route's typical price, its earlier checks, or its last "
+               "check, for the same departure date. Includes all date windows.", level=2)
     if standouts:
         ui.card_grid(standouts, render)
     else:

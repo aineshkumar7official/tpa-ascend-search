@@ -18,6 +18,9 @@ TRIP_PILLS = {"One-way": "one_way", "Round-trip": "round_trip"}
 # Both are required: 10% of a $30 fare is noise, and $20 off a $900 fare isn't much of a deal.
 STANDOUT_MIN_DROP = 0.10
 STANDOUT_MIN_SAVINGS_USD = 20
+# A route still "Tracking" (under MIN_POINTS checks) can be a stand-out once it has this many earlier checks
+# for the same departure date and has fallen well below them.
+STANDOUT_EARLY_MIN_POINTS = 2
 
 
 def window_for_pill(label):
@@ -194,33 +197,59 @@ def deals(conn, window_id, trip_type, region=None, carry_on=0, checked=0, party=
         fare = hydrate(conn, r)
         fare["fare_id"] = str(r["id"])
         out.append({"fare": fare, "trend": [h["min_price"] for h in hist], "baseline": baseline,
-                    "drop_pct": drop, "tracking": tracking,
+                    "drop_pct": drop, "tracking": tracking, "prev": prev,
                     "points": [(h["scanned_at"], h["min_price"]) for h in hist30]})
     ranked = sorted((x for x in out if not x["tracking"]), key=lambda x: -(x["drop_pct"] or 0))
     tracking = sorted((x for x in out if x["tracking"]), key=lambda x: x["fare"]["price_usd"])
     return ranked + tracking
 
 
+def standout_drop(deal):
+    """How a deal qualifies as a stand-out, or None: {"pct", "ref", "basis"}.
+
+    Every basis needs the same 10% and $20 fall, checked in this order:
+      typical  below the median of the last 14 days of checks (needs MIN_POINTS of them)
+      early    still Tracking, but below the median of its STANDOUT_EARLY_MIN_POINTS+ earlier checks
+      last     below the previous check (a sharp fall the 14-day median hasn't caught up with)
+    All of them compare prices for the same departure date only.
+    """
+    price = deal["fare"]["price_usd"]
+    prev = deal.get("prev") or []
+
+    def fell(ref, basis):
+        if ref and (ref - price) / ref >= STANDOUT_MIN_DROP and ref - price >= STANDOUT_MIN_SAVINGS_USD:
+            return {"pct": (ref - price) / ref, "ref": ref, "basis": basis}
+        return None
+
+    if not deal["tracking"] and deal["baseline"]:
+        hit = fell(deal["baseline"], "typical")
+        if hit:
+            return hit
+    if deal["tracking"] and len(prev) >= STANDOUT_EARLY_MIN_POINTS:
+        hit = fell(statistics.median(prev), "early")
+        if hit:
+            return hit
+    return fell(prev[-1], "last") if prev else None
+
+
 def is_standout(deal):
-    if deal["tracking"] or not deal["baseline"]:
-        return False
-    return (deal["drop_pct"] >= STANDOUT_MIN_DROP
-            and deal["baseline"] - deal["fare"]["price_usd"] >= STANDOUT_MIN_SAVINGS_USD)
+    return standout_drop(deal) is not None
 
 
 def standout_deals(conn, trip_type, region=None, carry_on=0, checked=0, party=1):
     """Stand-out deals of one trip type across every date window, biggest drop first.
 
-    Each is a `deals()` dict plus window_label, for showing which window it came from.
+    Each is a `deals()` dict plus window_label (which window it came from) and standout (see standout_drop).
     """
     out = []
     for window_label, window_id in WINDOW_PILLS.items():
         if window_id is None:  # Custom is live-only, so it has no price history
             continue
         for d in deals(conn, window_id, trip_type, region, carry_on, checked, party):
-            if is_standout(d):
-                out.append({**d, "window_label": window_label})
-    return sorted(out, key=lambda d: -d["drop_pct"])
+            hit = standout_drop(d)
+            if hit:
+                out.append({**d, "window_label": window_label, "standout": hit})
+    return sorted(out, key=lambda d: -d["standout"]["pct"])
 
 
 # ---------------------------------------------------------------- Airline Matrix
@@ -276,8 +305,37 @@ def matrix(conn):
             asset = {**asset, "exterior_url": curated["image_url"], "exterior_link": curated.get("source_page"),
                      "exterior_credit": curated.get("credit"), "exterior_source": "curated"}
         out.append({"iata": code, "name": config.airline_name(code), "n_nonstops": len(airline_routes(conn, code)),
-                    "asset": asset})
+                    "asset": asset, "photos": matrix_photos(conn, code, asset)})
     return out
+
+
+MATRIX_MAX_PHOTOS = 4  # Wireframes V8 p7: 2 = side by side, 3 = one large + two small, 4 = 2 x 2
+
+
+def matrix_photos(conn, code, asset):
+    """Up to four photos for an Airline Matrix tile, livery first: [{url, link, credit, label}].
+
+    Each slot takes the hand-picked cabins.json airline|* photo, else the airline's cached asset. A photo already
+    used in an earlier slot is skipped, so a seat slot that fell back to the cabin photo doesn't show it twice.
+    """
+    curated = config.cabins().get(f"{code}|*") or {}
+    cached = airline_photo_asset(conn, code)
+    slots = [("exterior", "exterior", "Plane · livery"), ("cabin", "interior", "Cabin"), ("seat", "seat", "Seat"),
+             ("food", "food", "Food & drink")]
+    photos, seen = [], set()
+    for slot, col, label in slots:
+        if slot == "exterior":
+            pic = {"url": asset.get("exterior_url"), "link": asset.get("exterior_link"),
+                   "credit": asset.get("exterior_credit")}
+        elif (curated.get(slot) or {}).get("image_url"):
+            c = curated[slot]
+            pic = {"url": c["image_url"], "link": c.get("source_page"), "credit": c.get("credit")}
+        else:
+            pic = {"url": cached.get(f"{col}_url"), "link": cached.get(f"{col}_link"), "credit": cached.get(f"{col}_credit")}
+        if pic["url"] and pic["url"] not in seen:
+            seen.add(pic["url"])
+            photos.append({**pic, "label": label})
+    return photos[:MATRIX_MAX_PHOTOS]
 
 
 def airline_photo_asset(conn, airline):

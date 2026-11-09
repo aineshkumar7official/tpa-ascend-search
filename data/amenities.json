@@ -1,8 +1,8 @@
 {
-  "_note": "Keyed airline|aircraft_type, with airline|* fallback ('Typical for [airline]'). Chips render only for true values; missing keys render nothing. legroom_pitch_in from the airline's published seat pitch. cool_thing in your own words. routes (on airline|* only): overrides for flights to or from one airport, e.g. Delta's Amsterdam meal. food_drinks format when snacks, drinks and more to buy: 'Free snacks (names, if known)/soft drinks, buy on board also available'. Chip pop-up keys (wifi_cost, wifi_speed, screen_size_in, entertainment_system, stream_app, stream_connect, stream_content, power_outlet) come from the Entertainment row of TPA_Airline_Fees_and_Policies.pdf (Nov 7, 2026).",
+  "_note": "Keyed airline|aircraft_type, with airline|* fallback ('Typical for [airline]'). Chips render only for true values; missing keys render nothing. legroom_pitch_in from the airline's published seat pitch. cool_thing in your own words. routes (on airline|* only): overrides for flights to or from one airport, e.g. Delta's Amsterdam meal. food_drinks format when snacks, drinks and more to buy: 'Free snacks (names, if known)/soft drinks, buy on board also available'. Chip pop-up keys (wifi_cost, wifi_speed, screen_size_in, entertainment_system, stream_app, stream_connect, stream_content, power_outlet) come from the Entertainment row of TPA_Airline_Fees_and_Policies_21_Airlines.pdf (Nov 9, 2026).",
   "DL|*": {
     "carry_on": "Free",
-    "food_drinks": "Free snacks (Cheez-It, Biscoff, Sun Chips)/soft drinks, buy on board also available",
+    "food_drinks": "Free snacks (Cheez-It, Biscoff, Sun Chips)/soft drinks and alcoholic drinks, buy on board also available",
     "wifi": true,
     "seatback_screen": true,
     "stream_to_device": null,
@@ -16,11 +16,12 @@
     },
     "entertainment_system": "Delta Studio",
     "wifi_cost": "Free for SkyMiles members, or $5 flight pass",
-    "power_outlet": "USB and universal (AC) outlets"
+    "power_outlet": "USB and universal (AC) outlets",
+    "screen_size_in": "9–10"
   },
   "WN|*": {
     "carry_on": "Free",
-    "food_drinks": "Free snacks (graham crackers, Oreo cookies, pretzels)/soft drinks, buy on board also available",
+    "food_drinks": "Free snacks (graham crackers, Oreo cookies, pretzels)/soft drinks, alcohol for a fee",
     "wifi": true,
     "seatback_screen": false,
     "stream_to_device": true,
@@ -45,7 +46,7 @@
   },
   "AA|*": {
     "carry_on": "Free",
-    "food_drinks": "Free snacks (cookies, pretzels, Goldfish, Biscoff)/soft drinks, buy on board also available",
+    "food_drinks": "Free snacks (cookies, pretzels, Goldfish, Biscoff)/soft drinks, coffee, tea, juice, water, buy on board also available",
     "wifi": true,
     "seatback_screen": false,
     "stream_to_device": true,
@@ -55,7 +56,8 @@
     "stream_app": "AA Inflight Entertainment",
     "stream_connect": "aainflight.com",
     "wifi_cost": "Free for AAdvantage members; paid plans for everyone else",
-    "power_outlet": "In-seat power and USB outlets"
+    "power_outlet": "In-seat power and USB outlets",
+    "wifi_speed": "Web browsing and messaging"
   },
   "UA|*": {
     "carry_on": "Free. Basic: not included domestic, short-haul; included transatlantic, transpacific.",
@@ -168,7 +170,7 @@
     "cool_thing": null
   },
   "F9|*": {
-    "carry_on": "Fee on Basic, included with Standard; max 35 lb",
+    "carry_on": "Paid · max 35 lb",
     "food_drinks": "Buy from Fly Bar",
     "wifi": false,
     "seatback_screen": false,
@@ -179,7 +181,7 @@
   },
   "AS|*": {
     "carry_on": "Free",
-    "food_drinks": "Free snacks (chips, cookies, pistachios, gummies)/soft drinks, buy on board also available",
+    "food_drinks": "Free snacks (chips, cookies, pistachios, gummies)/soft drinks, hot drinks, buy on board also available",
     "wifi": true,
     "seatback_screen": false,
     "stream_to_device": true,
@@ -188,12 +190,12 @@
     "cool_thing": "Trading cards",
     "stream_app": "Alaska Beyond Entertainment",
     "wifi_cost": "$8 (Standard Wi-Fi)",
-    "wifi_speed": "Stream, browse and chat; Starlink coming soon",
+    "wifi_speed": "Stream, browse and chat",
     "power_outlet": "In-seat power and USB outlets"
   },
   "SY|*": {
-    "carry_on": "$34 during booking, $50 before or at check-in; max 35 lb",
-    "food_drinks": "Free snacks/soft drinks, buy on board also available",
+    "carry_on": "$34 during booking, $50 before or at check-in · max 35 lb",
+    "food_drinks": "Free snacks/soft drinks, alcoholic drinks to buy",
     "wifi": false,
     "seatback_screen": false,
     "stream_to_device": true,
@@ -204,7 +206,7 @@
     "power_outlet": "USB socket"
   },
   "MX|*": {
-    "carry_on": "$35 on Nice; included on Nicer, Nicest; max 35 lb",
+    "carry_on": "$35 on Nice; included on Nicer, Nicest · max 35 lb",
     "food_drinks": "Buy on board",
     "wifi": true,
     "seatback_screen": false,
@@ -212,7 +214,9 @@
     "power": true,
     "legroom_pitch_in": "31",
     "cool_thing": "Trading cards",
-    "wifi_cost": "For purchase; messaging free"
+    "wifi_cost": "Free messaging; Wi-Fi for purchase",
+    "stream_app": "Breeze Airways app",
+    "power_outlet": "USB-A and USB-C outlets in Economy"
   },
   "G4|*": {
     "carry_on": null,
@@ -225,17 +229,18 @@
     "cool_thing": null
   },
   "AC|*": {
-    "carry_on": "Not included on Basic; included on Standard and above",
-    "food_drinks": "Free snacks (oat bars, pretzels, cookies)/soft drinks, buy on board also available",
+    "carry_on": "Not included on Basic; included on Standard and above · no weight limit",
+    "food_drinks": "Free snacks (oat bars, pretzels, cookies)/beer, wine, soft drinks, juices, hot drinks, Air Canada Bistro menu also available",
     "wifi": true,
     "seatback_screen": true,
     "stream_to_device": null,
     "power": true,
     "legroom_pitch_in": "29",
-    "cool_thing": null,
+    "cool_thing": "Business Class meal for $17.95",
     "screen_size_in": "10",
     "wifi_cost": "Free for Aeroplan members; paid for everyone else",
-    "power_outlet": "USB and universal (AC) outlets"
+    "power_outlet": "USB and universal (AC) outlets",
+    "entertainment_system": "enRoute (seatback touchscreen)"
   },
   "AM|*": {
     "carry_on": "Free",
@@ -245,14 +250,14 @@
     "stream_to_device": null,
     "power": true,
     "legroom_pitch_in": "30",
-    "cool_thing": "Limited 90th anniversary trading cards",
+    "cool_thing": "Limited 90th anniversary Aeroméxico trading cards",
     "screen_size_in": "9",
-    "entertainment_system": "AM Streaming (seatback touchscreen)",
+    "entertainment_system": "AM Streaming (9 in seatback touchscreen)",
     "wifi_cost": "Free messaging; paid plans for more",
     "power_outlet": "USB and universal (AC) outlets"
   },
   "AV|*": {
-    "carry_on": "Not included on Basic; included on Light and above; 10 kg",
+    "carry_on": "Not included on Basic; included on Light and above · max 10 kg",
     "food_drinks": "To buy: snacks, water, juice, coffee",
     "wifi": null,
     "seatback_screen": null,
@@ -271,20 +276,22 @@
     "stream_to_device": false,
     "power": false,
     "legroom_pitch_in": "29",
-    "cool_thing": null
+    "cool_thing": "A new airline: first flight in 2021"
   },
   "BA|*": {
-    "carry_on": "Free on every fare, including Basic",
+    "carry_on": "Free on every fare, including Basic · 23 kg",
     "food_drinks": "Snacks, starter, main, dessert; hot, cold and alcoholic drinks",
     "wifi": true,
     "seatback_screen": true,
     "stream_to_device": null,
     "power": true,
     "legroom_pitch_in": "31",
-    "cool_thing": null,
+    "cool_thing": "Paramount+ and Audible on board",
     "screen_size_in": "10",
     "entertainment_system": "Highlife (Paramount+ and Audible)",
-    "wifi_cost": "Messaging free for Club members; $4–$6.67 for non-members"
+    "wifi_cost": "Messaging free for Club members; $4–$6.67 for non-members",
+    "power_outlet": "USB and universal (AC) outlets",
+    "wifi_speed": "Web browsing and messaging"
   },
   "KX|*": {
     "carry_on": "Free",
@@ -299,18 +306,20 @@
     "power_outlet": "USB outlet"
   },
   "CM|*": {
-    "carry_on": "Free on every fare, 10 kg",
+    "carry_on": "Free on every fare · 10 kg",
     "food_drinks": "Snacks and non-alcoholic drinks",
     "wifi": null,
     "seatback_screen": false,
-    "stream_to_device": null,
+    "stream_to_device": true,
     "power": true,
     "legroom_pitch_in": "30–32",
     "cool_thing": null,
-    "power_outlet": "USB outlet"
+    "power_outlet": "USB outlet",
+    "stream_app": "Copa ShowPass",
+    "entertainment_system": "Drop-down overhead screens"
   },
   "4Y|*": {
-    "carry_on": "Free, 8 kg",
+    "carry_on": "Free · 8 kg",
     "food_drinks": "Hot meal: appetizer, main, dessert; more to buy",
     "wifi": true,
     "seatback_screen": true,
@@ -323,7 +332,7 @@
     "power_outlet": "Universal (AC) and USB sockets"
   },
   "WK|*": {
-    "carry_on": "Free, 8 kg",
+    "carry_on": "Free · 8 kg",
     "food_drinks": "Free water, soft and hot drinks; meal with salad, main, dessert, apero",
     "wifi": false,
     "seatback_screen": true,
@@ -342,19 +351,19 @@
     "stream_to_device": true,
     "power": true,
     "legroom_pitch_in": "30",
-    "cool_thing": null,
+    "cool_thing": "Snacks all from Canadian brands",
     "wifi_cost": "Free",
     "power_outlet": "In-seat power"
   },
   "VS|*": {
-    "carry_on": "1 included, 10 kg",
+    "carry_on": "1 included · 10 kg",
     "food_drinks": "Free three-course meal, snacks, soft and alcoholic drinks",
     "wifi": true,
     "seatback_screen": true,
     "stream_to_device": null,
     "power": true,
     "legroom_pitch_in": "31",
-    "cool_thing": "'Mile High' afternoon tea on day flights from the UK",
+    "cool_thing": "'Mile High' afternoon tea on day flights from the UK; Swizzels Love Hearts",
     "screen_size_in": "9 (older aircraft) or 13.3 (A330-900neo)",
     "entertainment_system": "Vera (touchscreen)",
     "wifi_cost": "For a fee",
@@ -362,7 +371,7 @@
   },
   "WS|*": {
     "carry_on": "1 free on Econo and above. UltraBasic: none on U.S., Canada flights.",
-    "food_drinks": "Free snack (sweet or salty)/soft drinks, buy on board also available",
+    "food_drinks": "Free snack (sweet or salty)/soda and water, buy on board also available",
     "wifi": true,
     "seatback_screen": false,
     "stream_to_device": true,

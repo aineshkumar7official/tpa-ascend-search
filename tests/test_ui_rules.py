@@ -187,6 +187,7 @@ def test_policy_freshness():
     assert policy_is_stale({"checked": None})
     assert policy_is_stale({"checked": "2026-09-01"}, today=date(2026, 11, 2))
     assert not policy_is_stale({"checked": "2026-10-20"}, today=date(2026, 11, 2))
+    assert policy_is_stale({"checked": "2026-10-20", "recheck": True}, today=date(2026, 11, 2))  # tracker flag
 
 
 def test_no_reviews_label():

@@ -100,3 +100,22 @@ def test_a_rolled_date_never_makes_a_standout(conn):
     _seed_route(conn, "JFK", "mid+4", "one_way", "2026-12-01", [], 100)
     conn.commit()
     assert queries.standout_deals(conn, "one_way") == []
+
+
+def test_tracking_route_that_fell_below_its_earlier_checks_is_a_standout(conn):
+    _seed_route(conn, "DEN", "wkend+2", "one_way", "2026-11-13", [403, 403, 320], 234)  # 3 checks: still Tracking
+    _seed_route(conn, "ATL", "wkend+2", "one_way", "2026-11-13", [174, 174, 204], 164)  # -6%: too small
+    _seed_route(conn, "BOS", "wkend+2", "one_way", "2026-11-13", [300], 200)            # one check: only vs. last
+    conn.commit()
+    got = {d["fare"]["destination"]: d["standout"] for d in queries.standout_deals(conn, "one_way")}
+    assert set(got) == {"DEN", "BOS"}
+    assert got["DEN"]["basis"] == "early" and got["DEN"]["ref"] == 403 and round(got["DEN"]["pct"], 2) == 0.42
+    assert got["BOS"]["basis"] == "last" and got["BOS"]["ref"] == 300
+
+
+def test_sharp_fall_since_last_check_counts_even_when_typical_price_is_close(conn):
+    # median of earlier checks is 149 (-9%: not enough), but the last check was 193 (-30%, $57)
+    _seed_route(conn, "DTW", "mid+4", "round_trip", "2026-12-01", [193, 193, 182, 182, 149, 149, 143, 143, 149], 136)
+    conn.commit()
+    [d] = queries.standout_deals(conn, "round_trip")
+    assert d["standout"]["basis"] == "last" and d["standout"]["ref"] == 193
