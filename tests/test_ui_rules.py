@@ -73,8 +73,9 @@ def test_compare_table_rows_follow_v7():
 
 def test_chip_popups_list_only_that_flights_amenities():
     html = amenity_chips({"wifi": True, "wifi_cost": "Free", "power": False})
-    assert "Wi-Fi" in html and "Cost" in html and "Free" in html and "Speed" in html and "Not verified yet" in html
-    assert "Outlet type" not in html
+    assert "Wi-Fi" in html and "Cost" in html and "Free" in html
+    assert "Speed" not in html and "Outlet type" not in html
+    assert "Not verified yet" in amenity_chips({"wifi": True})  # no cost recorded
 
 
 def test_amenities_fallback_label(monkeypatch):

@@ -305,37 +305,8 @@ def matrix(conn):
             asset = {**asset, "exterior_url": curated["image_url"], "exterior_link": curated.get("source_page"),
                      "exterior_credit": curated.get("credit"), "exterior_source": "curated"}
         out.append({"iata": code, "name": config.airline_name(code), "n_nonstops": len(airline_routes(conn, code)),
-                    "asset": asset, "photos": matrix_photos(conn, code, asset)})
+                    "asset": asset})
     return out
-
-
-MATRIX_MAX_PHOTOS = 4  # Wireframes V8 p7: 2 = side by side, 3 = one large + two small, 4 = 2 x 2
-
-
-def matrix_photos(conn, code, asset):
-    """Up to four photos for an Airline Matrix tile, livery first: [{url, link, credit, label}].
-
-    Each slot takes the hand-picked cabins.json airline|* photo, else the airline's cached asset. A photo already
-    used in an earlier slot is skipped, so a seat slot that fell back to the cabin photo doesn't show it twice.
-    """
-    curated = config.cabins().get(f"{code}|*") or {}
-    cached = airline_photo_asset(conn, code)
-    slots = [("exterior", "exterior", "Plane · livery"), ("cabin", "interior", "Cabin"), ("seat", "seat", "Seat"),
-             ("food", "food", "Food & drink")]
-    photos, seen = [], set()
-    for slot, col, label in slots:
-        if slot == "exterior":
-            pic = {"url": asset.get("exterior_url"), "link": asset.get("exterior_link"),
-                   "credit": asset.get("exterior_credit")}
-        elif (curated.get(slot) or {}).get("image_url"):
-            c = curated[slot]
-            pic = {"url": c["image_url"], "link": c.get("source_page"), "credit": c.get("credit")}
-        else:
-            pic = {"url": cached.get(f"{col}_url"), "link": cached.get(f"{col}_link"), "credit": cached.get(f"{col}_credit")}
-        if pic["url"] and pic["url"] not in seen:
-            seen.add(pic["url"])
-            photos.append({**pic, "label": label})
-    return photos[:MATRIX_MAX_PHOTOS]
 
 
 def airline_photo_asset(conn, airline):
