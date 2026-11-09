@@ -1,18 +1,18 @@
 {
-  "_note": "Economy fare. Fill every value from the airline's OWN policy page, then set 'checked'. fee_usd = numeric estimate for bag totals only (null = unknown -> fare shown without bags). each_way = fee charged per direction. Nothing here is guessed; null renders 'Not verified yet'. seat_selection.fee_usd / extra_legroom.fee_usd = cheapest economy seat / extra-legroom seat per traveler per flight (card Upgrades menu). change_cancel may add label, rows ([what, fee] pairs) and note for the fee table; text is still required for the round-trip summary. fee_label = text for the Upgrades menu when a fee applies but fee_usd is unknown.",
+  "_note": "Economy fare. Fill every value from the airline's OWN policy page, then set 'checked'. recheck=true keeps the 'confirm on the airline site' warning (Notion flag †). fee_usd = numeric estimate for bag totals only (null = unknown -> fare shown without bags). each_way = fee charged per direction. Nothing here is guessed; null renders 'Not verified yet'. seat_selection.fee_usd / extra_legroom.fee_usd = cheapest economy seat / extra-legroom seat per traveler per flight (card Upgrades menu). change_cancel may add label, rows ([what, fee] pairs) and note for the fee table; text is still required for the round-trip summary. fee_label = text for the Upgrades menu when a fee applies but fee_usd is unknown.",
   "DL": {
-    "checked": null,
+    "checked": "2026-11-07",
     "personal_item": {
-      "text": "Free",
+      "text": "Free · 1 per passenger",
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "Free",
+      "text": "Free · 22 x 14 x 9 in",
       "fee_usd": 0,
       "each_way": true
     },
     "first_checked": {
-      "text": "$45, 2nd bag $55. Amsterdam: Main Basic $75, 2nd bag $100; Main Cabin 1 included.",
+      "text": "$45, 2nd bag $55 · max 50 lb, 62 linear in. Amsterdam: Main Basic $75, 2nd bag $100; Main Cabin, Comfort+ 1 included.",
       "fee_usd": 45,
       "each_way": true
     },
@@ -40,18 +40,18 @@
     }
   },
   "WN": {
-    "checked": null,
+    "checked": "2026-11-07",
     "personal_item": {
-      "text": "Free",
+      "text": "Free · about 16.25 x 13.5 x 8 in",
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "Free",
+      "text": "Free · 24 x 16 x 10 in",
       "fee_usd": 0,
       "each_way": true
     },
     "first_checked": {
-      "text": "$45, 2nd bag $55, 3rd bag $150; max 50 lb",
+      "text": "$45, 2nd bag $55, 3rd bag $150 · max 50 lb, 62 linear in. Free 1st bag for A-List, eligible cardholders, active-duty military.",
       "fee_usd": 45,
       "each_way": true
     },
@@ -76,10 +76,11 @@
     "extra_legroom": {
       "text": null,
       "fee_usd": null
-    }
+    },
+    "recheck": true
   },
   "B6": {
-    "checked": null,
+    "checked": "2026-11-07",
     "personal_item": {
       "text": "Included",
       "fee_usd": 0
@@ -90,7 +91,7 @@
       "each_way": true
     },
     "first_checked": {
-      "text": "$55, $70 within 24 hours; max 50 lb",
+      "text": "$55, $70 within 24 hours · max 22.68 kg",
       "fee_usd": 55,
       "each_way": true
     },
@@ -119,18 +120,18 @@
     }
   },
   "AA": {
-    "checked": null,
+    "checked": "2026-11-07",
     "personal_item": {
-      "text": "Free",
+      "text": "Free · 1 per passenger",
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "Free",
+      "text": "Free · 1 per passenger",
       "fee_usd": 0,
       "each_way": true
     },
     "first_checked": {
-      "text": "$45 online, $50 airport; 2nd bag $55, $60; Basic $5 more per bag; max 50 lb",
+      "text": "$45 online, $50 airport; 2nd bag $55, $60; Basic $5 more per bag · max 50 lb, 62 linear in. Free 1st bag for AAdvantage Gold and eligible cardholders (domestic).",
       "fee_usd": 45,
       "each_way": true
     },
@@ -159,18 +160,18 @@
     }
   },
   "UA": {
-    "checked": null,
+    "checked": "2026-11-07",
     "personal_item": {
-      "text": "Free",
+      "text": "Free · 17 x 10 x 9 in",
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "Free. Basic: not included domestic, short-haul; included transatlantic, transpacific.",
+      "text": "Free · 22 x 14 x 9 in. Basic: not included domestic, short-haul; included transatlantic, transpacific.",
       "fee_usd": null,
       "each_way": true
     },
     "first_checked": {
-      "text": "$45 prepaid, $50 airport; 2nd bag $55, $60; 3rd bag $200; max 50 lb",
+      "text": "$45 prepaid, $50 airport; 2nd bag $55, $60; 3rd bag $200 · max 50 lb, 62 linear in. Free 1st bag for Premier and eligible cardholders.",
       "fee_usd": 45,
       "each_way": true
     },
@@ -238,24 +239,24 @@
     }
   },
   "F9": {
-    "checked": null,
+    "checked": "2026-11-07",
     "personal_item": {
-      "text": "Free",
+      "text": "Free · 14 x 18 x 8 in",
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "Fee on Basic, included with Standard; max 35 lb",
+      "text": "Paid · max 35 lb, 24 x 16 x 10 in",
       "fee_usd": null,
       "each_way": true
     },
     "first_checked": {
-      "text": "$55–$99 by route and timing; max 40 lb",
+      "text": "$55–$99 by route and timing · max 40 lb, 62 linear in",
       "fee_usd": null,
       "each_way": true,
       "fee_label": "$55–$99"
     },
     "seat_selection": {
-      "text": "Basic: from $15, or random at check-in. Bundles include a seat.",
+      "text": "Basic: from $15, or random at check-in. Economy bundle: standard seat; Business bundle: UpFront Plus.",
       "fee_usd": null,
       "fee_label": "From $15"
     },
@@ -297,10 +298,11 @@
       "text": null,
       "fee_usd": null,
       "fee_label": "Requires fee"
-    }
+    },
+    "recheck": true
   },
   "AS": {
-    "checked": null,
+    "checked": "2026-11-07",
     "personal_item": {
       "text": "Free",
       "fee_usd": 0
@@ -311,14 +313,14 @@
       "each_way": true
     },
     "first_checked": {
-      "text": "$45, 2nd bag $55; max 50 lb",
+      "text": "$45, 2nd bag $55 · max 50 lb, 62 linear in",
       "fee_usd": 45,
       "each_way": true
     },
     "seat_selection": {
-      "text": "Saver: assigned at check-in, pay to choose early. Main: free.",
+      "text": "Saver: assigned at check-in (groups not guaranteed together); pay for Main Preferred, Premium or First to choose early (price on seat map). Main: free.",
       "fee_usd": null,
-      "fee_label": "Requires fee"
+      "fee_label": "Price on seat map"
     },
     "change_cancel": {
       "text": "Saver: same-day change only, for a fee; 50% credit if canceled 14+ days out. Main: no change fee.",
@@ -360,18 +362,18 @@
     }
   },
   "SY": {
-    "checked": null,
+    "checked": "2026-11-07",
     "personal_item": {
-      "text": "Free",
+      "text": "Free · 17 x 13 x 9 in",
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "$34 during booking, $50 before or at check-in; max 35 lb",
+      "text": "$34 during booking, $50 before or at check-in · max 35 lb, 24 x 16 x 11 in",
       "fee_usd": 34,
       "each_way": true
     },
     "first_checked": {
-      "text": "$36–$50; max 50 lb",
+      "text": "$36–$50 · max 50 lb, 62 linear in",
       "fee_usd": null,
       "each_way": true,
       "fee_label": "$36–$50"
@@ -398,21 +400,22 @@
     "extra_legroom": {
       "text": null,
       "fee_usd": null
-    }
+    },
+    "recheck": true
   },
   "MX": {
-    "checked": null,
+    "checked": "2026-11-07",
     "personal_item": {
-      "text": "Free",
+      "text": "Free · 17 x 13 x 8 in",
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "$35 on Nice; included on Nicer, Nicest; max 35 lb",
+      "text": "$35 on Nice; included on Nicer, Nicest · max 35 lb, 24 x 14 x 10 in",
       "fee_usd": 35,
       "each_way": true
     },
     "first_checked": {
-      "text": "$35–$41 on Nice; 1 included on Nicer, 2 on Nicest; max 50 lb",
+      "text": "$35–$41 on Nice; 1 included on Nicer, 2 on Nicest · max 50 lb, 62 linear in",
       "fee_usd": null,
       "each_way": true,
       "fee_label": "$35–$41"
@@ -481,18 +484,18 @@
     }
   },
   "AC": {
-    "checked": null,
+    "checked": "2026-11-07",
     "personal_item": {
-      "text": "1 included",
+      "text": "1 included · no weight limit",
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "Not included on Basic; included on Standard and above",
+      "text": "Not included on Basic; included on Standard and above · no weight limit",
       "fee_usd": null,
       "each_way": true
     },
     "first_checked": {
-      "text": "$47.25 on Basic, Standard; free on Flex; 2 free on Latitude; max 23 kg",
+      "text": "$47.25 on Basic, Standard; free on Flex; 2 free on Latitude · max 23 kg",
       "fee_usd": 47.25,
       "each_way": true
     },
@@ -521,9 +524,9 @@
     }
   },
   "AM": {
-    "checked": null,
+    "checked": "2026-11-07",
     "personal_item": {
-      "text": "Free, 10 kg combined with carry-on on Basic",
+      "text": "Free · 10 kg combined with carry-on on Basic",
       "fee_usd": 0
     },
     "carry_on": {
@@ -532,7 +535,7 @@
       "each_way": true
     },
     "first_checked": {
-      "text": "$45 online, $50 airport; max 25 kg",
+      "text": "$45 online, $50 airport · max 25 kg",
       "fee_usd": 45,
       "each_way": true
     },
@@ -561,18 +564,18 @@
     }
   },
   "AV": {
-    "checked": null,
+    "checked": "2026-11-07",
     "personal_item": {
-      "text": "Free",
+      "text": "Free · 1 per passenger, every fare",
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "Not included on Basic; included on Light and above; 10 kg",
+      "text": "Not included on Basic; included on Light, Classic, Flex, Business · max 10 kg",
       "fee_usd": null,
       "each_way": true
     },
     "first_checked": {
-      "text": "Fee on Basic, Light; 1 included on Classic, Flex; max 23 kg",
+      "text": "Fee on Basic, Light; 1 included on Classic, Flex; 2 on Business (32 kg) · max 23 kg, 62 in",
       "fee_usd": null,
       "each_way": true,
       "fee_label": "Requires fee"
@@ -599,12 +602,13 @@
     "extra_legroom": {
       "text": null,
       "fee_usd": null
-    }
+    },
+    "recheck": true
   },
   "XP": {
-    "checked": null,
+    "checked": "2026-11-07",
     "personal_item": {
-      "text": "Free",
+      "text": "Free · 17 x 13 x 9 in",
       "fee_usd": 0
     },
     "carry_on": {
@@ -613,7 +617,7 @@
       "each_way": true
     },
     "first_checked": {
-      "text": "$49–$75; max 22 kg",
+      "text": "$49–$75 · max 22 kg",
       "fee_usd": null,
       "each_way": true,
       "fee_label": "$49–$75"
@@ -643,18 +647,18 @@
     }
   },
   "BA": {
-    "checked": null,
+    "checked": "2026-11-07",
     "personal_item": {
-      "text": "Free",
+      "text": "Free · handbag or backpack, 40 x 30 x 15 cm, 23 kg",
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "Free on every fare, including Basic",
+      "text": "Free on every fare, including Basic · 56 x 45 x 25 cm, 23 kg",
       "fee_usd": 0,
       "each_way": true
     },
     "first_checked": {
-      "text": "Fee on Basic; 1 included on Economy; 2nd bag $90 online, $100 airport; max 23 kg",
+      "text": "Fee on Basic; 1 included on Economy; 2nd bag $90 online, $100 airport · max 23 kg, 90 x 75 x 43 cm",
       "fee_usd": null,
       "each_way": true,
       "fee_label": "Requires fee"
@@ -681,21 +685,22 @@
     "extra_legroom": {
       "text": null,
       "fee_usd": null
-    }
+    },
+    "recheck": true
   },
   "KX": {
-    "checked": null,
+    "checked": "2026-11-07",
     "personal_item": {
-      "text": "Free, 15 lb",
+      "text": "Free · 14 x 14 x 10 in, 15 lb",
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "Free",
+      "text": "Free · 24 x 16 x 11 in",
       "fee_usd": 0,
       "each_way": true
     },
     "first_checked": {
-      "text": "$30 online, $35 at check-in; 2nd bag same; max 55 lb",
+      "text": "$30 online, $35 at check-in; 2nd bag same · max 55 lb, 62 linear in",
       "fee_usd": 30,
       "each_way": true
     },
@@ -723,18 +728,18 @@
     }
   },
   "CM": {
-    "checked": null,
+    "checked": "2026-11-07",
     "personal_item": {
-      "text": "Free",
+      "text": "Free · 17 x 10 x 9 in",
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "Free on every fare, 10 kg",
+      "text": "Free on every fare · 22 x 14 x 10 in, 10 kg",
       "fee_usd": 0,
       "each_way": true
     },
     "first_checked": {
-      "text": "$65 on Basic; 1 included on Classic, 2 on Full; max 23 kg",
+      "text": "$65 on Basic (our route); 1 included on Classic, 2 on Full · max 23 kg, 62 linear in",
       "fee_usd": 65,
       "each_way": true
     },
@@ -760,21 +765,22 @@
     "extra_legroom": {
       "text": null,
       "fee_usd": null
-    }
+    },
+    "recheck": true
   },
   "4Y": {
-    "checked": null,
+    "checked": "2026-11-07",
     "personal_item": {
-      "text": "Free",
+      "text": "Free · 40 x 30 x 15 cm",
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "Free, 8 kg",
+      "text": "Free · 8 kg, 55 x 40 x 23 cm",
       "fee_usd": 0,
       "each_way": true
     },
     "first_checked": {
-      "text": "1 included except Economy Light (fee); 2nd bag $90 from U.S.; max 23 kg",
+      "text": "1 included except Economy Light (fee); 2nd bag $90 from U.S. · max 23 kg, 158 cm",
       "fee_usd": null,
       "each_way": true,
       "fee_label": "Requires fee"
@@ -804,18 +810,18 @@
     }
   },
   "WK": {
-    "checked": null,
+    "checked": "2026-11-07",
     "personal_item": {
-      "text": "Free",
+      "text": "Free · 1 per passenger",
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "Free, 8 kg",
+      "text": "Free · 8 kg, 55 x 40 x 23 cm",
       "fee_usd": 0,
       "each_way": true
     },
     "first_checked": {
-      "text": "1 included on every Economy fare; max 23 kg",
+      "text": "1 included on every Economy fare · max 23 kg, 158 cm",
       "fee_usd": 0,
       "each_way": true
     },
@@ -844,18 +850,18 @@
     }
   },
   "PD": {
-    "checked": null,
+    "checked": "2026-11-07",
     "personal_item": {
-      "text": "Free",
+      "text": "Free · about 40 x 33 x 16 cm",
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "Not included on Basic; 1 free on Standard and above",
+      "text": "Not included on Basic; 1 free on Standard and above · 55 x 40 x 23 cm",
       "fee_usd": null,
       "each_way": true
     },
     "first_checked": {
-      "text": "C$40–$51.75 on Basic, Standard; 1 included on Flexible, Freedom; max 23 kg",
+      "text": "C$40–$51.75 on Basic, Standard; 1 included on Flexible, Freedom · max 23 kg, 158 cm",
       "fee_usd": null,
       "each_way": true,
       "fee_label": "C$40–$51.75"
@@ -883,21 +889,22 @@
       "text": "Stretch seats, 34 in, E195-E2 only. Free on Freedom, PorterReserve; paid on other fares.",
       "fee_usd": null,
       "fee_label": "Requires fee"
-    }
+    },
+    "recheck": true
   },
   "VS": {
-    "checked": null,
+    "checked": "2026-11-07",
     "personal_item": {
       "text": "Free on every fare",
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "1 included, 10 kg",
+      "text": "1 included · 10 kg, 56 x 36 x 23 cm",
       "fee_usd": 0,
       "each_way": true
     },
     "first_checked": {
-      "text": "$100 per flight on Light; 1 included on Classic, Delight; max 23 kg",
+      "text": "$100 per flight on Light; 1 included on Classic, Delight; 2 on Premium · max 23 kg",
       "fee_usd": 100,
       "each_way": true
     },
@@ -923,21 +930,22 @@
     "extra_legroom": {
       "text": "Economy Delight: free extra-legroom seat, up to 34 in vs 31 in",
       "fee_usd": null
-    }
+    },
+    "recheck": true
   },
   "WS": {
-    "checked": null,
+    "checked": "2026-11-07",
     "personal_item": {
-      "text": "Free",
+      "text": "Free · 16 x 13 x 6 in",
       "fee_usd": 0
     },
     "carry_on": {
-      "text": "1 free on Econo and above. UltraBasic: none on U.S., Canada flights.",
+      "text": "1 free on Econo and above · 22 x 14 x 9 in. UltraBasic: none on U.S., Canada flights; included to Europe, Asia.",
       "fee_usd": null,
       "each_way": true
     },
     "first_checked": {
-      "text": "UltraBasic about $55–$65, Econo about $45–$53 prepaid; more at airport; max 23 kg",
+      "text": "Econo about $45–$53 prepaid, UltraBasic about $55–$65; free on EconoFlex and above · max 23 kg, 157 cm",
       "fee_usd": null,
       "each_way": true,
       "fee_label": "$45–$65"
@@ -964,6 +972,7 @@
     "extra_legroom": {
       "text": null,
       "fee_usd": null
-    }
+    },
+    "recheck": true
   }
 }

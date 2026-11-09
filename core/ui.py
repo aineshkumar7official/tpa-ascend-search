@@ -651,25 +651,36 @@ def trend_summary(days):
             f'<div class="tr-pct {cls}" style="margin-top:.5rem">{arrow} {abs(pct)}% vs. {span}-day avg</div>')
 
 
+_STANDOUT_BASIS = {  # standout basis -> (short note on the card, tooltip)
+    "typical": ("vs. typical", "At least 10% and $20 below this route's typical price for the same departure date"),
+    "early": ("vs. earlier checks", "At least 10% and $20 below this route's earlier prices for the same departure date "
+                                    "(only a few checks so far)"),
+    "last": ("since last check", "At least 10% and $20 below the previous price check for the same departure date"),
+}
+
+
 def _standout_badge(d):
-    tip = "At least 10% and $20 below this route's typical price for the same departure date"
-    return (f'<div class="mod-top"><span class="btag tag-low" title="{esc(tip)}">▼ {round(d["drop_pct"] * 100)}% · '
-            f'Stand-out deal</span><span class="mod-note">{esc(d["window_label"])}</span></div>')
+    hit = d["standout"]
+    note, tip = _STANDOUT_BASIS[hit["basis"]]
+    return (f'<div class="mod-top"><span class="btag tag-low" title="{esc(tip)}">▼ {round(hit["pct"] * 100)}% · '
+            f'Stand-out deal</span><span class="mod-note">{esc(d["window_label"])} · {note}</span></div>')
 
 
 def deal_card(d, cp, scope):
     """Ascend Deals card (V7 p4): '$Price was ~$Avg', then Fare & upgrades, Cabin experience and Price trend dropdowns.
-    Stand-out deals (they carry a window_label) get a badge saying how far the price fell and which date window it's from."""
+    Stand-out deals (they carry window_label and standout) get a badge saying how far the price fell and which date window it's from."""
     f, a = d["fare"], d["fare"].get("asset") or {}
     after = _unit(f)  # until the route has a baseline, just say one-way / round trip
-    if not d["tracking"] and d.get("baseline"):
-        # Same basis as the headline: fare-only baseline, plus the same bag estimate when bags are included.
-        was = d["baseline"] * cp.travelers + (cp.headline - cp.fare_total)
+    # A stand-out's "was" is the price its badge compares against; otherwise the route's typical price.
+    ref = d["standout"]["ref"] if d.get("standout") else (d.get("baseline") if not d["tracking"] else None)
+    if ref:
+        # Same basis as the headline: fare-only reference, plus the same bag estimate when bags are included.
+        was = ref * cp.travelers + (cp.headline - cp.fare_total)
         after = f"was ~{money(was)}"
     row_key = f"{scope}_{f['fare_id']}"
     with st.container(key=f"card_{scope}_{f['fare_id']}"):
         st.markdown(
-            card_photo(a, 125) + f'<div class="card-body">{_standout_badge(d) if d.get("window_label") else ""}'
+            card_photo(a, 125) + f'<div class="card-body">{_standout_badge(d) if d.get("standout") else ""}'
             f'{card_text(f, cp, after, added=card_added(f, cp, row_key))}</div>',
             unsafe_allow_html=True)
         bags_row(f, cp, row_key)
@@ -1769,11 +1780,32 @@ def bundle_card(b, s, idx):
 
 
 # ================================================================ airline matrix
+def matrix_collage(photos):
+    """Wireframes V8 p7 photo block: 2 = side by side, 3 = one large + two small, 4 = 2 x 2 (1 fills the tile).
+    Every photo is cropped to its cell around its center, so the middle of each picture is what shows. Each one
+    links to its source, and their credits sit over the bottom edge (full list on hover)."""
+    if not photos:
+        return f'<div class="card-photo">{image(None, None, "Plane photo · airline livery", 150, "card-img mx-img")}</div>'
+    cells = ""
+    for i, p in enumerate(photos):
+        src = esc(asset_src(p["url"]))
+        img = f'<img src="{src}" alt="{esc(p["label"])}" loading="lazy">'
+        cls = "mx-cell"
+        if i == 0:  # the livery photo: in a tall cell it's fitted whole over a blurred copy instead of cropped
+            img = f'<img class="mx-fill" src="{src}" alt="" aria-hidden="true" loading="lazy">{img}'
+            cls += " mx-ext"
+        cells += (f'<a class="{cls}" href="{esc(p["link"])}" target="_blank" rel="noopener">{img}</a>'
+                  if p.get("link") else f'<div class="{cls}">{img}</div>')
+    names = list(dict.fromkeys(c for c in (p.get("credit") for p in photos) if c))
+    text = " · ".join(n[len("Photo: "):] if n.startswith("Photo: ") else n for n in names)
+    cred = f'<div class="credit" title="{esc(text)}">Photos: {esc(text)}</div>' if text else ""
+    return f'<div class="card-photo"><div class="mx-collage n{len(photos)}">{cells}</div>{cred}</div>'
+
+
 def airline_card(a):
-    """Matrix tile: one livery photo (Planespotters, else Wikimedia Commons) with its required credit."""
-    asset = a.get("asset") or {}
+    """Matrix tile: up to four photos (livery, cabin, seat, food) in the V8 collage, with their required credits."""
     with st.container(key=f"card_mx_{a['iata']}"):
-        st.markdown(card_photo(asset, 115, "card-img mx-img")
+        st.markdown(matrix_collage(a.get("photos") or [])
                     + f'<div class="card-body"><div class="mx-name" title="{esc(a["name"])}">{esc(a["name"])}</div>'
                     f'<div class="mx-n">{a["n_nonstops"]} nonstop{"s" if a["n_nonstops"] != 1 else ""} from TPA</div></div>',
                     unsafe_allow_html=True)
@@ -1803,7 +1835,7 @@ FEE_ROWS = [("personal_item", "Personal item"), ("carry_on", "Carry-on bag"), ("
 
 def policy_is_stale(policy, today=None):
     checked = (policy or {}).get("checked")
-    if not checked:
+    if not checked or (policy or {}).get("recheck"):  # recheck: the tracker flags it as due for a re-check
         return True
     return ((today or date.today()) - date.fromisoformat(checked)).days > settings.POLICY_STALE_DAYS
 
@@ -1863,11 +1895,6 @@ def fees_grid(code, sample=None):
         st.markdown(f'<div class="fees-grid">{"".join(cells)}</div>{ladder}{recent_html}{link}{warn}', unsafe_allow_html=True)
 
 
-def airline_gallery(code):
-    """Extra photos for the airline page (cabins.json airline|* "gallery"), beyond the four library tiles."""
-    return [g for g in (config.cabins().get(f"{code}|*") or {}).get("gallery") or [] if g.get("image_url")]
-
-
 def photo_library(asset, code=None):
     tiles = [("exterior", "Exterior · livery"), ("interior", "Cabin · economy"), ("seat", "Seat / legroom"),
              ("food", "Food / perks")]
@@ -1877,16 +1904,8 @@ def photo_library(asset, code=None):
             with col:
                 cls = "lib lib-fit" if k == "exterior" else "lib"
                 st.markdown(image(asset.get(f"{k}_url"), asset.get(f"{k}_link"), label, 190, cls), unsafe_allow_html=True)
-    extra = airline_gallery(code) if code else []
-    if extra:
-        st.markdown('<div class="credit" style="margin:.4rem 0 .2rem">More photos</div>', unsafe_allow_html=True)
-        for i in range(0, len(extra), 3):
-            cols = st.columns(3, gap="small")
-            for col, g in zip(cols, extra[i:i + 3]):
-                with col:
-                    st.markdown(image(g["image_url"], g.get("source_page"), "Photo", 110), unsafe_allow_html=True)
+    # Wireframes V8: four photos at most, so cabins.json "gallery" extras aren't shown here.
     pairs = [(asset.get(f"{k}_credit"), asset.get(f"{k}_link")) for k, _ in tiles]
-    pairs += [(g.get("credit"), g.get("source_page")) for g in extra]
     st.markdown(credits_block(pairs) or '<div class="credit">Photos: none yet — add curated images in data/cabins.json</div>',
                 unsafe_allow_html=True)
 
