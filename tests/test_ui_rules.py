@@ -232,3 +232,21 @@ def test_local_images_use_relative_paths_for_streamlit_cloud():
     assert asset_src("https://upload.wikimedia.org/x.jpg") == "https://upload.wikimedia.org/x.jpg"
     assert asset_src(None) is None
     assert 'src="app/static/a.jpg"' in image("/app/static/a.jpg")
+
+
+def test_roundtrip_summary_without_a_return_flight(monkeypatch, tmp_path):
+    """No nonstop return for the chosen outbound: the summary asks for a return instead of crashing (ret is None)."""
+    from streamlit.testing.v1 import AppTest
+
+    from core.config import settings
+    monkeypatch.setattr(settings, "DB_PATH", str(tmp_path / "ascend.db"))  # its own empty database
+
+    def page():
+        from core import ui
+        out = {"fare_id": "o1", "airline_iata": "DL", "destination": "ATL", "price_usd": 120.0, "depart_date": "2026-12-01",
+               "depart_time": "09:00", "arrive_time": "10:30", "duration_min": 90, "stops": 0, "trip_type": "round_trip"}
+        ui.roundtrip_summary(out, None, {"carry_on": 1, "checked": 1, "party": {"adults": 1}})
+
+    at = AppTest.from_function(page).run(timeout=60)
+    assert not at.exception
+    assert any("Pick a return flight" in m.value for m in at.markdown)

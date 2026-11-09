@@ -1712,7 +1712,6 @@ def leg_card(label, f, anchor=None):
 
 def roundtrip_summary(out, ret, s):
     party = party_of(s)
-    qt = pricing.rt_quote(out, ret, ret["price_usd"] if ret else out["price_usd"], s["carry_on"], s["checked"], party)
     with st.container(key="softcard_rtsum"):
         st.markdown(f'<div class="fc-top"><span class="as-h2" style="margin:0">Your round trip</span>'
                     f'<span class="muted small">{party.size} traveler{"s" if party.size != 1 else ""}</span></div>',
@@ -1723,6 +1722,8 @@ def roundtrip_summary(out, ret, s):
         else:
             st.markdown('<div class="leg-card muted">Pick a return flight</div>', unsafe_allow_html=True)
             return
+        # Priced only once a return is picked: with no return (none found for this outbound) there's nothing to quote.
+        qt = pricing.rt_quote(out, ret, ret["price_usd"], s["carry_on"], s["checked"], party)
         est = ' <span class="est">est.</span>' if qt.is_estimate else ""
         st.markdown(f'<hr class="rule" style="margin:.7rem 0 .5rem"><div class="sum-h">Fares &amp; prices</div>{fare_rows(qt, party)}'
                     f'<div class="sum-h" style="margin-top:.7rem">What this price buys</div>{price_buys(out, ret, qt, party)}'
