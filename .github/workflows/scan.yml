@@ -65,12 +65,18 @@ jobs:
           python - <<'EOF' >> "$GITHUB_STEP_SUMMARY"
           import sqlite3
           c = sqlite3.connect("data/ascend.db")
-          scan, at = c.execute("SELECT scan_id, MIN(scanned_at) FROM scan_log GROUP BY scan_id ORDER BY 2 DESC LIMIT 1").fetchone()
+          # The main scan, not the Airline Matrix route scan (window 'routes') that runs after it about once a day:
+          # the route scan only prices routes still missing a fare, so 0 fares from it is normal.
+          latest = lambda where: c.execute(f"SELECT scan_id, MIN(scanned_at) FROM scan_log GROUP BY scan_id HAVING {where} ORDER BY 2 DESC LIMIT 1").fetchone()
+          scan, at = latest("SUM(window_id='routes') = 0")
           ok, failed, rows = c.execute("SELECT SUM(error IS NULL), SUM(error IS NOT NULL), SUM(result_count) FROM scan_log WHERE scan_id=?", (scan,)).fetchone()
           fares = c.execute("SELECT COUNT(*) FROM fares WHERE scan_id=?", (scan,)).fetchone()[0]
+          route = latest("SUM(window_id='routes') > 0")
+          route_fares = c.execute("SELECT COUNT(*) FROM fares WHERE scan_id=?", (route[0],)).fetchone()[0] if route and route[1] > at else None
           serp = c.execute("SELECT COALESCE(SUM(calls),0) FROM api_usage WHERE provider='serpapi' AND month=strftime('%Y-%m','now')").fetchone()[0]
           print(f"### Scan {at}\n\n| | |\n|---|---|\n| Searches OK | {ok or 0} |\n| Searches failed | {failed or 0} |\n"
-                f"| Fares saved | {fares} |\n| SerpApi used this month | {serp} |")
+                f"| Fares saved | {fares} |\n| Route-scan fares | {'not due' if route_fares is None else route_fares} |\n"
+                f"| SerpApi used this month | {serp} |")
           if not fares:
               raise SystemExit("No fares came back from this scan")
           EOF
