@@ -89,6 +89,13 @@ a {{ color: var(--link); }}
 [class*="st-key-resrowopen"] {{ background: #fff; }}
 [class*="st-key-restable"] {{ border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
   background: #fff; gap: 0 !important; }}
+/* V8 p4, p22: Cabin experience opens as a full-width panel under the card row; the open card and its button turn gold */
+[class*="st-key-cxrow_"] {{ border: 1.5px solid var(--tan); border-radius: 12px; background: var(--card-bg); padding: 1rem 1.1rem !important; }}
+[class*="st-key-cxrow_"] .cx-deal {{ color: var(--muted); font-size: .85rem; }}
+[class*="st-key-cxrow_"] .cx-imgs-h {{ font-weight: 700; font-size: 1rem; margin: .1rem 0 .4rem; }}
+[class*="st-key-card"]:has([class*="st-key-cxbtnon_"]), [class*="st-key-tile"]:has([class*="st-key-cxbtnon_"]) {{
+  border-color: var(--tan); box-shadow: 0 0 0 1px var(--tan); }}
+[class*="st-key-cxbtnon_"] button {{ border-color: var(--tan) !important; box-shadow: 0 0 0 1px var(--tan); }}
 [class*="st-key-cabinpanel"] {{ background: var(--panel); border-radius: 10px; padding: .7rem !important; gap: .4rem !important; margin: 0 .8rem .6rem; width: calc(100% - 1.6rem) !important; }}
 [class*="st-key-cabinpanel"] .amen {{ background: transparent; padding: 0; min-height: 0; }}
 
@@ -631,20 +638,7 @@ label p {{ font-size: .8rem !important; }}
 .step-h {{ margin: .3rem 0 .25rem; }}
 .step-n {{ width: 26px; height: 26px; font-size: .85rem; }}
 .news li, .routes li {{ font-size: .8rem; margin-bottom: .15rem; }}
-.mx-img {{ height: 150px; }}
-/* Airline Matrix photo collage (V8 p7). Each photo fills its cell, cropped around its center. */
-.mx-collage {{ display: grid; gap: 2px; height: 150px; background: #fff; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }}
-.mx-collage.n1 {{ grid-template-columns: 1fr; grid-template-rows: 1fr; }}
-.mx-collage.n2 {{ grid-template-rows: 1fr; }}
-.mx-collage.n3 {{ grid-template-columns: 1.4fr 1fr; }}
-.mx-collage.n3 > :first-child {{ grid-row: span 2; }}
-.mx-cell {{ display: block; min-width: 0; min-height: 0; overflow: hidden; background: var(--image-ph); }}
-.mx-cell img {{ display: block; width: 100%; height: 100%; object-fit: cover; object-position: center center; }}
-.mx-cell {{ position: relative; }}
-.mx-cell .mx-fill {{ display: none; }}
-/* 3 photos: the large cell is taller than a plane photo, so show the whole plane, centered, over a blurred fill */
-.mx-collage.n3 .mx-ext .mx-fill {{ display: block; position: absolute; inset: 0; filter: blur(12px); transform: scale(1.15); }}
-.mx-collage.n3 .mx-ext img:not(.mx-fill) {{ position: relative; object-fit: contain; }}
+.mx-img {{ height: 115px; }}
 [class*="st-key-tileempty"] {{ padding: .7rem .85rem !important; height: auto; }}
 .fee .v {{ font-size: .8rem; }}
 .fee .k {{ font-size: .68rem; }}

@@ -1,7 +1,8 @@
 """Reusable page pieces. Pages only assemble these; all raw HTML lives here (CSS in theme.py)."""
 import html
 import unicodedata
-from contextlib import nullcontext
+import threading
+from contextlib import contextmanager, nullcontext
 from dataclasses import replace
 from datetime import date, datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
@@ -283,26 +284,73 @@ def fare_meta(f):
 
 
 def card_actions(f, key, came_from="home", note=None):
-    """Book now + Cabin experience ▾ (V7.2 p1, p4, p9). The cabin panel opens under them, inside the card:
-    cabin images, then baggage · food & drinks · entertainment, then the special freebie.
+    """Book now + Cabin experience ▾ (V8 p4, p22). Inside a `cabin_panel_row()` block the panel opens full width
+    below the card's row (see `row_cabin_panel`); elsewhere it opens inside the card as before.
     Everything sits in one group so the card's bottom alignment keeps the note under its buttons."""
     open_ = st.session_state.get(f"cxopen_{key}", False)
     with st.container(gap="small", key=f"actgroup_{key}"):
         with st.container(horizontal=True, gap="small", key=f"btnrow_{key}"):
             st.link_button("Book now", book(f), type="primary",
                            help="Opens Google Flights booking options for this exact flight")
-            st.button(f"Cabin experience {'▴' if open_ else '▾'}", key=f"cxbtn_{key}", on_click=_flip,
-                      args=(f"cxopen_{key}",))
+            # The key changes while open so CSS can outline this button and its card (V8: the open card is gold).
+            st.button(f"Cabin experience {'▴' if open_ else '▾'}", key=f"cxbtn{'on' if open_ else ''}_{key}",
+                      on_click=_toggle_cabin, args=(key,))
         if note:
             st.markdown(f'<div class="credit" style="margin:0">{note}</div>', unsafe_allow_html=True)
-        if open_:
-            with st.container(key=f"cxpanel_{key}", gap="small"):
-                st.markdown(cabin_images_html(f.get("asset") or {}, 64) + cabin_facts_html(f, stacked=True),
-                            unsafe_allow_html=True)
-                page = PAGES.get(config.NAV_SEARCH)
-                if page is not None:
-                    st.page_link(page, label="Open full cabin experience ↗",
-                                 query_params={"fare_id": f["fare_id"], "from": came_from})
+        if not open_:
+            return
+        row = getattr(_ROW, "open", None)
+        if row is not None:
+            row.append((f, key, came_from))
+            return
+        with st.container(key=f"cxpanel_{key}", gap="small"):
+            st.markdown(cabin_images_html(f.get("asset") or {}, 64) + cabin_facts_html(f, stacked=True),
+                        unsafe_allow_html=True)
+            _full_cabin_link(f, came_from)
+
+
+_ROW = threading.local()  # per script run: the open Cabin experience panels of the card row being drawn
+
+
+@contextmanager
+def cabin_panel_row():
+    """Cards drawn inside this block open their Cabin experience panel below the whole row, full width (V8 p4, p22)."""
+    prev, _ROW.open = getattr(_ROW, "open", None), []
+    try:
+        yield
+        opened = _ROW.open
+    finally:
+        _ROW.open = prev
+    for f, key, came_from in opened:
+        row_cabin_panel(f, key, came_from)
+
+
+def _toggle_cabin(key):
+    """One Cabin experience panel open at a time: opening one closes the rest."""
+    was = st.session_state.get(f"cxopen_{key}", False)
+    for k in [k for k in st.session_state if str(k).startswith("cxopen_")]:
+        st.session_state[k] = False
+    st.session_state[f"cxopen_{key}"] = not was
+
+
+def _full_cabin_link(f, came_from):
+    page = PAGES.get(config.NAV_SEARCH)
+    if page is not None:
+        st.page_link(page, label="Open full cabin experience ↗",
+                     query_params={"fare_id": f["fare_id"], "from": came_from})
+
+
+def row_cabin_panel(f, key, came_from):
+    """'Cabin experience · [deal]' with Close ✕ (V8 p4, p22): cabin images, then baggage · food & drinks ·
+    entertainment side by side, then the special freebie."""
+    with st.container(key=f"cxrow_{key}", gap="small"):
+        title, close = st.columns([6, 1], vertical_alignment="center")
+        title.markdown(f'<span class="as-h3" style="margin:0">Cabin experience</span>'
+                       f'<span class="cx-deal"> · {route_label(f)} · {airline_label(f)}</span>', unsafe_allow_html=True)
+        with close, st.container(horizontal=True, horizontal_alignment="right"):
+            st.button("Close ✕", key=f"cxclose_{key}", on_click=_toggle_cabin, args=(key,))
+        st.markdown(cabin_images_html(f.get("asset") or {}, 190) + cabin_facts_html(f), unsafe_allow_html=True)
+        _full_cabin_link(f, came_from)
 
 
 def bags_chip(qt):
@@ -691,10 +739,11 @@ def deal_card(d, cp, scope):
 
 def card_grid(items, render, cols=3):
     for i in range(0, len(items), cols):
-        row = st.columns(cols, gap="medium")
-        for col, item in zip(row, items[i:i + cols]):
-            with col:
-                render(item)
+        with cabin_panel_row():
+            row = st.columns(cols, gap="medium")
+            for col, item in zip(row, items[i:i + cols]):
+                with col:
+                    render(item)
 
 
 # ================================================================ cabin experience
@@ -713,7 +762,7 @@ CHIP_ICONS = {
 
 # What each chip's pop-up lists (V7 p20). amenities.json keys; a missing value says "Not verified yet".
 CHIP_DETAILS = {
-    "wifi": (("Cost", "wifi_cost"), ("Speed", "wifi_speed")),
+    "wifi": (("Cost", "wifi_cost"),),  # speed isn't shown: not needed (wifi_speed stays in amenities.json)
     "seatback_screen": (("Screen size", "screen_size_in"), ("Entertainment system", "entertainment_system")),
     "stream_to_device": (("App", "stream_app"), ("How to connect", "stream_connect"), ("What's on", "stream_content")),
     "power": (("Outlet type", "power_outlet"),),
@@ -1780,32 +1829,11 @@ def bundle_card(b, s, idx):
 
 
 # ================================================================ airline matrix
-def matrix_collage(photos):
-    """Wireframes V8 p7 photo block: 2 = side by side, 3 = one large + two small, 4 = 2 x 2 (1 fills the tile).
-    Every photo is cropped to its cell around its center, so the middle of each picture is what shows. Each one
-    links to its source, and their credits sit over the bottom edge (full list on hover)."""
-    if not photos:
-        return f'<div class="card-photo">{image(None, None, "Plane photo · airline livery", 150, "card-img mx-img")}</div>'
-    cells = ""
-    for i, p in enumerate(photos):
-        src = esc(asset_src(p["url"]))
-        img = f'<img src="{src}" alt="{esc(p["label"])}" loading="lazy">'
-        cls = "mx-cell"
-        if i == 0:  # the livery photo: in a tall cell it's fitted whole over a blurred copy instead of cropped
-            img = f'<img class="mx-fill" src="{src}" alt="" aria-hidden="true" loading="lazy">{img}'
-            cls += " mx-ext"
-        cells += (f'<a class="{cls}" href="{esc(p["link"])}" target="_blank" rel="noopener">{img}</a>'
-                  if p.get("link") else f'<div class="{cls}">{img}</div>')
-    names = list(dict.fromkeys(c for c in (p.get("credit") for p in photos) if c))
-    text = " · ".join(n[len("Photo: "):] if n.startswith("Photo: ") else n for n in names)
-    cred = f'<div class="credit" title="{esc(text)}">Photos: {esc(text)}</div>' if text else ""
-    return f'<div class="card-photo"><div class="mx-collage n{len(photos)}">{cells}</div>{cred}</div>'
-
-
 def airline_card(a):
-    """Matrix tile: up to four photos (livery, cabin, seat, food) in the V8 collage, with their required credits."""
+    """Matrix tile: one livery photo, centered, with its required credit. The airline page has the four-photo library."""
+    asset = a.get("asset") or {}
     with st.container(key=f"card_mx_{a['iata']}"):
-        st.markdown(matrix_collage(a.get("photos") or [])
+        st.markdown(card_photo(asset, 115, "card-img mx-img")
                     + f'<div class="card-body"><div class="mx-name" title="{esc(a["name"])}">{esc(a["name"])}</div>'
                     f'<div class="mx-n">{a["n_nonstops"]} nonstop{"s" if a["n_nonstops"] != 1 else ""} from TPA</div></div>',
                     unsafe_allow_html=True)
@@ -2074,8 +2102,14 @@ def deal_cards(code, deals):
     if best:
         cp = card_price(best, party, carry, checked, bool(carry or checked))
         if cp.included or not (carry or checked):
-            _best_deal(code, best, cp)
+            with cabin_panel_row():
+                _best_deal(code, best, cp)
             return
+    with cabin_panel_row():
+        _deal_row(code, deals, party, carry, checked)
+
+
+def _deal_row(code, deals, party, carry, checked):
     for col, (slot, tag, note, empty) in zip(st.columns(3, gap="small"), DEAL_SLOTS):
         with col:
             f = deals[slot]
