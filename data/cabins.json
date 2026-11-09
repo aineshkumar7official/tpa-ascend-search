@@ -800,6 +800,11 @@
     ]
   },
   "WS|*": {
+    "exterior": {
+      "image_url": "/app/static/airlines/WS/exterior.jpg",
+      "credit": "Photo: Tomás Del Coro, CC BY-SA 2.0, via Wikimedia Commons",
+      "source_page": "https://commons.wikimedia.org/wiki/File:C-FKWJ_WestJet_2010_Boeing_737-8CT_(53851350223).jpg"
+    },
     "seat": {
       "image_url": "/app/static/airlines/WS/westjet-737-700-san-ycc-trip-report-08.jpg",
       "credit": "Photo: SANspotter",
