@@ -268,8 +268,15 @@ def matrix(conn):
                GROUP BY a.asset_key
                ORDER BY (a.exterior_source='planespotters') DESC, COUNT(f.id) DESC LIMIT 1""",
             (f"{code}|%",)).fetchone()
+        asset = dict(row) if row else {}
+        # A hand-picked livery photo (cabins.json airline|* exterior) wins over the cached one: cached assets
+        # only refresh every 30 days, so without this a new pick wouldn't show until then.
+        curated = (config.cabins().get(f"{code}|*") or {}).get("exterior") or {}
+        if curated.get("image_url"):
+            asset = {**asset, "exterior_url": curated["image_url"], "exterior_link": curated.get("source_page"),
+                     "exterior_credit": curated.get("credit"), "exterior_source": "curated"}
         out.append({"iata": code, "name": config.airline_name(code), "n_nonstops": len(airline_routes(conn, code)),
-                    "asset": dict(row) if row else {}})
+                    "asset": asset})
     return out
 
 
