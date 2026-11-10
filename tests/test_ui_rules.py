@@ -297,3 +297,59 @@ def test_curated_photos_override_cached_asset(monkeypatch):
     out = enricher.with_curated(cached)
     assert out["exterior_url"] == "/app/static/airlines/ZZ/plane.jpg" and out["exterior_source"] == "curated"
     assert out["seat_url"] == "s.jpg" and "freebie_url" not in out
+
+
+def test_matrix_filters_sort_and_count(monkeypatch):
+    from core import queries
+
+    monkeypatch.setattr(queries.config, "airline", lambda c: {
+        "AA": {"fare_model": "Full Service"}, "NK": {"fare_model": "Budget"},
+        "BA": {"fare_model": "Full Service", "international": True}}[c])
+    monkeypatch.setattr(queries.config, "destinations", lambda: [
+        {"iata": "MIA", "region": "Southeast"}, {"iata": "LHR", "region": "Europe"}])
+    items = [{"iata": "NK", "name": "Spirit", "n_nonstops": 5, "routes": ["MIA"]},
+             {"iata": "AA", "name": "American", "n_nonstops": 9, "routes": ["MIA"]},
+             {"iata": "BA", "name": "British Airways", "n_nonstops": 1, "routes": ["LHR"]}]
+    names = lambda xs: [a["iata"] for a in xs]  # noqa: E731
+    assert names(queries.filter_matrix(items)) == ["AA", "BA", "NK"]
+    assert names(queries.filter_matrix(items, "Z–A")) == ["NK", "BA", "AA"]
+    assert names(queries.filter_matrix(items, "Most nonstops")) == ["AA", "NK", "BA"]
+    assert names(queries.filter_matrix(items, airline_type="Budget")) == ["NK"]
+    assert names(queries.filter_matrix(items, airline_type="Full Service")) == ["AA", "BA"]
+    assert names(queries.filter_matrix(items, airline_type="Low-Cost")) == []
+    assert names(queries.filter_matrix(items, airline_type="International")) == ["BA"]
+    assert names(queries.filter_matrix(items, dest_type="Europe")) == ["BA"]
+    assert names(queries.filter_matrix(items, dest_type="Domestic (U.S.)")) == ["AA", "NK"]
+
+
+def test_single_route_airline_names_its_destination(monkeypatch):
+    from core import ui
+
+    monkeypatch.setattr(ui.config, "city", lambda iata: {"MEX": "Mexico City", "AMS": "Amsterdam"}.get(iata, iata))
+    assert ui.nonstops_label({"n_nonstops": 13, "routes": ["ATL", "AMS"], "matching": ["AMS"]}) == "Nonstop to Amsterdam"
+    ac = {"n_nonstops": 5, "routes": [], "matching": ["YYZ", "YHZ", "YUL"]}
+    monkeypatch.setattr(ui.config, "city", lambda iata: {"MEX": "Mexico City", "AMS": "Amsterdam", "YYZ": "Toronto",
+                                                         "YHZ": "Halifax", "YUL": "Montreal"}.get(iata, iata))
+    assert ui.nonstops_label(ac) == "Nonstop to Halifax · Montreal · Toronto"
+    assert ui.nonstops_label({"n_nonstops": 40, "routes": [], "matching": [f"X{i}" for i in range(9)]}) == \
+        "9 nonstops to these destinations"
+    assert ui.nonstops_label({"n_nonstops": 1, "routes": ["MEX"]}) == "Nonstop to Mexico City"
+    assert ui.nonstops_label({"n_nonstops": 9, "routes": ["MIA"] * 9}) == "9 nonstops from TPA"
+
+
+def test_routes_that_havent_started_are_left_out(monkeypatch):
+    from datetime import date as d
+    from core import queries
+
+    assert queries.start_date("Dec 19, 2026") == d(2026, 12, 19)
+    assert queries.start_date("June 18, 2027 (year-round; not in Instagram post)") == d(2027, 6, 18)
+    assert queries.start_date("November 2026") == d(2026, 11, 1)
+    assert queries.start_date(None) is None
+    dests = [{"iata": "NAS", "region": "Caribbean & Latin America", "carrier_status": {"MX": {"status": "current"}}},
+             {"iata": "CUN", "region": "Caribbean & Latin America",
+              "carrier_status": {"MX": {"status": "coming_soon", "note": "Dec 19, 2026"}}}]
+    monkeypatch.setattr(queries.config, "destinations", lambda: dests)
+    monkeypatch.setattr(queries.config, "destination", lambda i: next(x for x in dests if x["iata"] == i))
+    region = {"Caribbean & Latin America"}
+    assert queries.matching_routes("MX", ["NAS", "CUN"], region, today=d(2026, 11, 10)) == ["NAS"]
+    assert queries.matching_routes("MX", ["NAS", "CUN"], region, today=d(2026, 12, 19)) == ["NAS", "CUN"]

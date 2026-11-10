@@ -258,10 +258,15 @@ class CardPrice:
 
     @property
     def bag_level(self):
-        """'on' (checked bag in the price), 'some' (carry-on or personal item only) or 'off' (none / unknown)."""
+        """The tag's color group, one per allowance: 'checked' (a checked bag is in the price), 'carry'
+        (personal item + carry-on), 'personal' (personal item only), 'none' (no free bags) or 'unknown'."""
         if self.included or self.covers_bag:
-            return "on"
-        return "some" if self.carry_free or self.personal_free else "off"
+            return "checked"
+        if self.carry_free:
+            return "carry"
+        if self.personal_free:
+            return "personal"
+        return "none" if self.bag_known or self.personal_free is False else "unknown"
 
     def tooltip(self, money=lambda v: f"${v:,.0f}"):
         """Only when the headline has bags added, so the estimate can be explained."""

@@ -204,16 +204,16 @@ def test_bundles_with_bags_reprices_and_leaves_out_unknown():
 
 @pytest.mark.parametrize("policy,tag,level", [
     ({"personal_item": {"fee_usd": 0}, "carry_on": {"fee_usd": 0}, "first_checked": {"fee_usd": 0}},
-     "Carry-on + checked bag included", "on"),
+     "Carry-on + checked bag included", "checked"),
     ({"personal_item": {"fee_usd": 0}, "carry_on": {"fee_usd": None}, "first_checked": {"fee_usd": 0}},
-     "Checked bag included", "on"),
+     "Checked bag included", "checked"),
     ({"personal_item": {"fee_usd": 0}, "carry_on": {"fee_usd": 0}, "first_checked": {"fee_usd": 45}},
-     "Personal item + carry-on included", "some"),
+     "Personal item + carry-on included", "carry"),
     ({"personal_item": {"fee_usd": 0}, "carry_on": {"fee_usd": 35}, "first_checked": {"fee_label": "$36–$50"}},
-     "Personal item only", "some"),
+     "Personal item only", "personal"),
     ({"personal_item": {"fee_usd": 10}, "carry_on": {"fee_usd": 35}, "first_checked": {"fee_usd": 40}},
-     "No bags included", "off"),
-    ({}, "Bag info unavailable", "off"),
+     "No bags included", "none"),
+    ({}, "Bag info unavailable", "unknown"),
 ])
 def test_bag_tag_names_which_bags_the_fare_includes(policy, tag, level):
     cp = card_price({"price_usd": 100, "airline_iata": "QQ", "trip_type": "one_way"}, 0, 0, 1, False, {"QQ": policy})

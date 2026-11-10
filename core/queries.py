@@ -1,7 +1,8 @@
 """Read-side queries for the web app. Pure functions of a sqlite connection (the UI caches them)."""
 import json
+import re
 import statistics
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 from bots.enricher import amenities_for, with_curated
 from bots.scouter import BASELINE_DAYS, MIN_POINTS
@@ -314,9 +315,97 @@ def matrix(conn):
         if not row and curated.get("image_url"):
             asset = {"exterior_url": curated["image_url"], "exterior_link": curated.get("source_page"),
                      "exterior_credit": curated.get("credit"), "exterior_source": "curated"}
-        out.append({"iata": code, "name": config.airline_name(code), "n_nonstops": len(airline_routes(conn, code)),
+        routes = airline_routes(conn, code)
+        out.append({"iata": code, "name": config.airline_name(code), "n_nonstops": len(routes), "routes": routes,
                     "asset": asset})
     return out
+
+
+# Airline Matrix filters (Wireframes V9.1). Each option -> test on an airline.
+MATRIX_SORTS = ("A–Z (default)", "Z–A", "Most nonstops")
+AIRLINE_TYPES = {"All airlines": lambda info: True,
+                 "Budget": lambda info: info.get("fare_model") == "Budget",
+                 "Low-Cost": lambda info: info.get("fare_model") == "Low-Cost",
+                 "Full Service": lambda info: info.get("fare_model") == "Full Service",
+                 "International": lambda info: bool(info.get("international"))}
+DOMESTIC_REGIONS = {"Southeast", "Northeast", "Midwest", "Southwest", "West"}
+DESTINATION_TYPES = {
+    "All destinations": None,
+    "Domestic (U.S.)": DOMESTIC_REGIONS,
+    "International": {"Caribbean & Latin America", "Canada", "Europe"},
+    "Caribbean & Latin America": {"Caribbean & Latin America"},
+    "Canada": {"Canada"},
+    "Europe": {"Europe"},
+}
+
+
+_MONTHS = {m: i for i, m in enumerate(["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"], 1)}
+
+
+def start_date(note):
+    """The first date in a carrier_status note ('Dec 19, 2026', 'June 18, 2027 (year-round)', 'November 2026' = the
+    1st), or None when the note has no date."""
+    m = re.search(r"([A-Za-z]{3,9})\.?\s+(?:(\d{1,2}),\s*)?(\d{4})", note or "")
+    if not m or m.group(1)[:3].lower() not in _MONTHS:
+        return None
+    return date(int(m.group(3)), _MONTHS[m.group(1)[:3].lower()], int(m.group(2) or 1))
+
+
+def has_started(airline, iata, today=None):
+    """False for a route the airline hasn't started flying yet (carrier_status 'coming_soon' in destinations.json),
+    until its start date in the note has passed."""
+    cs = ((config.destination(iata) or {}).get("carrier_status") or {}).get(airline) or {}
+    if cs.get("status") != "coming_soon":
+        return True
+    start = start_date(cs.get("note"))
+    return bool(start and start <= (today or date.today()))
+
+
+def matching_routes(airline, routes, regions, today=None):
+    """The airline's routes to destinations in `regions` that it already flies (Matrix Destination type filter)."""
+    region_of = {d["iata"]: d.get("region") for d in config.destinations()}
+    return [r for r in routes if region_of.get(r) in regions and has_started(airline, r, today)]
+
+
+def destination_regions(dest_type):
+    """The regions a Destination type covers, or None for all destinations."""
+    return DESTINATION_TYPES.get(dest_type)
+
+
+def route_cover(conn, airline, regions):
+    """A Matrix cover showing the plane the airline flies to those regions (e.g. Delta's A330-900neo to Amsterdam when
+    the filter is Europe), or None to keep the usual cover. Only trusted photos are used: one picked for that aircraft
+    in cabins.json, or a Planespotters photo of a real tail, never an airline-wide pick or a Commons search result."""
+    dests = [d["iata"] for d in config.destinations() if d.get("region") in regions]
+    if not dests:
+        return None
+    row = conn.execute(
+        f"""SELECT a.* FROM fares f JOIN assets a ON a.asset_key=f.asset_key
+            WHERE f.airline_iata=? AND f.stops=0 AND f.destination IN ({",".join("?" * len(dests))})
+            GROUP BY a.asset_key ORDER BY COUNT(*) DESC LIMIT 1""", (airline, *dests)).fetchone()
+    if not row:
+        return None
+    asset = dict(row)
+    aircraft = asset["asset_key"].split("|", 1)[1]
+    picked = ((config.cabins().get(f"{airline}|{aircraft}") or {}).get("exterior") or {})
+    if picked.get("image_url"):
+        return {**asset, "exterior_url": picked["image_url"], "exterior_link": picked.get("source_page"),
+                "exterior_credit": picked.get("credit"), "exterior_source": "curated"}
+    return asset if asset.get("exterior_source") == "planespotters" else None
+
+
+def filter_matrix(items, sort="A–Z (default)", airline_type="All airlines", dest_type="All destinations"):
+    """The Matrix cards for the chosen filters: an airline stays when it is that type and flies nonstop from TPA to
+    at least one destination of that type."""
+    regions = DESTINATION_TYPES.get(dest_type)
+    keep = AIRLINE_TYPES.get(airline_type, AIRLINE_TYPES["All airlines"])  # airlines.json fare_model / international
+    out = [a for a in items if keep(config.airline(a["iata"]))
+           and (regions is None or matching_routes(a["iata"], a.get("routes", []), regions))]
+    if sort == "Z–A":
+        return sorted(out, key=lambda a: a["name"].lower(), reverse=True)
+    if sort == "Most nonstops":
+        return sorted(out, key=lambda a: (-a["n_nonstops"], a["name"].lower()))
+    return sorted(out, key=lambda a: a["name"].lower())
 
 
 def airline_photo_asset(conn, airline):

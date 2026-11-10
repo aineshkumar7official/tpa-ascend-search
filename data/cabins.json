@@ -597,6 +597,11 @@
       "image_url": "/app/static/airlines/DL/a330-900neo-interior7-jpg.jpg",
       "credit": "Photo: Delta Air Lines",
       "source_page": null
+    },
+    "exterior": {
+      "image_url": "/app/static/airlines/DL/a330-900neo-exterior.jpg",
+      "credit": "Photo: Anna Zvereva, CC BY-SA 2.0, via Wikimedia Commons",
+      "source_page": "https://commons.wikimedia.org/wiki/File:N414DZ_@_FCO,_2023-02-23.jpg"
     }
   },
   "DL|*": {
