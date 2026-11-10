@@ -283,7 +283,12 @@
       "credit": "Frontier Airlines",
       "source_page": "https://flyfrontier-com-frontdoor-en-chh3dufqdpdff8h9.a02.azurefd.net/media/10543/updated-inflight-menu-landing-page_snack-packs_400x400.png"
     },
-    "layout": null
+    "layout": null,
+    "freebie": {
+      "image_url": "/app/static/airlines/F9/pasted-2026-11-10-at-17-14-06.jpg",
+      "credit": "Photo: source to be confirmed",
+      "source_page": null
+    }
   },
   "F9|Airbus A321neo": {
     "cabin": {
@@ -415,6 +420,11 @@
       "image_url": "/app/static/airlines/AM/61a542351f8b8c00195ab333.jpg",
       "credit": "Photo: source to be confirmed",
       "source_page": null
+    },
+    "freebie": {
+      "image_url": "/app/static/airlines/AM/2024am-7879.jpg",
+      "credit": "Photo: Aeroméxico",
+      "source_page": null
     }
   },
   "AC|*": {
@@ -469,6 +479,11 @@
     },
     "freebie": {
       "image_url": "/app/static/airlines/AA/041526-trading-cards-set-front.jpg",
+      "credit": "Photo: American Airlines",
+      "source_page": null
+    },
+    "cabin": {
+      "image_url": "/app/static/airlines/AA/pasted-2026-11-10-at-17-09-22.jpg",
       "credit": "Photo: American Airlines",
       "source_page": null
     }
@@ -629,13 +644,11 @@
       "credit": "Photo: Discover Airlines",
       "source_page": null
     },
-    "gallery": [
-      {
-        "image_url": "/app/static/airlines/4Y/images.jpg",
-        "credit": "Photo: Discover Airlines",
-        "source_page": null
-      }
-    ]
+    "freebie": {
+      "image_url": "/app/static/airlines/4Y/images.jpg",
+      "credit": "Photo: Discover Airlines",
+      "source_page": null
+    }
   },
   "B6|Airbus A220-300": {
     "cabin": {
@@ -812,6 +825,11 @@
     },
     "food": {
       "image_url": "/app/static/airlines/WS/screenshot-2026-11-07-at-19-02-54.jpg",
+      "credit": "Photo: source to be confirmed",
+      "source_page": null
+    },
+    "freebie": {
+      "image_url": "/app/static/airlines/WS/1737768115946.jpg",
       "credit": "Photo: source to be confirmed",
       "source_page": null
     }

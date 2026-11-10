@@ -49,12 +49,14 @@ def test_freebie_and_fun_fact_dont_repeat_each_other():
     assert freebie_lines(None, "A fact.") == ["A fact."] and freebie_lines(None, None) == []
 
 
-def test_best_deal_only_when_all_three_slots_are_one_flight():
+def test_best_deal_when_any_two_slots_are_one_flight():
     a = {"flight_numbers": "DL1", "depart_date": "2026-12-01", "return_date": None}
     b = {**a, "flight_numbers": "DL2"}
+    c = {**a, "flight_numbers": "DL3"}
     assert same_flight({"cheapest": a, "fastest_nonstop": dict(a), "cheapest_nonstop": dict(a)}) == a
-    assert same_flight({"cheapest": a, "fastest_nonstop": b, "cheapest_nonstop": a}) is None
-    assert same_flight({"cheapest": a, "fastest_nonstop": None, "cheapest_nonstop": a}) is None
+    assert same_flight({"cheapest": a, "fastest_nonstop": b, "cheapest_nonstop": a}) == a
+    assert same_flight({"cheapest": a, "fastest_nonstop": None, "cheapest_nonstop": a}) == a
+    assert same_flight({"cheapest": a, "fastest_nonstop": b, "cheapest_nonstop": c}) is None
     unknown = {"flight_numbers": None, "depart_date": "2026-12-01", "return_date": None}
     assert same_flight({"cheapest": unknown, "fastest_nonstop": unknown, "cheapest_nonstop": unknown}) is None
 
@@ -76,6 +78,14 @@ def test_chip_popups_list_only_that_flights_amenities():
     assert "Wi-Fi" in html and "Cost" in html and "Free" in html
     assert "Speed" not in html and "Outlet type" not in html
     assert "Not verified yet" in amenity_chips({"wifi": True})  # no cost recorded
+
+
+def test_stream_popup_shows_only_known_details():
+    html = amenity_chips({"stream_to_device": True, "stream_app": "Alaska Beyond Entertainment"})
+    assert "Alaska Beyond Entertainment" in html
+    assert "Not verified yet" not in html and "How to connect" not in html and "What's on" not in html
+    assert html.count("Not verified yet") == 0
+    assert amenity_chips({"stream_to_device": True}).count("Not verified yet") == 3  # nothing known: say so
 
 
 def test_amenities_fallback_label(monkeypatch):
@@ -250,3 +260,40 @@ def test_roundtrip_summary_without_a_return_flight(monkeypatch, tmp_path):
     at = AppTest.from_function(page).run(timeout=60)
     assert not at.exception
     assert any("Pick a return flight" in m.value for m in at.markdown)
+
+
+def test_any_two_deal_slots_on_one_flight_become_one_best_deal():
+    from core.ui import same_flight
+
+    def f(num, ret="R1"):
+        return {"flight_numbers": num, "depart_date": "2026-12-08", "return_date": "2026-12-15",
+                "return_leg": {"flight_numbers": ret}}
+
+    assert same_flight({"cheapest": f("AA1"), "fastest_nonstop": f("AA2"), "cheapest_nonstop": f("AA3")}) is None
+    two = f("AA1")
+    assert same_flight({"cheapest": two, "fastest_nonstop": f("AA2"), "cheapest_nonstop": f("AA1")}) is two
+    assert same_flight({"cheapest": f("AA1"), "fastest_nonstop": f("AA1"), "cheapest_nonstop": None}) is not None
+    # same outbound, different return flight: two different round trips
+    assert same_flight({"cheapest": f("AA1", "R1"), "fastest_nonstop": f("AA1", "R2"), "cheapest_nonstop": f("AA3")}) is None
+
+
+def test_photo_library_v9_shows_only_photos_that_exist():
+    from core.ui import library_tiles
+
+    full = {f"{k}_url": "x" for k in ("exterior", "interior", "seat", "food")}
+    assert len(library_tiles(full)) == 4
+    three = {**full, "food_url": None}
+    assert [k for k, _ in library_tiles(three)] == ["exterior", "interior", "seat"]
+    assert len(library_tiles({})) == 4  # nothing yet: keep the four labelled placeholders
+
+
+def test_curated_photos_override_cached_asset(monkeypatch):
+    from bots import enricher
+
+    monkeypatch.setattr(enricher.config, "cabins", lambda: {
+        "ZZ|*": {"exterior": {"image_url": "/app/static/airlines/ZZ/plane.jpg", "credit": "Photo: ZZ"},
+                 "freebie": {"image_url": "/app/static/airlines/ZZ/cards.jpg"}}})
+    cached = {"asset_key": "ZZ|Boeing 737 MAX 8", "exterior_url": "https://commons/contrail.jpg", "seat_url": "s.jpg"}
+    out = enricher.with_curated(cached)
+    assert out["exterior_url"] == "/app/static/airlines/ZZ/plane.jpg" and out["exterior_source"] == "curated"
+    assert out["seat_url"] == "s.jpg" and "freebie_url" not in out

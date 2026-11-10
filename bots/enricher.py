@@ -72,6 +72,30 @@ def _curated(slot):
     return None
 
 
+# cabins.json slot -> assets column prefix.
+ASSET_SLOTS = {"exterior": "exterior", "cabin": "interior", "seat": "seat", "food": "food"}
+
+
+def with_curated(asset):
+    """An assets row with the hand-picked photos in cabins.json laid over it (same aircraft first, then airline|*).
+
+    fetch_asset() already prefers them, but a cached row only refreshes every REFRESH_DAYS, so without this a photo
+    added or changed in cabins.json (or one the cached row picked before it existed) wouldn't show until then."""
+    if not asset or not asset.get("asset_key"):
+        return asset
+    airline, aircraft = asset["asset_key"].split("|", 1)
+    cabin = (_cabin_entry(airline, aircraft) if aircraft != "Unknown" else None) or {}
+    airline_wide = config.cabins().get(f"{airline}|*") or {}
+    out = dict(asset)
+    for slot, col in ASSET_SLOTS.items():
+        img = _curated(cabin.get(slot)) or _curated(airline_wide.get(slot))
+        if img:
+            out.update({f"{col}_url": img["url"], f"{col}_link": img["link"], f"{col}_credit": img["credit"]})
+            if col in ("exterior", "interior"):  # the only slots with a source column
+                out[f"{col}_source"] = "curated"
+    return out
+
+
 # Commons query suffix + image kind for each interior slot.
 INTERIOR_SLOTS = {"cabin": ("cabin interior", "interior"),
                   "seat": ("seats", "interior"),

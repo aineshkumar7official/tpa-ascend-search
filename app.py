@@ -4,7 +4,7 @@
 """
 import streamlit as st
 
-from core import config, pricing, ui
+from core import config, ui
 
 st.set_page_config(page_title=config.PRODUCT_NAME, page_icon="✈️", layout="wide",
                    initial_sidebar_state="collapsed")
@@ -31,13 +31,7 @@ def home():
     trip_type = "round_trip" if trip == "Round-trip" else "one_way"
     party, carry, checked = ui.controls("home")  # cards follow the travelers/bags set in the form above
     include_bags = include_bags or bool(carry or checked)
-    if include_bags:
-        # Re-rank by the total with bags: a cheap fare with high bag fees can lose to another airline.
-        picks = [(f, ui.card_price(f, party, carry, checked, True))
-                 for f, _ in pricing.cheapest_with_bags(ui.q("nonstop_candidates", trip_type), carry, checked, party)]
-    else:
-        picks = [(f, ui.card_price(f, party, carry, checked, False))
-                 for f in ui.q("cheapest_mix", trip_type, 3)]
+    picks = ui.home_picks(trip_type, party, carry, checked, include_bags)
     fares = [f for f, _ in picks]
     if not fares and include_bags and ui.q("cheapest_nonstops", trip_type, 1):
         st.info("No bags-included prices yet: bag fees aren't verified for the airlines in the latest scan. "
