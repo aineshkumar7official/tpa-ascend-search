@@ -381,6 +381,15 @@ def card_price(f, party, carry, checked, include_bags):
     return pricing.card_price(f, carry, checked, party, include_bags, google=google_fare(f, party))
 
 
+def home_picks(trip_type, party, carry, checked, include_bags):
+    """The Home cards: [(fare, CardPrice)], cheapest first, no airline or city repeated. With bags included they are
+    re-ranked by the with-bags total (a cheap fare with high bag fees can lose to another airline)."""
+    if include_bags:
+        return [(f, card_price(f, party, carry, checked, True))
+                for f, _ in pricing.cheapest_with_bags(q("nonstop_candidates", trip_type), carry, checked, party)]
+    return [(f, card_price(f, party, carry, checked, False)) for f in q("cheapest_mix", trip_type, 3)]
+
+
 def _checked_at(data):
     at = local_time((data or {}).get("checked_at"))
     return at.strftime("%b %-d, %-I:%M %p") if at else ""
@@ -511,8 +520,8 @@ def fare_body(f, cp, key):
     else:
         hint = ("The price updates as you choose upgrades." if any(r["fee"] for r in rows)
                 else "Exact upgrade prices show on Google Flights when you book.")
-        if cp.bag_known or cp.included:
-            hint += f" Bags are {'included' if cp.included or cp.covers_bag else 'not included'} on this fare."
+        if cp.bag_known or cp.included or cp.bag_level != "off":
+            hint += f" This fare: {cp.bags_line()[0].lower()}{cp.bags_line()[1:]}."
     ladder = fare_ladder(data)
     more = (f'<details class="fare-more"><summary>Other fares on this flight ({len(data["options"]) - 1})</summary>{ladder}</details>'
             if ladder and len(data["options"]) > 1 else "")
@@ -522,10 +531,11 @@ def fare_body(f, cp, key):
 
 
 def bags_line(f, cp, key):
-    """The bag tag (V7 p5): 'Bags included', 'Bags not included', '1 checked bag added' or 'Bag info unavailable'."""
+    """The bag tag (V7 p5): which bags the fare includes (checked bag, carry-on, personal item only, none), what the
+    price includes when bags were picked, '1 checked bag added' or 'Bag info unavailable'."""
     rows, picked = _upgrade_rows(f, cp), _picked(key)
     added_bag = any(r["id"] == "checked" and r["fee"] and r["id"] in picked for r in rows)
-    state = "on" if added_bag or cp.included or cp.covers_bag else ("" if cp.bag_known else "off")
+    state = "on" if added_bag else {"on": "on", "some": "", "off": "off"}[cp.bag_level]
     return (f'<div class="bag-chip v3 {state}" title="{esc(cp.tooltip(money))}">'
             f'<span class="bag-chip-ico">{ICONS["checked"]}</span><span>{esc(cp.bags_line(added_bag))}</span></div>')
 
@@ -771,7 +781,10 @@ CHIP_DETAILS = {
 
 def _chip_pop(key, amen):
     rows = []
-    for label, field in CHIP_DETAILS[key]:
+    fields = CHIP_DETAILS[key]
+    if key == "stream_to_device" and any(amen.get(f) for _, f in fields):
+        fields = [(label, f) for label, f in fields if amen.get(f)]  # e.g. Alaska: just the app's name, no "Not verified" rows
+    for label, field in fields:
         v = amen.get(field)
         if v and field == "screen_size_in":
             v = f"{v} in"
@@ -1885,7 +1898,7 @@ def airline_freebie(code):
     photo = (config.cabins().get(f"{code}|*") or {}).get("freebie") or {}
     if cool or photo.get("image_url"):
         with st.container(key=f"softcard_fact_{code}"):
-            pic = (f'<div class="freebie-img">{image(photo["image_url"], photo.get("source_page"), cool or "Freebie", 150)}'
+            pic = (f'<div class="freebie-img">{image(photo["image_url"], photo.get("source_page"), cool or "Freebie", 220, "freebie-pic")}'
                    f'{credit(photo.get("credit"), photo.get("source_page"))}</div>') if photo.get("image_url") else ""
             st.markdown(f'<div class="credit" style="margin:0">Freebie</div><div>{esc(cool or "")}</div>{pic}',
                         unsafe_allow_html=True)
@@ -1924,15 +1937,30 @@ def fees_grid(code, sample=None):
         st.markdown(f'<div class="fees-grid">{"".join(cells)}</div>{ladder}{recent_html}{link}{warn}', unsafe_allow_html=True)
 
 
+LIBRARY_TILES = (("exterior", "Exterior · livery"), ("interior", "Cabin · economy"), ("seat", "Seat / legroom"),
+                 ("food", "Food / perks"))
+
+
+def library_tiles(asset):
+    """The photo library's tiles: all four slots when every one has a photo, otherwise only the ones that do
+    (V9: a 3-photo airline gets three stacked photos of the same size, not a grid with an empty box)."""
+    have = [(k, label) for k, label in LIBRARY_TILES if asset.get(f"{k}_url")]
+    return list(LIBRARY_TILES) if len(have) in (0, 4) else have
+
+
 def photo_library(asset, code=None):
-    tiles = [("exterior", "Exterior · livery"), ("interior", "Cabin · economy"), ("seat", "Seat / legroom"),
-             ("food", "Food / perks")]
-    for i in range(0, 4, 2):
-        cols = st.columns(2, gap="small")
-        for col, (k, label) in zip(cols, tiles[i:i + 2]):
-            with col:
-                cls = "lib lib-fit" if k == "exterior" else "lib"
-                st.markdown(image(asset.get(f"{k}_url"), asset.get(f"{k}_link"), label, 190, cls), unsafe_allow_html=True)
+    tiles = library_tiles(asset)
+    if len(tiles) == 4:  # 2 × 2 grid of squares (V8)
+        for i in range(0, 4, 2):
+            cols = st.columns(2, gap="small")
+            for col, (k, label) in zip(cols, tiles[i:i + 2]):
+                with col:
+                    cls = "lib lib-fit" if k == "exterior" else "lib"
+                    st.markdown(image(asset.get(f"{k}_url"), asset.get(f"{k}_link"), label, 190, cls), unsafe_allow_html=True)
+    else:  # V9 variation: one column of wide photos, all the same size
+        st.markdown("".join(image(asset.get(f"{k}_url"), asset.get(f"{k}_link"), label, 190,
+                                  "lib-wide lib-fit" if k == "exterior" else "lib-wide")
+                            for k, label in tiles), unsafe_allow_html=True)
     # Wireframes V8: four photos at most, so cabins.json "gallery" extras aren't shown here.
     pairs = [(asset.get(f"{k}_credit"), asset.get(f"{k}_link")) for k, _ in tiles]
     st.markdown(credits_block(pairs) or '<div class="credit">Photos: none yet — add curated images in data/cabins.json</div>',
@@ -2069,13 +2097,23 @@ def _deal_tile(key, tag, note, f, cp, highlight=False):
         card_actions(f, key, f"airline:{f.get('airline_iata')}", note="Opens Google Flights to confirm the fare.")
 
 
+def _flight_id(f):
+    """Same flights both ways on the same dates. A round trip with another return flight is a different deal."""
+    ret = f.get("return_leg") or {}
+    return (f.get("flight_numbers"), f.get("depart_date"), f.get("return_date"),
+            ret.get("flight_numbers") if isinstance(ret, dict) else None)
+
+
 def same_flight(deals):
-    """All three deal slots are one flight (V6 p16): the fare shown is identical, so one card says it all."""
-    fares = [deals.get(slot) for slot, *_ in DEAL_SLOTS]
-    if not all(fares):
-        return None
-    ids = {(f.get("flight_numbers"), f.get("depart_date"), f.get("return_date")) for f in fares}
-    return fares[0] if len(ids) == 1 and None not in next(iter(ids))[:1] else None
+    """The flight to show as one BEST DEAL card, or None to show the three cards.
+
+    Three cards only when they are three different flights. When any two slots hold the same flight (say the
+    cheapest flight is also the cheapest nonstop) the page shows that flight once, full width (V9 p16)."""
+    fares = [f for f in (deals.get(slot) for slot, *_ in DEAL_SLOTS) if f and f.get("flight_numbers")]
+    for i, f in enumerate(fares):
+        if any(_flight_id(f) == _flight_id(g) for g in fares[i + 1:]):
+            return f
+    return None
 
 
 def _best_deal(code, f, cp):

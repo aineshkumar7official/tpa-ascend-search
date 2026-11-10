@@ -195,3 +195,15 @@ def test_deals_with_bags_picks_cheapest_total_and_hides_unknown_fees(conn, monke
         == {"JFK": "ZZ", "BOS": "ZZ"}                                  # no bags: cheapest fare, nothing hidden
     with_bag = queries.deals(conn, "mid+4", "one_way", None, 0, 1, pricing.Party(2))
     assert [(d["fare"]["destination"], d["fare"]["airline_iata"]) for d in with_bag] == [("JFK", "XX")]
+
+
+def test_standouts_to_show_caps_at_three_and_skips_home_cities():
+    from core import queries
+
+    def sd(dest):
+        return {"fare": {"destination": dest}}
+
+    pool = [sd("MCO"), sd("JFK"), sd("ATL"), sd("BOS"), sd("DEN"), sd("ORD")]
+    shown = queries.standouts_to_show(pool, ["MCO", "LGA"])  # LGA is the same metro as JFK
+    assert [d["fare"]["destination"] for d in shown] == ["ATL", "BOS", "DEN"]
+    assert len(queries.standouts_to_show(pool, [])) == 3

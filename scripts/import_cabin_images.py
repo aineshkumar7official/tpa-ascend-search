@@ -30,6 +30,7 @@ PHOTOS = [
     ("Aeromexico", "Aeromexico-737-MAX-cabin.avif", "AM|*", "cabin", "Aeroméxico"),
     ("Aeromexico", "still_I.avif", "AM|*", "seat", "Aeroméxico"),
     ("Aeromexico", "61a542351f8b8c00195ab333.webp", "AM|*", "food", UNCONFIRMED),
+    ("Aeromexico", "2024AM_7879.webp", "AM|*", "freebie", "Aeroméxico"),
 
     ("Air Canada", "Air-Canada-737-MAX-8-Economy-Class-Review-6.jpeg", "AC|Boeing 737 MAX 8", "cabin", UNCONFIRMED),
     ("Air Canada", "Air-Canada-737-MAX-8-Economy-Class-Review-12.jpeg", "AC|Boeing 737 MAX 8", "seat", UNCONFIRMED),
@@ -45,6 +46,7 @@ PHOTOS = [
     ("Alaska Airlines", "20250319_as_legend_fulton0409_9f11b1.jpg", "AS|*", "freebie", "Alaska Airlines"),
 
     ("American Airlines", "AA_04_21_Library_NarrowBody_Main_Cabin_004001.jpg", "AA|*", "seat", "American Airlines"),
+    ("American Airlines", "Pasted 2026-11-10 at 17.09.22.png", "AA|*", "cabin", "American Airlines"),
     ("American Airlines", "American_Airlines_in-flight_snack_in_economy_class_from_MIA_to_PHL.jpeg", "AA|*", "food", UNCONFIRMED),
     ("American Airlines", "041526-trading-cards-set-front.jpg", "AA|*", "freebie", "American Airlines"),
 
@@ -88,7 +90,7 @@ PHOTOS = [
     ("Discover Airlines", "Discover Airlines_Intercont_Eco.jpg", "4Y|*", "cabin", "Discover Airlines"),
     ("Discover Airlines", "Discover Airlines_Economy_Legroom.jpg", "4Y|*", "seat", "Discover Airlines"),
     ("Discover Airlines", "img.jpg", "4Y|*", "food", "Discover Airlines"),
-    ("Discover Airlines", "images.jpeg", "4Y|*", "gallery", "Discover Airlines"),
+    ("Discover Airlines", "images.jpeg", "4Y|*", "freebie", "Discover Airlines"),  # the free Discover cookies
 
     ("Edelweiss Airlines", "edelweiss_a350_economy_class_cabin_overview.jpg", "WK|*", "cabin", "Edelweiss"),
     ("Edelweiss Airlines", "edelweiss_a350_economy_class_seats.jpg", "WK|*", "seat", "Edelweiss"),
@@ -136,6 +138,9 @@ PHOTOS = [
 
     ("Westjet", "westjet_737-700-SAN-YCC_trip_report_08.jpg", "WS|*", "seat", "SANspotter"),
     ("Westjet", "Screenshot 2026-11-07 at 19.02.54.png", "WS|*", "food", UNCONFIRMED),
+    ("Westjet", "1737768115946.jpeg", "WS|*", "freebie", UNCONFIRMED),
+
+    ("Frontier Airlines", "Pasted 2026-11-10 at 17.14.06.png", "F9|*", "freebie", UNCONFIRMED),
 ]
 
 # Not imported, with why. Frontier's three photos were already in static/airlines/F9 (F9|*).

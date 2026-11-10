@@ -73,9 +73,9 @@ def test_card_price_bags_line_and_toggle():
     f = {"price_usd": 100, "airline_iata": "XX", "trip_type": "one_way"}
     off = card_price(f, 0, 0, 1, False, POL)            # no bags picked -> 1 carry-on + 1 checked reference
     assert off.headline == 100 and off.with_bags == 135
-    assert off.bags_line() == "Bags not included"       # never a separate "total with bags" (V6 p15)
+    assert off.bags_line() == "Personal item + carry-on included"       # never a separate "total with bags" (V6 p15)
     on = card_price(f, 0, 0, 1, True, POL)
-    assert on.headline == 135 and on.is_estimate and on.bags_line() == "Bags included"
+    assert on.headline == 135 and on.is_estimate and on.bags_line() == "Price includes 1 carry-on + 1 checked"
     unknown = card_price({**f, "airline_iata": "ZZ"}, 1, 0, 1, True, POL)
     assert unknown.headline == 100 and not unknown.included
     assert unknown.bags_line() == "Bag info unavailable"
@@ -93,7 +93,7 @@ def test_upgrades_scale_and_unknowns():
 def test_bags_line_when_fees_apply_without_amount():
     pol = {"XX": {"first_checked": {"fee_usd": None, "fee_label": "Requires fee"}}}
     cp = card_price({"price_usd": 100, "airline_iata": "XX", "trip_type": "one_way"}, 0, 0, 1, False, pol)
-    assert cp.with_bags is None and cp.bags_line() == "Bags not included"
+    assert cp.with_bags is None and cp.bags_line() == "Checked bag not included"
     assert cp.tooltip() == ""
 
 
@@ -118,7 +118,7 @@ def test_state_1_and_2_not_included_then_ticked():
     from core.pricing import upgrades_added
 
     cp, rows = _v6_rows("XX")
-    assert cp.bags_line() == "Bags not included" and cp.headline == 159
+    assert cp.bags_line() == "Personal item + carry-on included" and cp.headline == 159
     assert (rows["checked"]["label"], rows["checked"]["fee"], rows["checked"]["included"]) == ("Add checked bag", 35, False)
     assert upgrades_added(rows.values(), {"checked"}) == 35 and cp.bags_line(checked_added=True) == "1 checked bag added"
 
@@ -127,14 +127,14 @@ def test_state_3_and_4_fare_covers_the_bag():
     from core.pricing import upgrades_added
 
     cp, rows = _v6_rows("IN")
-    assert cp.bags_line() == "Bags included"
+    assert cp.bags_line() == "Carry-on + checked bag included"
     assert rows["checked"]["included"] and rows["checked"]["label"] == "Checked bag" and rows["checked"]["fee"] is None
     assert upgrades_added(rows.values(), {"checked", "seat_selection", "extra_legroom"}) == 63   # the bag can't add again
 
 
 def test_home_toggle_counts_as_included():
     cp, rows = _v6_rows("XX", include=True)
-    assert cp.headline == 194 and cp.bags_line() == "Bags included" and rows["checked"]["included"]
+    assert cp.headline == 194 and cp.bags_line() == "Price includes 1 carry-on + 1 checked" and rows["checked"]["included"]
 
 
 def test_state_5_no_bag_data():
@@ -150,7 +150,7 @@ def test_ranges_stay_informative_but_cant_be_ticked():
     from core.pricing import CHECK_GOOGLE
 
     cp, rows = _v6_rows("RG")
-    assert cp.bags_line() == "Bags not included" and rows["checked"]["note"] == "$55–$99" and rows["checked"]["fee"] is None
+    assert cp.bags_line() == "Checked bag not included" and rows["checked"]["note"] == "$55–$99" and rows["checked"]["fee"] is None
     assert rows["seat_selection"]["note"] == CHECK_GOOGLE      # "Requires fee" says nothing a traveler can act on
 
 
@@ -200,3 +200,21 @@ def test_bundles_with_bags_reprices_and_leaves_out_unknown():
     out = bundles_with_bags([{"out": xx, "ret": xx, "total": 300}, {"out": zz, "ret": zz, "total": 100}],
                             0, 1, 2, POL)
     assert [(b["total"], b["fare_total"]) for b in out] == [(370, 300)]
+
+
+@pytest.mark.parametrize("policy,tag,level", [
+    ({"personal_item": {"fee_usd": 0}, "carry_on": {"fee_usd": 0}, "first_checked": {"fee_usd": 0}},
+     "Carry-on + checked bag included", "on"),
+    ({"personal_item": {"fee_usd": 0}, "carry_on": {"fee_usd": None}, "first_checked": {"fee_usd": 0}},
+     "Checked bag included", "on"),
+    ({"personal_item": {"fee_usd": 0}, "carry_on": {"fee_usd": 0}, "first_checked": {"fee_usd": 45}},
+     "Personal item + carry-on included", "some"),
+    ({"personal_item": {"fee_usd": 0}, "carry_on": {"fee_usd": 35}, "first_checked": {"fee_label": "$36–$50"}},
+     "Personal item only", "some"),
+    ({"personal_item": {"fee_usd": 10}, "carry_on": {"fee_usd": 35}, "first_checked": {"fee_usd": 40}},
+     "No bags included", "off"),
+    ({}, "Bag info unavailable", "off"),
+])
+def test_bag_tag_names_which_bags_the_fare_includes(policy, tag, level):
+    cp = card_price({"price_usd": 100, "airline_iata": "QQ", "trip_type": "one_way"}, 0, 0, 1, False, {"QQ": policy})
+    assert cp.bags_line() == tag and cp.bag_level == level

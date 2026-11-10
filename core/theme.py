@@ -106,6 +106,10 @@ a {{ color: var(--link); }}
 /* Photo library: square tiles. The plane photo fits inside its square (whole aircraft visible), the rest fill it. */
 .img-tile.lib, .img-ph.lib {{ aspect-ratio: 1 / 1; height: auto !important; }}
 .img-tile.lib-fit {{ object-fit: contain !important; background: #fff; border: 1px solid var(--border); }}
+/* V9 photo library for airlines with fewer than four photos: wide tiles, all the same size, stacked. */
+.img-tile.lib-wide, .img-ph.lib-wide {{ aspect-ratio: 16 / 7; height: auto !important; margin-bottom: .5rem; }}
+/* Freebie box: show the whole photo (a trading card is tall, a snack is wide), centred on a soft background. */
+.img-tile.freebie-pic {{ object-fit: contain !important; background: var(--panel); border: 1px solid var(--border); }}
 .card-img {{ border-radius: 0 !important; height: 190px; }}
 .card-img.img-ph {{ border-radius: 0; }}
 .credit {{ color: var(--muted); font-size: .72rem; margin-top: .25rem; line-height: 1.3; }}

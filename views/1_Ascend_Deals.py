@@ -68,14 +68,18 @@ else:
     window_id = queries.window_for_pill(window_label)
     region_arg = None if region == "All regions" else region
     items = ui.q("deals", window_id, trip_type, region_arg, carry, checked, party)
-    standouts = ui.q("standout_deals", trip_type, region_arg, carry, checked, party)
+    # At most 3, and never a city that's already on the Home cards (same trip type and bags).
+    home_dests = [f["destination"] for f, _ in ui.home_picks(trip_type, party, carry, checked, bool(carry or checked))]
+    standouts = queries.standouts_to_show(ui.q("standout_deals", trip_type, region_arg, carry, checked, party),
+                                          home_dests)
 
     def render(d):
         ui.deal_card(d, ui.card_price(d["fare"], party, carry, checked, bool(carry or checked)), "deals")
 
     ui.heading(f"Stand-out deals · {trip_label}", f"At least {queries.STANDOUT_MIN_DROP:.0%} and "
                f"&#36;{queries.STANDOUT_MIN_SAVINGS_USD} below the route's typical price, its earlier checks, or its last "
-               "check, for the same departure date. Includes all date windows.", level=2)
+               "check, for the same departure date. Includes all date windows. Top "
+               f"{queries.STANDOUT_MAX_CARDS}, leaving out cities already on Home.", level=2)
     if standouts:
         ui.card_grid(standouts, render)
     else:

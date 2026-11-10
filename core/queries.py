@@ -3,7 +3,7 @@ import json
 import statistics
 from datetime import datetime, timedelta
 
-from bots.enricher import amenities_for
+from bots.enricher import amenities_for, with_curated
 from bots.scouter import BASELINE_DAYS, MIN_POINTS
 from core import config
 from core.dates import WINDOWS
@@ -18,6 +18,7 @@ TRIP_PILLS = {"One-way": "one_way", "Round-trip": "round_trip"}
 # Both are required: 10% of a $30 fare is noise, and $20 off a $900 fare isn't much of a deal.
 STANDOUT_MIN_DROP = 0.10
 STANDOUT_MIN_SAVINGS_USD = 20
+STANDOUT_MAX_CARDS = 3  # Ascend Deals shows at most this many stand-outs
 # A route still "Tracking" (under MIN_POINTS checks) can be a stand-out once it has this many earlier checks
 # for the same departure date and has fallen well below them.
 STANDOUT_EARLY_MIN_POINTS = 2
@@ -61,7 +62,7 @@ def asset(conn, key):
     if not key:
         return {}
     row = conn.execute("SELECT * FROM assets WHERE asset_key=?", (key,)).fetchone()
-    return dict(row) if row else {}
+    return with_curated(dict(row)) if row else {}
 
 
 def review_summary(conn, key):
@@ -252,6 +253,16 @@ def standout_deals(conn, trip_type, region=None, carry_on=0, checked=0, party=1)
     return sorted(out, key=lambda d: -d["standout"]["pct"])
 
 
+def standouts_to_show(standouts, home_destinations, n=STANDOUT_MAX_CARDS):
+    """The stand-outs Ascend Deals shows: the n biggest drops, skipping any city already on the Home cards
+    so the two pages never feature the same deal."""
+    def city(iata):  # JFK/LGA/EWR count as one city, as on Home
+        return config.metro_for(iata) or iata
+
+    home = {city(x) for x in home_destinations}
+    return [d for d in standouts if city(d["fare"]["destination"]) not in home][:n]
+
+
 # ---------------------------------------------------------------- Airline Matrix
 def _recent_cutoff(scan):
     """Oldest scanned_at still counted as current. ISO-formatted like the column, because the values
@@ -297,12 +308,11 @@ def matrix(conn):
                GROUP BY a.asset_key
                ORDER BY (a.exterior_source='planespotters') DESC, COUNT(f.id) DESC LIMIT 1""",
             (f"{code}|%",)).fetchone()
-        asset = dict(row) if row else {}
-        # A hand-picked livery photo (cabins.json airline|* exterior) wins over the cached one: cached assets
-        # only refresh every 30 days, so without this a new pick wouldn't show until then.
+        # A hand-picked livery photo (cabins.json) wins over the cached one (see with_curated).
+        asset = with_curated(dict(row)) if row else {}
         curated = (config.cabins().get(f"{code}|*") or {}).get("exterior") or {}
-        if curated.get("image_url"):
-            asset = {**asset, "exterior_url": curated["image_url"], "exterior_link": curated.get("source_page"),
+        if not row and curated.get("image_url"):
+            asset = {"exterior_url": curated["image_url"], "exterior_link": curated.get("source_page"),
                      "exterior_credit": curated.get("credit"), "exterior_source": "curated"}
         out.append({"iata": code, "name": config.airline_name(code), "n_nonstops": len(airline_routes(conn, code)),
                     "asset": asset})
@@ -317,9 +327,9 @@ def airline_photo_asset(conn, airline):
            ORDER BY (a.exterior_url IS NOT NULL) + (a.interior_url IS NOT NULL) + (a.seat_url IS NOT NULL)
                     + (a.food_url IS NOT NULL) DESC, COUNT(*) DESC LIMIT 1""", (airline,)).fetchone()
     if row:
-        return dict(row)
+        return with_curated(dict(row))
     row = conn.execute("SELECT * FROM assets WHERE asset_key LIKE ? LIMIT 1", (f"{airline}|%",)).fetchone()
-    return dict(row) if row else {}
+    return with_curated(dict(row)) if row else {}
 
 
 def airline_review(conn, airline):

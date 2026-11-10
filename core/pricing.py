@@ -225,6 +225,8 @@ class CardPrice:
     travelers: int
     bag_known: bool = False         # we know something about the checked-bag fee (an amount or a label)
     covers_bag: bool = False        # the fare itself includes a checked bag
+    carry_free: bool = False        # the fare includes a carry-on
+    personal_free: bool | None = None  # the fare includes a personal item (None = we don't know)
 
     @property
     def headline(self):
@@ -238,9 +240,28 @@ class CardPrice:
         """The bag tag (V6 p15). It never quotes a separate with-bags total: the big price is the only price."""
         if checked_added:
             return "1 checked bag added"
+        if self.included:
+            return f"Price includes {bags_text(*self.bags)}"
+        return self.free_bags()
+
+    def free_bags(self):
+        """Which bags the fare itself includes, most generous first: checked bag, carry-on, personal item or none."""
+        if self.covers_bag:
+            return "Carry-on + checked bag included" if self.carry_free else "Checked bag included"
+        if self.carry_free:
+            return "Personal item + carry-on included"
+        if self.personal_free:
+            return "Personal item only"
+        if self.personal_free is False:
+            return "No bags included"
+        return "Checked bag not included" if self.bag_known else "Bag info unavailable"
+
+    @property
+    def bag_level(self):
+        """'on' (checked bag in the price), 'some' (carry-on or personal item only) or 'off' (none / unknown)."""
         if self.included or self.covers_bag:
-            return "Bags included"
-        return "Bags not included" if self.bag_known else "Bag info unavailable"
+            return "on"
+        return "some" if self.carry_free or self.personal_free else "off"
 
     def tooltip(self, money=lambda v: f"${v:,.0f}"):
         """Only when the headline has bags added, so the estimate can be explained."""
@@ -300,7 +321,17 @@ def card_price(fare, carry_on=0, checked=0, party=1, include_bags=False, policie
     return CardPrice(fare_total=q.fare_total, with_bags=with_bags, bags=bags,
                      included=bool(include_bags and with_bags is not None), travelers=q.travelers,
                      bag_known=bag.get("fee_usd") is not None or bool(bag.get("fee_label")),
-                     covers_bag=bag.get("fee_usd") == 0)
+                     covers_bag=bag.get("fee_usd") == 0,
+                     carry_free=(policy.get("carry_on") or {}).get("fee_usd") == 0,
+                     personal_free=_is_free(policy.get("personal_item")))
+
+
+def _is_free(item):
+    """True if a policy item costs nothing, False if it has a fee, None if we have no data."""
+    item = item or {}
+    if item.get("fee_usd") is not None:
+        return item["fee_usd"] == 0
+    return False if item.get("fee_label") else None
 
 
 def extra_fee(airline, key, trip_type, party, policies=None):
