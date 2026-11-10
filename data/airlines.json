@@ -1,5 +1,5 @@
 {
-  "_note": "description: 2-3 sentences in YOUR words (fare style, cabin, what's included). null renders 'Description coming soon'. hq, alliance: from TPA_Airline_Fees_and_Policies_21_Airlines.pdf (alliance null = independent); stored, not shown yet.",
+  "_note": "description: 2-3 sentences in YOUR words (fare style, cabin, what's included). null renders 'Description coming soon'. hq, alliance: from TPA_Airline_Fees_and_Policies_21_Airlines.pdf (alliance null = independent); stored, not shown yet. fare_model (Budget / Low-Cost / Full Service) is the Airline Matrix 'Airline type' filter (Wireframes V9.1); international (based outside the U.S.) adds an 'International' option, so an airline can be e.g. both Low-Cost and International (Porter, WestJet).",
   "DL": {
     "name": "Delta Air Lines",
     "brand_color": "#003366",
@@ -9,7 +9,9 @@
     "website": "https://www.delta.com",
     "description": null,
     "hq": "Atlanta",
-    "alliance": "SkyTeam"
+    "alliance": "SkyTeam",
+    "fare_model": "Full Service",
+    "international": false
   },
   "WN": {
     "name": "Southwest Airlines",
@@ -20,7 +22,9 @@
     "website": "https://www.southwest.com",
     "description": null,
     "hq": "Dallas",
-    "alliance": null
+    "alliance": null,
+    "fare_model": "Low-Cost",
+    "international": false
   },
   "B6": {
     "name": "JetBlue",
@@ -32,7 +36,9 @@
     "website": "https://www.jetblue.com",
     "description": null,
     "hq": "New York",
-    "alliance": null
+    "alliance": null,
+    "fare_model": "Low-Cost",
+    "international": false
   },
   "AA": {
     "name": "American Airlines",
@@ -43,7 +49,9 @@
     "website": "https://www.aa.com",
     "description": null,
     "hq": "Fort Worth",
-    "alliance": "oneworld"
+    "alliance": "oneworld",
+    "fare_model": "Full Service",
+    "international": false
   },
   "UA": {
     "name": "United Airlines",
@@ -54,7 +62,9 @@
     "website": "https://www.united.com",
     "description": null,
     "hq": "Chicago",
-    "alliance": "Star Alliance"
+    "alliance": "Star Alliance",
+    "fare_model": "Full Service",
+    "international": false
   },
   "NK": {
     "name": "Spirit Airlines",
@@ -63,7 +73,9 @@
       "Spirit"
     ],
     "website": "https://www.spirit.com",
-    "description": null
+    "description": null,
+    "fare_model": "Budget",
+    "international": false
   },
   "F9": {
     "name": "Frontier Airlines",
@@ -74,7 +86,9 @@
     "website": "https://www.flyfrontier.com",
     "description": null,
     "hq": "Denver",
-    "alliance": null
+    "alliance": null,
+    "fare_model": "Budget",
+    "international": false
   },
   "AS": {
     "name": "Alaska Airlines",
@@ -85,7 +99,9 @@
     "website": "https://www.alaskaair.com",
     "description": null,
     "hq": "Seattle",
-    "alliance": "oneworld"
+    "alliance": "oneworld",
+    "fare_model": "Full Service",
+    "international": false
   },
   "SY": {
     "name": "Sun Country Airlines",
@@ -96,7 +112,9 @@
     "website": "https://www.suncountry.com",
     "description": null,
     "hq": "Minneapolis",
-    "alliance": null
+    "alliance": null,
+    "fare_model": "Low-Cost",
+    "international": false
   },
   "MX": {
     "name": "Breeze Airways",
@@ -107,7 +125,9 @@
     "website": "https://www.flybreeze.com",
     "description": null,
     "hq": "Cottonwood Heights, UT",
-    "alliance": null
+    "alliance": null,
+    "fare_model": "Budget",
+    "international": false
   },
   "G4": {
     "name": "Allegiant Air",
@@ -116,7 +136,9 @@
       "Allegiant"
     ],
     "website": "https://www.allegiantair.com",
-    "description": null
+    "description": null,
+    "fare_model": "Budget",
+    "international": false
   },
   "AC": {
     "name": "Air Canada",
@@ -125,7 +147,9 @@
     "website": "https://www.aircanada.com",
     "description": null,
     "hq": "Toronto",
-    "alliance": "Star Alliance"
+    "alliance": "Star Alliance",
+    "fare_model": "Full Service",
+    "international": true
   },
   "AM": {
     "name": "Aeroméxico",
@@ -136,7 +160,9 @@
     "website": "https://www.aeromexico.com",
     "description": null,
     "hq": "Mexico City",
-    "alliance": "SkyTeam"
+    "alliance": "SkyTeam",
+    "fare_model": "Full Service",
+    "international": true
   },
   "AV": {
     "name": "Avianca",
@@ -145,7 +171,9 @@
     "website": "https://www.avianca.com",
     "description": null,
     "hq": "Bogotá",
-    "alliance": "Star Alliance"
+    "alliance": "Star Alliance",
+    "fare_model": "Full Service",
+    "international": true
   },
   "XP": {
     "name": "Avelo Airlines",
@@ -156,7 +184,9 @@
     "website": "https://www.aveloair.com",
     "description": null,
     "hq": "Houston",
-    "alliance": null
+    "alliance": null,
+    "fare_model": "Budget",
+    "international": false
   },
   "BA": {
     "name": "British Airways",
@@ -165,7 +195,9 @@
     "website": "https://www.britishairways.com",
     "description": null,
     "hq": "London",
-    "alliance": "oneworld"
+    "alliance": "oneworld",
+    "fare_model": "Full Service",
+    "international": true
   },
   "KX": {
     "name": "Cayman Airways",
@@ -174,7 +206,9 @@
     "website": "https://www.caymanairways.com",
     "description": null,
     "hq": "George Town, Cayman Islands",
-    "alliance": null
+    "alliance": null,
+    "fare_model": "Full Service",
+    "international": true
   },
   "CM": {
     "name": "Copa Airlines",
@@ -185,7 +219,9 @@
     "website": "https://www.copaair.com",
     "description": null,
     "hq": "Panama City",
-    "alliance": "Star Alliance"
+    "alliance": "Star Alliance",
+    "fare_model": "Full Service",
+    "international": true
   },
   "4Y": {
     "name": "Discover Airlines",
@@ -196,7 +232,9 @@
     "website": "https://www.discover-airlines.com",
     "description": null,
     "hq": "Frankfurt",
-    "alliance": null
+    "alliance": null,
+    "fare_model": "Full Service",
+    "international": true
   },
   "WK": {
     "name": "Edelweiss Air",
@@ -207,7 +245,9 @@
     "website": "https://www.flyedelweiss.com",
     "description": null,
     "hq": "Zurich",
-    "alliance": null
+    "alliance": null,
+    "fare_model": "Full Service",
+    "international": true
   },
   "PD": {
     "name": "Porter Airlines",
@@ -218,7 +258,9 @@
     "website": "https://www.flyporter.com",
     "description": null,
     "hq": "Toronto",
-    "alliance": null
+    "alliance": null,
+    "fare_model": "Low-Cost",
+    "international": true
   },
   "VS": {
     "name": "Virgin Atlantic",
@@ -227,7 +269,9 @@
     "website": "https://www.virginatlantic.com",
     "description": null,
     "hq": "Crawley, UK",
-    "alliance": "SkyTeam"
+    "alliance": "SkyTeam",
+    "fare_model": "Full Service",
+    "international": true
   },
   "WS": {
     "name": "WestJet",
@@ -238,6 +282,8 @@
     "website": "https://www.westjet.com",
     "description": null,
     "hq": "Calgary",
-    "alliance": null
+    "alliance": null,
+    "fare_model": "Low-Cost",
+    "international": true
   }
 }

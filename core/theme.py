@@ -204,8 +204,10 @@ label p {{ font-weight: 600 !important; font-size: .82rem !important; }}
 /* routes table (airline detail) */
 [class*="st-key-routespanel"] {{ border: 1px solid var(--border); border-radius: 12px; background: #fff; overflow: hidden;
   gap: 0 !important; margin-top: .3rem; }}
-.rp-head {{ background: var(--cream); display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
-  padding: .4rem .8rem; font-size: .9rem; }}
+/* V9.1: cream header with the title over "[N] nonstop routes · [airline] · [trip] fares", the trip toggle on the right. */
+[class*="st-key-rphead_"] {{ background: var(--cream); padding: .45rem .8rem; justify-content: space-between; flex-wrap: nowrap; }}
+[class*="st-key-rphead_"] [data-testid="stElementContainer"]:has(.rp-head) {{ flex: 1 1 auto; min-width: 0; width: auto !important; }}
+.rp-head {{ display: flex; flex-direction: column; gap: .1rem; font-size: .9rem; }}
 .rp-head span {{ color: var(--maroon); font-size: .76rem; }}
 .rp-hint {{ color: var(--muted); font-size: .76rem; padding: .3rem .8rem; }}
 /* Each route row is one big button: an invisible st.button stretched over the row's text. */
@@ -399,8 +401,14 @@ table.cmp td .chip {{ font-size: .7rem; }}
 [class*="st-key-baghead"] button p {{ color: var(--maroon) !important; font-weight: 700; font-size: .8rem; text-decoration: none !important; }}
 .bag-chip.v3 {{ margin: 0; white-space: normal; line-height: 1.25; border-radius: 12px; padding: .3rem .65rem .3rem .55rem;
   font-size: .73rem; }}
-.bag-chip.v3.on {{ background: #E8F2EA; }}
-.bag-chip.v3.off {{ background: var(--panel); }}
+/* Bag tag: one color per allowance, most generous first. */
+.bag-chip.v3.checked {{ background: #E3F1E6; color: #1E5B2E; }}   /* checked bag included / in the price */
+.bag-chip.v3.carry {{ background: #E4EEF8; color: #1D4A73; }}     /* personal item + carry-on */
+.bag-chip.v3.personal {{ background: #FBEFD5; color: #7A4B00; }}  /* personal item only */
+.bag-chip.v3.none {{ background: #FBE5E2; color: #8F2318; }}      /* no bags included */
+.bag-chip.v3.unknown {{ background: var(--panel); color: var(--muted); }}
+.bag-chip.v3.checked .bag-chip-ico, .bag-chip.v3.carry .bag-chip-ico, .bag-chip.v3.personal .bag-chip-ico,
+.bag-chip.v3.none .bag-chip-ico, .bag-chip.v3.unknown .bag-chip-ico {{ color: inherit; }}
 [class*="st-key-uprow"] {{ flex-wrap: nowrap !important; justify-content: space-between; }}
 [class*="st-key-uprow"] [data-testid="stElementContainer"] {{ width: auto !important; flex: 0 1 auto; }}
 [class*="st-key-uprow"] [data-testid="stCheckbox"] label {{ align-items: center; }}
@@ -549,6 +557,7 @@ label p {{ font-size: .88rem !important; }}
 .st-key-panel_filters button[data-variant="pills"], .st-key-hometoggles button[data-variant="pills"] {{
   border-radius: 8px !important; min-height: 34px; padding-left: .7rem; padding-right: .7rem; }}
 .st-key-panel_filters {{ background: var(--footer-bg); }}
+.mx-count {{ color: var(--maroon); font-weight: 700; font-size: .9rem; text-align: right; padding-bottom: .55rem; }}
 .st-key-hometoggles button[data-variant="segmented_control"] {{ min-height: 34px; padding-left: .7rem; padding-right: .7rem; }}
 [class*="st-key-inlineseg"] button[data-variant="pills"] {{ min-height: 32px; padding-left: .75rem; padding-right: .75rem; }}
 .inline-lbl {{ font-size: .92rem; white-space: nowrap; }}

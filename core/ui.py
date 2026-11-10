@@ -520,7 +520,7 @@ def fare_body(f, cp, key):
     else:
         hint = ("The price updates as you choose upgrades." if any(r["fee"] for r in rows)
                 else "Exact upgrade prices show on Google Flights when you book.")
-        if cp.bag_known or cp.included or cp.bag_level != "off":
+        if cp.bag_level != "unknown":
             hint += f" This fare: {cp.bags_line()[0].lower()}{cp.bags_line()[1:]}."
     ladder = fare_ladder(data)
     more = (f'<details class="fare-more"><summary>Other fares on this flight ({len(data["options"]) - 1})</summary>{ladder}</details>'
@@ -535,7 +535,7 @@ def bags_line(f, cp, key):
     price includes when bags were picked, '1 checked bag added' or 'Bag info unavailable'."""
     rows, picked = _upgrade_rows(f, cp), _picked(key)
     added_bag = any(r["id"] == "checked" and r["fee"] and r["id"] in picked for r in rows)
-    state = "on" if added_bag else {"on": "on", "some": "", "off": "off"}[cp.bag_level]
+    state = "checked" if added_bag else cp.bag_level  # each allowance has its own color (theme.py .bag-chip.v3.*)
     return (f'<div class="bag-chip v3 {state}" title="{esc(cp.tooltip(money))}">'
             f'<span class="bag-chip-ico">{ICONS["checked"]}</span><span>{esc(cp.bags_line(added_bag))}</span></div>')
 
@@ -1843,13 +1843,32 @@ def bundle_card(b, s, idx):
 
 
 # ================================================================ airline matrix
+MAX_LISTED = 8  # Matrix cards name up to this many destinations for a Destination type filter
+
+
+def nonstops_label(a):
+    """'[N] nonstops from TPA', or the city itself when there's only one: 'Nonstop to Mexico City'. With a Destination
+    type picked, `matching` is the airline's routes of that type, named on the card: Air Canada under International is
+    'Nonstop to Halifax · Montreal · Toronto–Pearson' (a count instead when there are more than MAX_LISTED)."""
+    routes = a.get("routes") or []
+    matching = a.get("matching") or []
+    if matching:
+        if len(matching) > MAX_LISTED:
+            return f"{len(matching)} nonstops to these destinations"
+        cities = sorted(config.city(r) for r in matching)
+        return "Nonstop to " + " · ".join(cities)  # "·", not ",": some names have a comma (San José, Costa Rica)
+    if a["n_nonstops"] == 1 and routes:
+        return f"Nonstop to {config.city(routes[0])}"
+    return f'{a["n_nonstops"]} nonstop{"s" if a["n_nonstops"] != 1 else ""} from TPA'
+
+
 def airline_card(a):
     """Matrix tile: one livery photo, centered, with its required credit. The airline page has the four-photo library."""
     asset = a.get("asset") or {}
     with st.container(key=f"card_mx_{a['iata']}"):
         st.markdown(card_photo(asset, 115, "card-img mx-img")
                     + f'<div class="card-body"><div class="mx-name" title="{esc(a["name"])}">{esc(a["name"])}</div>'
-                    f'<div class="mx-n">{a["n_nonstops"]} nonstop{"s" if a["n_nonstops"] != 1 else ""} from TPA</div></div>',
+                    f'<div class="mx-n">{esc(nonstops_label(a))}</div></div>',
                     unsafe_allow_html=True)
         if st.button("View airline", key=f"view_{a['iata']}", type="primary", width="stretch"):
             st.query_params["airline"] = a["iata"]
@@ -2040,26 +2059,33 @@ def search_route(dest, round_trip, fare=None, airline=None):
     st.switch_page(PAGES[config.NAV_SEARCH])
 
 
-def routes_panel(code, routes, priced, round_trip=False):
-    """'Routes from TPA' (V5.1 p7): every row opens that flight in Ascend Search. `priced` matches the trip type the page
-    is showing, so what a row says is what it opens. Weekly frequency isn't in any source, so the third column shows the
-    carrier's service status from TPA_Nonstop_Destinations.docx, not a guessed flights/week."""
+def routes_panel(code, routes):
+    """'Routes from TPA' (V9.1 p8): its own One-way / Round-trip toggle; every row opens that flight in Ascend Search
+    with the toggle's trip type, so what a row says is what it opens. Weekly frequency isn't in any source, so the
+    third column shows the carrier's service status from TPA_Nonstop_Destinations.docx, not a guessed flights/week."""
+    ss = st.session_state
+    trip = ss.get(f"routes_trip_{code}") or "Round-trip"
+    round_trip = trip == "Round-trip"
+    priced = q("route_prices", code, "round_trip" if round_trip else "one_way")
+    unit = "round trip" if round_trip else "one-way"
     by_dest = {f["destination"]: f for f in priced}
     dests = {d["iata"]: d for d in config.destinations()}
     rows = sorted(routes, key=lambda r: (r not in by_dest, by_dest[r]["price_usd"] if r in by_dest else 0,
                                          config.city(r)))
-    ss = st.session_state
     show_all = ss.get(f"routes_all_{code}", False)
     with st.container(key=f"routespanel_{code}"):
-        st.markdown(f'<div class="rp-head"><b>Routes from TPA</b><span>{len(rows)} nonstop route'
-                    f'{"s" if len(rows) != 1 else ""} · {esc(config.airline_name(code))}</span></div>'
-                    f'<div class="rp-hint">Select a route to search it in Ascend Search. Prices are {"round trip" if round_trip else "one-way"}.</div>',
-                    unsafe_allow_html=True)
+        with st.container(horizontal=True, vertical_alignment="center", key=f"rphead_{code}"):
+            st.markdown(f'<div class="rp-head"><b>Routes from TPA</b><span>{len(rows)} nonstop route'
+                        f'{"s" if len(rows) != 1 else ""} · {esc(config.airline_name(code))} · {unit} fares</span></div>',
+                        unsafe_allow_html=True)
+            st.segmented_control("Route prices", ["One-way", "Round-trip"], default="Round-trip",
+                                 key=f"routes_trip_{code}", label_visibility="collapsed")
+        st.markdown('<div class="rp-hint">Select a route to search it in Ascend Search.</div>', unsafe_allow_html=True)
         for r in rows if show_all else rows[:5]:
             f = by_dest.get(r)
             cs = ((dests.get(r) or {}).get("carrier_status") or {}).get(code) or {}
             status = cs.get("note") or STATUS_TEXT.get(cs.get("status"), "")
-            price = f'from <b>{money(f["price_usd"])}</b>' if f else '<span class="muted">not priced</span>'
+            price = f'from <b>{money(f["price_usd"])}</b> ({unit})' if f else '<span class="muted">not priced</span>'
             with st.container(key=f"routerow_{code}_{r}"):
                 st.markdown(f'<div class="rp-row"><b>TPA → {esc(config.city(r))}</b>'
                             f'<span class="muted">{aircraft_label(f) if f and f.get("aircraft_type") else "—"}</span>'

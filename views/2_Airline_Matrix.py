@@ -3,7 +3,7 @@ import html
 
 import streamlit as st
 
-from core import config, ui
+from core import config, queries, ui
 from sources import news
 
 ui.chrome(config.NAV_MATRIX)
@@ -35,9 +35,7 @@ if code and code in config.airlines():
     with right:
         ui.heading("Photo library", level=3)
         ui.photo_library(asset, code)
-        # The One-way / Round-trip toggle sits further down the page; its value carries over from the last run.
-        round_trip = st.session_state.get("airline_trip", "Round-trip") != "One-way"
-        ui.routes_panel(code, routes, ui.q("route_prices", code, "round_trip" if round_trip else "one_way"), round_trip)
+        ui.routes_panel(code, routes)  # has its own One-way / Round-trip toggle (V9.1)
 
     st.write("")
     ui.news_panel(news.latest(ui.conn(), code))
@@ -53,7 +51,24 @@ if code and code in config.airlines():
 else:
     if code:
         st.warning(f"Unknown airline code “{html.escape(code)}”.")
-    ui.heading("Airline Matrix", "Every airline flying from TPA. Pick one to see its deals, cabin and what's included.")
-    ui.card_grid(ui.q("matrix"), ui.airline_card, cols=4)
+    ui.heading("Airline Matrix", "Every airline flying from TPA. Filter by airline or destination type, then pick one "
+               "to see its deals, cabin and what's included.")
+    airlines = ui.q("matrix")
+    with st.container(key="panel_filters"):
+        c1, c2, c3, c4 = st.columns([1, 1, 1, 0.55], gap="medium", vertical_alignment="bottom")
+        sort = c1.selectbox("Sort", queries.MATRIX_SORTS, key="mx_sort")
+        kind = c2.selectbox("Airline type", list(queries.AIRLINE_TYPES), key="mx_type")
+        dest = c3.selectbox("Destination type", list(queries.DESTINATION_TYPES), key="mx_dest")
+        shown = queries.filter_matrix(airlines, sort, kind, dest)
+        regions = queries.destination_regions(dest)
+        if regions:  # show the plane each airline flies to those destinations, when there's a trusted photo of it
+            shown = [{**a, "asset": ui.q("route_cover", a["iata"], regions) or a["asset"],
+                      "matching": queries.matching_routes(a["iata"], a["routes"], regions)} for a in shown]
+        c4.markdown(f'<div class="mx-count">{len(shown)} of {len(airlines)} airlines</div>', unsafe_allow_html=True)
+    st.write("")
+    if shown:
+        ui.card_grid(shown, ui.airline_card, cols=4)
+    else:
+        st.markdown('<div class="muted">No airlines match these filters.</div>', unsafe_allow_html=True)
 
 ui.footer()
