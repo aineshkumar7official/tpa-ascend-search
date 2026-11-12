@@ -14,6 +14,12 @@ API = "https://commons.wikimedia.org/w/api.php"
 CACHE_DAYS = 30
 ALLOWED = ("cc by", "cc-by", "cc0", "public domain", "pd")
 INTERIOR_HINTS = ("cabin", "interior", "seat", "economy", "first class", "inside")
+# Rule: a livery photo must show the whole plane from the side. File names with these words are shots from below
+# (planform / belly), close-ups of one part, or views from inside, so they're never used as the exterior.
+PARTIAL_VIEW_WORDS = ("planform", "underside", "belly", "bottom", "below", "overhead", "from above", "aerial",
+                      "close up", "closeup", "detail", "nose", "tail", "tailfin", "fin", "engine", "engines",
+                      "wing", "wings", "wingtip", "winglet", "fuselage", "gear", "landing gear", "cockpit",
+                      "flight deck", "window", "door", "logo", "head on", "front view", "rear view", "crop", "cropped")
 
 
 def _license_ok(name):
@@ -28,6 +34,14 @@ def _strip_html(s):
 
 def _title_words(title):
     return " " + re.sub(r"[^a-z0-9]+", " ", title.lower()) + " "
+
+
+def partial_view(name):
+    """True when a Commons file name or URL says the photo isn't the whole plane (see PARTIAL_VIEW_WORDS)."""
+    if not name:
+        return False
+    words = _title_words(re.sub(r"%[0-9A-Fa-f]{2}", " ", name.split("?", 1)[0]))
+    return any(f" {w} " in words for w in PARTIAL_VIEW_WORDS)
 
 
 def parse(payload, kind="exterior", blocked=(), must_contain=()):
@@ -48,7 +62,7 @@ def parse(payload, kind="exterior", blocked=(), must_contain=()):
         is_interior = any(h in title.lower() for h in INTERIOR_HINTS)
         if kind == "interior" and not is_interior:
             continue
-        if kind == "exterior" and is_interior:
+        if kind == "exterior" and (is_interior or partial_view(title)):
             continue
         artist = _strip_html(meta.get("Artist", {}).get("value", "")) or "Unknown author"
         return {
@@ -61,7 +75,7 @@ def parse(payload, kind="exterior", blocked=(), must_contain=()):
 
 
 def search(query, kind="exterior", conn=None, blocked=(), must_contain=()):
-    key = f"commons:{kind}:{query.lower()}:{'|'.join(sorted(must_contain))}"
+    key = f"commons2:{kind}:{query.lower()}:{'|'.join(sorted(must_contain))}"
     if conn is not None:
         hit, value = cache_get(conn, key, CACHE_DAYS)
         if hit:

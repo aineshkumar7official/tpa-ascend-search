@@ -51,8 +51,15 @@ def make_asset_key(airline, aircraft_type):
 
 
 def _fresh(row):
+    if _partial_exterior(dict(row)):  # picked before the whole-plane rule: look again now
+        return False
     age = datetime.now(timezone.utc) - datetime.fromisoformat(row["fetched_at"])
     return age < timedelta(days=REFRESH_DAYS)
+
+
+def _partial_exterior(asset):
+    """A non-curated livery photo whose file name says it isn't the whole plane (commons.partial_view)."""
+    return asset.get("exterior_source") != "curated" and commons.partial_view(asset.get("exterior_url"))
 
 
 def _cabin_entry(airline, aircraft_type):
@@ -87,6 +94,8 @@ def with_curated(asset):
     cabin = (_cabin_entry(airline, aircraft) if aircraft != "Unknown" else None) or {}
     airline_wide = config.cabins().get(f"{airline}|*") or {}
     out = dict(asset)
+    if _partial_exterior(out):  # never show a belly / close-up shot; the card shows its placeholder until a re-fetch
+        out.update({"exterior_url": None, "exterior_link": None, "exterior_credit": None, "exterior_source": "placeholder"})
     for slot, col in ASSET_SLOTS.items():
         img = _curated(cabin.get(slot)) or _curated(airline_wide.get(slot))
         if img:

@@ -1,6 +1,6 @@
 # TPA Ascend Search — Build Guide
 
-**TPA Ascend Search, by AK Aviation.** Tagline: *"Value the journey."* Banner line: *"Other flights give you the prices; we show you the experience."*
+**TPA Ascend Search.** Tagline: *"Value the journey."* Banner line: *"Other flights give you the prices; we show you the experience."*
 
 A web app that watches Tampa International Airport (TPA) for cheap **nonstop** flights (one-way and round-trip), pairs each fare with aircraft livery photos, cabin experience details (photos, bags, food, entertainment, legroom), airline fees and policies, passenger reviews and fun facts, and serves it all through the six-screen layout in the wireframes.
 
@@ -14,7 +14,7 @@ A web app that watches Tampa International Airport (TPA) for cheap **nonstop** f
 
 ## 0. Wireframe map
 
-The wireframes define six screens. Every screen shares the same chrome: a maroon header with the "TPA Ascend Search by AK Aviation" wordmark and "Value the journey" on the right, a nav row (Home · Ascend Deals · Airline Matrix · Ascend Search), a cream banner with the banner line, and a footer.
+The wireframes define six screens. Every screen shares the same chrome: a maroon header with the "TPA Ascend Search" wordmark and "Value the journey" on the right, a nav row (Home · Ascend Deals · Airline Matrix · Ascend Search), a cream banner with the banner line, and a footer.
 
 | Wireframe | App view | File | Notes |
 |---|---|---|---|
@@ -747,9 +747,9 @@ Streamlit's defaults can't fully match the wireframes, so `theme.inject()` also 
 
 | Component | Wireframe element |
 |---|---|
-| `header(active)` | Maroon bar: wordmark + "by AK Aviation", "Value the journey", nav row |
+| `header(active)` | Maroon bar: logo + wordmark, "Value the journey", nav row |
 | `banner()` | Cream strip with the banner line |
-| `footer()` | 3 columns: **1. Explore** (Ascend Deals, Airline Matrix, Ascend Search), **2. About** (about the project, AK Aviation links), **3. Data sources** (fare source, delay data, photo credits); then the disclaimer: "Prices are snapshots from public fare searches and may have changed. Always confirm on the airline or booking site. Student project · USF" |
+| `footer()` | 3 columns: **1. Explore** (Ascend Deals, Airline Matrix, Ascend Search), **2. About** (about the project), **3. Data sources** (fare source, delay data, photo credits); then the disclaimer: "Prices are snapshots from public fare searches and may have changed. Always confirm on the airline or booking site. Student project · USF" |
 | `search_form()` | Home form: From (TPA – Tampa, fixed), To (nonstop destinations), Depart, Return, Travelers *, Carry-on, Checked, Round trip checkbox, Search |
 | `search_bar_compact(params)` | Ascend Search summary: "TPA → City · dates · Round trip · Nonstop only", "Change route or dates" link, Travelers/Carry-on/Checked, **Update prices** |
 | `fare_card(fare, asset)` | Home cards: livery photo, "TPA → City", price, "Airline · Nonstop", date · depart–arrive · flight time, **Book now** + **Cabin experience ↓** |
@@ -883,7 +883,7 @@ Store `SERPAPI_API_KEY` in GitHub Secrets / Streamlit secrets; never commit it.
 - [ ] Delay data (if used): BTS credited in Data sources.
 - [ ] Descriptive `User-Agent` with a contact email on all outbound requests.
 - [ ] fast-flights is an unofficial scraper of a public site: keep scan rates low, personal/educational use.
-- [ ] Footer says "Student project · USF" and the About column links to the AK Aviation channels.
+- [ ] Footer says "Student project · USF" and has no personal or channel branding (group project).
 
 ---
 
@@ -949,7 +949,7 @@ Use `pytest`; mock all HTTP in unit tests.
 ### Milestone 6 — Polish & ship
 - [ ] Tests green; wireframe visual check on all six views
 - [ ] README with screenshots; optional deploy (Option B)
-- [ ] Record a demo for AK Aviation content
+- [ ] Record a demo of the project
 
 ---
 

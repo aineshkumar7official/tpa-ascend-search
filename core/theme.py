@@ -22,7 +22,7 @@ TOKENS = {
 }
 
 FONTS = ("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700"
-         "&family=Nunito:wght@700;800&display=swap")
+         "&family=Nunito:wght@700;800&family=Barlow+Condensed:wght@600;700&display=swap")
 
 _CSS = """
 @import url('{fonts}');
@@ -47,11 +47,15 @@ a {{ color: var(--link); }}
 [data-testid="stMarkdownContainer"]:has(> table:last-child) {{ margin-bottom: 0 !important; }}
 
 /* ---------- header / nav / banner ---------- */
-.as-header {{ background: var(--maroon); color: #fff; padding-top: 1.2rem; margin-top: -1rem; padding-bottom: .8rem;
-  display: flex; align-items: baseline; justify-content: space-between; }}
-.as-wordmark {{ font-family: 'Nunito', 'Inter', sans-serif; font-weight: 800; font-size: 1.6rem; color: #fff; }}
-.as-by {{ font-family: 'Nunito', sans-serif; font-weight: 700; font-size: .88rem; color: var(--gold); margin-left: .5rem; }}
-.as-tagline {{ font-family: 'Nunito', sans-serif; font-weight: 700; color: var(--gold); font-size: .95rem; }}
+/* V10.1 brand kit: plane + price-tag symbol, condensed all-caps wordmark, letter-spaced gold tagline. */
+.as-header {{ background: var(--maroon); color: #fff; padding-top: 1rem; margin-top: -1rem; padding-bottom: 2rem;
+  display: flex; align-items: center; justify-content: space-between; }}
+.as-brand {{ display: flex; align-items: center; gap: .6rem; }}
+.as-symbol {{ height: 2.6rem; width: auto; display: block; }}
+.as-wordmark {{ font-family: 'Barlow Condensed', 'Inter', sans-serif; font-weight: 700; font-size: 2rem; line-height: 1;
+  color: #fff; text-transform: uppercase; letter-spacing: .01em; }}
+.as-tagline {{ font-family: 'Barlow Condensed', sans-serif; font-weight: 600; color: var(--gold); font-size: 1.05rem;
+  text-transform: uppercase; letter-spacing: .16em; }}
 .st-key-navrow {{ background: var(--maroon); width: 100vw !important; max-width: 100vw !important;
   margin-left: calc(50% - 50vw); padding: 0 calc(50vw - 50%); gap: 0.25rem !important;
   position: relative; z-index: 3; margin-top: -2rem; }}
@@ -236,14 +240,21 @@ label p {{ font-weight: 600 !important; font-size: .82rem !important; }}
 .news li, .routes li {{ font-size: .85rem; margin-bottom: .3rem; }}
 
 /* ---------- footer ---------- */
-.as-footer {{ background: var(--footer-bg); border-top: 1px solid var(--border); margin-top: 1.5rem;
-  padding-top: 1rem; padding-bottom: .9rem; font-size: .8rem; }}
-.as-footer .cols {{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }}
-.as-footer h5 {{ font-size: .88rem; font-weight: 700; margin: 0 0 .5rem; padding: 0 !important; color: var(--ink); }}
-.as-footer .cols div > div {{ margin-bottom: .25rem; color: var(--muted); }}
-.as-footer a {{ color: var(--link); }}
-.as-footer .disc {{ border-top: 1px solid var(--border); margin-top: 1rem; padding-top: .8rem; color: var(--muted); font-size: .84rem; }}
-.as-footer.short {{ padding-top: .8rem; padding-bottom: .8rem; }}
+/* V11: maroon footer, brand symbol on the left, white text, gold underlined links. */
+.as-footer {{ background: var(--maroon); color: #fff; margin-top: 1.5rem;
+  padding-top: 1.4rem; padding-bottom: 1.1rem; font-size: .8rem; }}
+.as-footer-row {{ display: flex; align-items: flex-start; gap: 1.1rem; }}
+.as-footer-symbol {{ height: 2.9rem; width: auto; flex: none; display: block; }}
+.as-footer .cols {{ flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }}
+.as-footer h5 {{ font-size: .88rem; font-weight: 700; margin: 0 0 .5rem; padding: 0 !important; color: #fff; }}
+.as-footer .cols div > div {{ margin-bottom: .25rem; color: rgba(255, 255, 255, .9); }}
+.as-footer a {{ color: var(--gold); text-decoration: underline; }}
+.as-footer a:hover {{ color: #fff; }}
+.as-footer .disc {{ border-top: 1px solid rgba(255, 255, 255, .18); margin-top: 1rem; padding-top: .8rem;
+  color: rgba(255, 255, 255, .92); font-size: .8rem; }}
+.as-footer.short {{ padding-top: .9rem; padding-bottom: .9rem; }}
+.as-footer.short .as-footer-row {{ align-items: center; }}
+.as-footer.short .as-footer-symbol {{ height: 2.3rem; }}
 .as-footer.short .disc {{ border-top: 0; margin: 0; padding: 0; }}
 
 /* ---------- equal-size cards ---------- */
@@ -563,7 +574,11 @@ label p {{ font-size: .88rem !important; }}
 .inline-lbl {{ font-size: .92rem; white-space: nowrap; }}
 
 /* ---------- V4: card photo with credit on it ---------- */
-.card-photo {{ position: relative; }}
+.card-photo {{ position: relative; overflow: hidden; background: var(--image-ph); }}
+/* Whole plane always visible: the photo fits inside the box; a blurred copy of it fills the sides. */
+.card-photo .card-img-bg {{ position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+  filter: blur(14px) brightness(.92); transform: scale(1.15); }}
+.card-photo img.card-img {{ position: relative; object-fit: contain !important; background: transparent; }}
 .card-photo .credit {{ position: absolute; left: 0; right: 0; bottom: 0; margin: 0; padding: 1rem .7rem .3rem;
   background: linear-gradient(transparent, rgba(0, 0, 0, .62)); color: #fff; font-size: .68rem; white-space: nowrap;
   overflow: hidden; text-overflow: ellipsis; }}
@@ -671,9 +686,11 @@ a.linkish {{ font-size: .84rem; }}
 [class*="st-key-faresbox"] [data-testid="stMarkdownContainer"], [class*="st-key-cabinpanel"] [data-testid="stMarkdownContainer"],
 [class*="st-key-bundledetail"] [data-testid="stMarkdownContainer"], [class*="st-key-softcard_cabin"] [data-testid="stMarkdownContainer"],
 [class*="st-key-legrow"] [data-testid="stMarkdownContainer"] {{ overflow: visible; }}
-.cx-grid {{ display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; margin-top: .35rem; }}
+/* V10: Baggage · Food & drinks · Entertainment · Legroom in one row; 3 columns on the airline page (Legroom wraps);
+   2 × 2 inside a card's dropdown. */
+.cx-grid {{ display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .5rem; margin-top: .35rem; align-items: start; }}
+.cx-grid.cols3 {{ grid-template-columns: repeat(3, minmax(0, 1fr)); }}
 .cx-grid.stacked {{ grid-template-columns: 1fr 1fr; gap: .4rem; }}
-.cx-grid.stacked .amen-ent {{ grid-column: 1 / -1; }}
 .cx-grid .amen {{ background: var(--panel); min-height: 0; }}
 .cx-grid.stacked .amen {{ padding: .4rem .5rem; }}
 .cx-grid .amen .v {{ font-size: .84rem; line-height: 1.3; }}
@@ -725,7 +742,9 @@ a.linkish {{ font-size: .84rem; }}
 
 @media (max-width: 760px) {{
   .as-footer .cols {{ grid-template-columns: 1fr; }}
-  .as-header {{ flex-direction: column; gap: .2rem; }}
+  .as-footer:not(.short) .as-footer-row {{ flex-direction: column; gap: .8rem; }}
+  .as-header {{ flex-direction: column; align-items: flex-start; gap: .3rem; padding-bottom: 1.8rem; }}
+  .as-brand {{ flex-wrap: wrap; }} .as-wordmark {{ font-size: 1.6rem; }} .as-symbol {{ height: 2.1rem; }}
 }}
 """
 
