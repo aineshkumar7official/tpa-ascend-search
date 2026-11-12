@@ -13,7 +13,6 @@ load_dotenv(ROOT / ".env")
 
 # Naming: the wireframes alternate "Ascend Search" / "AscendSearch". Standardized here.
 PRODUCT_NAME = "TPA Ascend Search"
-BY_LINE = "by AK Aviation"
 TAGLINE = "Value the journey"
 BANNER_LINE = "Other flights give you the prices; we show you the experience."
 NAV_HOME = "Home"
@@ -24,6 +23,9 @@ DISCLAIMER = ("Prices are snapshots from public fare searches and may have chang
               "Always confirm on the airline or booking site.")
 DISCLAIMER_SHORT = "Prices are snapshots and may have changed. Always confirm on the airline or booking site."
 STUDENT_LINE = "Student project · USF"
+# V10.1 brand kit (TPA ASCEND SEARCH DRAFTS.png): app icon = browser favicon, symbol = header logo.
+APP_ICON = ROOT / "static" / "brand" / "favicon.png"
+HEADER_SYMBOL = "app/static/brand/symbol_light.png"
 
 
 def _env(name):

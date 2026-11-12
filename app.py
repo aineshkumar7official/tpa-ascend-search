@@ -6,7 +6,7 @@ import streamlit as st
 
 from core import config, ui
 
-st.set_page_config(page_title=config.PRODUCT_NAME, page_icon="✈️", layout="wide",
+st.set_page_config(page_title=config.PRODUCT_NAME, page_icon=str(config.APP_ICON), layout="wide",
                    initial_sidebar_state="collapsed")
 
 

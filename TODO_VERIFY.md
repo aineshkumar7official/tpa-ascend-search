@@ -129,7 +129,7 @@ Confirm each on planespotters.net shows the current livery.
 ## 5. Your own words
 - `data/airlines.json` → `description` (2–3 sentences per airline)
 - `data/fun_facts.json` → starter facts are placeholders; rewrite in your aviation voice, add more airlines
-- Footer "About" column → add the AK Aviation channel links in `core/ui.py` `footer()`
+- Footer "About" column → add the group's project links in `core/ui.py` `footer()`
 
 ## 6. `data/destinations.json`
 Generated from `TPA_Nonstop_Destinations.docx` by `python scripts/import_destinations_docx.py` (106 airports, 21 airlines).

@@ -69,8 +69,8 @@ def test_trend_summary_is_honest_about_span_and_today():
     assert "▼ 33% vs. 2-day avg" in html
 
 
-def test_compare_table_rows_follow_v7():
-    assert [k for k, _ in CMP_ROWS] == ["aircraft", "bags", "food", "ent", "freebie"]
+def test_compare_table_rows_follow_v10():
+    assert [k for k, _ in CMP_ROWS] == ["aircraft", "bags", "food", "legroom", "ent", "freebie"]
 
 
 def test_chip_popups_list_only_that_flights_amenities():
@@ -353,3 +353,12 @@ def test_routes_that_havent_started_are_left_out(monkeypatch):
     region = {"Caribbean & Latin America"}
     assert queries.matching_routes("MX", ["NAS", "CUN"], region, today=d(2026, 11, 10)) == ["NAS"]
     assert queries.matching_routes("MX", ["NAS", "CUN"], region, today=d(2026, 12, 19)) == ["NAS", "CUN"]
+
+
+def test_legroom_box_shows_seat_pitch_v10():
+    from core.ui import cabin_facts_html, legroom_text
+    assert legroom_text({"legroom_pitch_in": "30–31"}) == "Seat pitch · 30–31 in"
+    assert legroom_text({}) is None
+    html = cabin_facts_html({"airline_iata": "B6", "amenities": {"legroom_pitch_in": "32"}}, data={})
+    assert "Legroom" in html and "Seat pitch · 32 in" in html
+    assert "Not verified yet" in cabin_facts_html({"airline_iata": "B6", "amenities": {}}, data={})

@@ -1,4 +1,4 @@
-# TPA Ascend Search — by AK Aviation
+# TPA Ascend Search
 
 *Value the journey.* Other flights give you the prices; we show you the experience.
 

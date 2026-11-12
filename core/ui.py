@@ -161,8 +161,9 @@ def chrome(active):
     sync_db()
     theme.inject()
     st.markdown(
-        f"""<div class="as-header bleed"><div><span class="as-wordmark">{config.PRODUCT_NAME}</span>
-        <span class="as-by">{config.BY_LINE}</span></div><div class="as-tagline">{config.TAGLINE}</div></div>""",
+        f"""<div class="as-header bleed"><div class="as-brand"><img class="as-symbol" src="{config.HEADER_SYMBOL}" alt="">
+        <span class="as-wordmark">{config.PRODUCT_NAME}</span></div>
+        <div class="as-tagline">{config.TAGLINE}</div></div>""",
         unsafe_allow_html=True)
     alerts = queries.unseen_alerts(conn())  # uncached so the badge clears right after a Deals visit
     with st.container(horizontal=True, key="navrow"):
@@ -179,10 +180,12 @@ def chrome(active):
 
 
 def footer(full=False):
-    """Disclaimer strip on every page; the Explore / About / Data sources columns on Home only (wireframes V4 p1 vs p2-13)."""
+    """Disclaimer strip on every page; the Explore / About / Data sources columns on Home only (wireframes V4 p1 vs p2-13).
+    V11: maroon footer with the brand symbol on the left, white text and gold links."""
+    symbol = f'<img class="as-footer-symbol" src="{config.HEADER_SYMBOL}" alt="">'
     if not full:
-        st.markdown(f'<div class="as-footer short bleed"><div class="disc">Credentials / disclaimers: '
-                    f'{config.DISCLAIMER_SHORT}</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="as-footer short bleed"><div class="as-footer-row">{symbol}<div class="disc">'
+                    f'Credentials / disclaimers: {config.DISCLAIMER_SHORT}</div></div></div>', unsafe_allow_html=True)
         return
     c = conn()
     serpapi = queries.serpapi_remaining(c) is not None
@@ -193,21 +196,21 @@ def footer(full=False):
         delay = '<div>Delay data: U.S. DOT / BTS On-Time Performance</div>'
     html_ = f"""
 <div class="as-footer bleed">
+  <div class="as-footer-row">{symbol}
   <div class="cols">
     <div><h5>1. Explore</h5>
       {''.join(f'<div><a href="{paths[l]}" target="_self">{l}</a></div>' for l in paths)}
     </div>
     <div><h5>2. About</h5>
       <div>{config.PRODUCT_NAME} finds cheap nonstops out of Tampa (TPA) and shows what the flight is actually like: the plane, the cabin, the bags.</div>
-      <div>A project by <b>AK Aviation</b></div>
     </div>
     <div><h5>3. Data sources</h5>
       <div>Fares: Google Flights (via fast-flights){' + SerpApi' if serpapi else ''}</div>
       <div>Photos: Planespotters.net photographers · Wikimedia Commons (credited on each image)</div>
-      <div>Reviews: <a href="{settings.REVIEWS_SOURCE_URL}">{esc(settings.REVIEWS_SOURCE)}</a></div>
       <div>Airports: OurAirports (public domain) · News: Google News RSS</div>
       {delay}
     </div>
+  </div>
   </div>
   <div class="disc">Credentials / disclaimers: {config.DISCLAIMER} {config.STUDENT_LINE}</div>
 </div>"""
@@ -259,8 +262,12 @@ def credit(text, link=None):
 
 
 def card_photo(a, height, cls="card-img"):
-    """Card image with its required credit laid over the bottom edge, so the card body starts at the price (V4 p1)."""
-    return (f'<div class="card-photo">{image(a.get("exterior_url"), a.get("exterior_link"), "Plane photo · airline livery", height, cls)}'
+    """Card image with its required credit laid over the bottom edge, so the card body starts at the price (V4 p1).
+    Rule: the whole plane shows, nose to tail. The photo is fitted inside the box (never cropped) and a blurred
+    copy of it fills the space around it."""
+    src = asset_src(a.get("exterior_url"))
+    backdrop = f'<img class="card-img-bg" src="{esc(src)}" alt="" aria-hidden="true">' if src else ""
+    return (f'<div class="card-photo">{backdrop}{image(a.get("exterior_url"), a.get("exterior_link"), "Plane photo · airline livery", height, cls)}'
             f'{credit(a.get("exterior_credit"), a.get("exterior_link"))}</div>')
 
 
@@ -882,9 +889,16 @@ def _unknown(v):
     return esc(str(v)) if v else '<span class="unknown">Not verified yet</span>'
 
 
-def cabin_facts_html(f, stacked=False, data=None):
-    """Baggage · Food & drinks · Entertainment (hover a chip), then Special freebie when the airline has one (V7 p3, p20).
-    `stacked` is the narrow version inside a card's Cabin experience dropdown."""
+def legroom_text(amen):
+    """'Seat pitch · 31 in' from the airline's published economy seat pitch (V10), or None when unknown."""
+    pitch = str((amen or {}).get("legroom_pitch_in") or "").strip()
+    return f"Seat pitch · {pitch} in" if pitch else None
+
+
+def cabin_facts_html(f, stacked=False, data=None, cols=4):
+    """Baggage · Food & drinks · Entertainment (hover a chip) · Legroom, then Special freebie when the airline has one
+    (V7 p3, p20; Legroom V10). `stacked` is the narrow 2×2 version inside a card's Cabin experience dropdown; `cols`
+    is the column count otherwise (the airline page uses 3, so Legroom wraps under Baggage)."""
     amen = f.get("amenities") or {}
     data = google_fare(f) if data is None else data
     chips = amenity_chips(amen)
@@ -893,12 +907,14 @@ def cabin_facts_html(f, stacked=False, data=None):
     cells = (f'<div class="amen"><div class="k">Baggage</div><div class="v">Carry-on · {_unknown(_carry_text(amen, data))}</div>'
              f'<div class="v">Checked · {_unknown(_checked_text(f, amen, data))}</div></div>'
              f'<div class="amen"><div class="k">Food &amp; drinks</div><div class="v">{_unknown(amen.get("food_drinks"))}</div></div>'
-             f'<div class="amen amen-ent"><div class="k">{ent_k}</div>{ent}</div>')
+             f'<div class="amen amen-ent"><div class="k">{ent_k}</div>{ent}</div>'
+             f'<div class="amen"><div class="k">Legroom</div><div class="v">{_unknown(legroom_text(amen))}</div></div>')
     cool = amen.get("cool_thing")
     free = (f'<div class="freebie-box"><div class="k">Special freebie</div><div class="v">{esc(cool)}</div></div>'
             if cool else "")
     tag = f'<div class="cx-typical">{typical_tag(f)}</div>' if f.get("amenities_typical") else ""
-    return f'<div class="cx-grid{" stacked" if stacked else ""}">{cells}</div>{free}{tag}'
+    layout = " stacked" if stacked else ("" if cols == 4 else f" cols{cols}")
+    return f'<div class="cx-grid{layout}">{cells}</div>{free}{tag}'
 
 
 def cabin_panel(f, compact=True, came_from=None):
@@ -1762,12 +1778,14 @@ def _cmp_value(f, key):
         data = google_fare(f)
         return (f'Carry-on · {_unknown(_carry_text(amen, data))}<br>'
                 f'Checked · {_unknown(_checked_text(f, amen, data))}')
+    if key == "legroom":
+        return _unknown(legroom_text(amen))
     if key == "freebie":
         return esc(amen.get("cool_thing") or "—")
     return "—"
 
 
-CMP_ROWS = [("aircraft", "Aircraft"), ("bags", "Baggage"), ("food", "Food &amp; drinks"),
+CMP_ROWS = [("aircraft", "Aircraft"), ("bags", "Baggage"), ("food", "Food &amp; drinks"), ("legroom", "Legroom"),
             ("ent", 'Entertainment &amp; power<div class="cmp-sub">hover a chip: outbound / return</div>'),
             ("freebie", 'Special freebie <span class="cmp-sub">(optional)</span>')]
 
@@ -1908,7 +1926,7 @@ def airline_cabin_card(code, asset):
     with st.container(key=f"softcard_cabin_{code}"):
         st.markdown('<div class="fc-top"><span class="as-h3" style="margin:0">Cabin experience</span>'
                     '<span class="credit">Typical for this airline · economy</span></div>'
-                    f'{cabin_facts_html(fake, data={})}', unsafe_allow_html=True)
+                    f'{cabin_facts_html(fake, data={}, cols=3)}', unsafe_allow_html=True)
 
 
 def airline_freebie(code):
