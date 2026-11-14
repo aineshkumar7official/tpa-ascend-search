@@ -32,7 +32,7 @@ with st.container(key="panel_filters"):
         ret = d2.date_input("Return", dep + timedelta(days=3), min_value=dep, format="MM/DD/YYYY",
                             disabled=trip_label == "One-way")
         dests = [d["iata"] for d in config.destinations()
-                 if (region == "All regions" or d.get("region") == region) and d.get("status") != "coming_soon"]
+                 if (region == "All regions" or d.get("region") == region) and d.get("status") not in ("coming_soon", "not_flying")]
         dest = d3.selectbox("To", dests, format_func=ui.dest_label)
         if d4.button("Search live", type="primary", width="stretch"):
             custom = {"destination": dest, "depart_date": dep.isoformat(),

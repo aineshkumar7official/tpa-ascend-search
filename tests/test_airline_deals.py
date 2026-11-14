@@ -13,8 +13,11 @@ def test_older_cheaper_scan_never_overrides_the_newest_price(conn):
 def test_route_missed_by_last_scan_keeps_its_recent_price_until_it_ages_out(conn):
     _fare(conn, trip="one_way", price=90, dest="BOS", scan="new", at="2026-11-04T16:00:00+00:00")
     _fare(conn, trip="one_way", price=50, dest="ATL", scan="prev", at="2026-11-04T04:00:00+00:00")
-    _fare(conn, trip="one_way", price=10, dest="LAX", scan="stale", at="2026-11-03T02:00:00+00:00")
-    assert {f["destination"]: f["price_usd"] for f in queries.route_prices(conn, "DL")} == {"ATL": 50, "BOS": 90}
+    _fare(conn, trip="one_way", price=70, dest="MSP", scan="older", at="2026-11-02T04:00:00+00:00")  # 2.5 days
+    _fare(conn, trip="one_way", price=10, dest="LAX", scan="stale", at="2026-11-01T02:00:00+00:00")  # over 3 days
+    got = {f["destination"]: f for f in queries.route_prices(conn, "DL")}
+    assert {d: f["price_usd"] for d, f in got.items()} == {"ATL": 50, "BOS": 90, "MSP": 70}
+    assert "carried_from" not in got["BOS"] and got["ATL"]["carried_from"] == "2026-11-04T04:00:00+00:00"
 
 
 def _fare(conn, airline="DL", trip="round_trip", stops=0, price=100, mins=120, mode="nonstop", dest="ATL", scan="s1", at=AT):

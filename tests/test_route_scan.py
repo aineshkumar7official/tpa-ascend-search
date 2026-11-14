@@ -112,3 +112,59 @@ def test_route_scan_due_about_daily(conn, world):
     run(conn, {})
     assert not scouter.route_scan_due(conn, now=now + timedelta(hours=1))
     assert scouter.route_scan_due(conn, now=now + timedelta(hours=21))
+
+
+def test_one_way_tries_the_rest_of_the_week_for_airlines_still_missing(conn, world):
+    week = scouter.route_scan_dates(TODAY, extra=True)
+    assert [d.weekday() for d, _ in week] == [1, 4, 2, 3, 5, 6, 0] and all((r - d).days == 7 for d, r in week)
+    sat = week[4][0].isoformat()
+    calls = run(conn, {"CAK": [("MX", 80, 0, sat)], "ATL": [("DL", 90, 0, None), ("F9", 40, 0, None)]})
+    assert [c[1] for c in calls if c[0] == "CAK" and c[2] is None] == [d.isoformat() for d, _ in week[:5]]
+    assert stored(conn)[("MX", "CAK")] == 80
+    assert len([c for c in calls if c[0] == "ATL"]) == 2  # found on Tuesday both ways: no extra days
+
+
+def test_extra_days_try_the_airlines_usual_weekday_first(conn, world):
+    week = scouter.route_scan_dates(TODAY, extra=True)
+    sun = week[5][0]
+    conn.execute("""INSERT INTO fares(scan_id, scanned_at, destination, trip_type, window_id, scan_mode, depart_date, stops,
+                    price_usd, airline_iata, source) VALUES ('old','2026-10-01T00:00:00+00:00','CAK','one_way','routes',
+                    'airline','2026-10-18',0,70,'MX','t')""")  # Oct 18, 2026 was a Sunday
+    calls = run(conn, {"CAK": [("MX", 80, 0, sun.isoformat())]})
+    assert [c[1] for c in calls if c[0] == "CAK" and c[2] is None][2] == sun.isoformat()
+
+
+def test_coming_soon_airlines_and_the_extra_cap_limit_extra_days(conn, world, monkeypatch):
+    soon = [{"iata": "CAK", "carriers": ["MX"], "carrier_status": {"MX": {"status": "coming_soon"}}},
+            {"iata": "BGR", "carriers": ["MX"]}, {"iata": "BTV", "carriers": ["MX"]}]
+    monkeypatch.setattr(config, "destinations", lambda: soon)
+    monkeypatch.setattr(scouter, "ROUTE_EXTRA_SEARCHES", 6)
+    calls = [c for c in run(conn, {}) if c[2] is None]
+    assert len([c for c in calls if c[0] == "CAK"]) == 2   # Tuesday and Friday only
+    assert len([c for c in calls if c[0] == "BGR"]) == 7   # the whole week
+    assert len([c for c in calls if c[0] == "BTV"]) == 3   # cap reached after one extra day
+
+
+def test_round_trip_starts_on_the_day_the_one_way_found_the_airline(conn, world):
+    week = scouter.route_scan_dates(TODAY, extra=True)
+    sun, sun_back = week[5]
+    calls = run(conn, {"CAK": [("MX", 80, 0, sun.isoformat())]})
+    assert [c for c in calls if c[0] == "CAK" and c[2]][0] == ("CAK", sun.isoformat(), sun_back.isoformat())
+    assert stored(conn, "round_trip")[("MX", "CAK")] == 80
+
+
+def test_round_trip_tries_shorter_trips_when_the_week_apart_return_has_no_nonstop(conn, world):
+    (_, _), (fri, fri_back) = scouter.route_scan_dates(TODAY)
+    sun_back = (fri + timedelta(days=2)).isoformat()
+
+    def search(origin, dest, depart, ret=None, nonstop=True):
+        calls.append((dest, depart, ret))
+        if dest != "CAK" or depart != fri.isoformat() or ret not in (None, sun_back):
+            return []
+        return [fare("MX", dest, 80, depart, ret)]
+
+    calls = []
+    scouter.scan_routes(conn, search, lambda r, party, nonstop: [], TODAY)
+    rt = [c for c in calls if c[0] == "CAK" and c[2]]
+    assert rt[0] == ("CAK", fri.isoformat(), fri_back.isoformat()) and rt[-1] == ("CAK", fri.isoformat(), sun_back)
+    assert stored(conn, "round_trip")[("MX", "CAK")] == 80

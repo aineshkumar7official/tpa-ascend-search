@@ -13,6 +13,11 @@ on:
   schedule:
     - cron: "17 10,22 * * *"   # 10:17 and 22:17 UTC (about 5–6 AM and 5–6 PM in Tampa)
   workflow_dispatch:
+    inputs:
+      route_scan:
+        description: "Also run the Airline Matrix route scan now (normally about once a day)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -54,7 +59,7 @@ jobs:
           fi
 
       - name: Scan
-        run: python -m bots.pipeline --once
+        run: python -m bots.pipeline --once ${{ inputs.route_scan && '--routes' || '' }}
 
       - name: News
         continue-on-error: true

@@ -122,9 +122,41 @@ def _public(d):
     return {k: v for k, v in (d or {}).items() if not k.startswith("_")}
 
 
+# Best status across a destination's airlines (same order as scripts/import_destinations_docx.py), and how far
+# down the list 'not_flying' sits: a destination whose every airline is not flying is not flying.
+STATUS_RANK = {"current": 0, "seasonal": 1, "coming_soon": 2, "suspending": 3, "not_flying": 4}
+
+
+def _apply_route_checks(dests, checks):
+    """destinations.json with route_checks.json's hand-checked airline statuses laid over it (the destination's own
+    status recomputed from its airlines), so they survive re-importing the doc."""
+    if not checks:
+        return dests
+    out = []
+    for d in dests:
+        fixes = {a: checks[f"{a}|{d['iata']}"] for a in d.get("carriers", []) if f"{a}|{d['iata']}" in checks}
+        if not fixes:
+            out.append(d)
+            continue
+        cs = {**d.get("carrier_status", {}), **fixes}
+        best = min((s.get("status", "current") for s in cs.values()), key=STATUS_RANK.get)
+        d = {**d, "carrier_status": cs}
+        if best != d.get("status"):
+            note = next((s.get("note") for s in cs.values() if s.get("status") == best and s.get("note")), None)
+            d.update(status=best, status_note=note, seasonal=d.get("seasonal") or best == "seasonal")
+        out.append(d)
+    return out
+
+
+@lru_cache(maxsize=None)
+def _destinations():
+    return _apply_route_checks(load_json("destinations.json").get("destinations", []),
+                               load_json("route_checks.json").get("routes", {}))
+
+
 def destinations():
-    """All TPA nonstop destinations (Home 'To' dropdown)."""
-    return load_json("destinations.json").get("destinations", [])
+    """All TPA nonstop destinations (Home 'To' dropdown), with route_checks.json applied."""
+    return _destinations()
 
 
 def scan_destinations():
@@ -162,7 +194,7 @@ def metro_airports(code):
     if not is_metro(code):
         return [code]
     base, _, picked = code.partition(":")
-    live = {d["iata"] for d in destinations() if d.get("status") != "coming_soon"}
+    live = {d["iata"] for d in destinations() if d.get("status") not in ("coming_soon", "not_flying")}
     airports = [a for a in METROS[base][1] if a in live]
     return [a for a in airports if a in picked.split(",")] if picked else airports
 

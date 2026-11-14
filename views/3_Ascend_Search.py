@@ -109,6 +109,9 @@ def show_airline_notice():
     if ui.airline_notice(s):
         s["airline"] = None
         st.rerun()
+    note = ui.route_availability(s["destination"], s.get("airline"))
+    if note:
+        st.info(note, icon=":material/event_busy:")
 
 
 # ---------------------------------------------------------------- one-way (p8)

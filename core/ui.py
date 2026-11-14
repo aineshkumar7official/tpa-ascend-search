@@ -290,11 +290,19 @@ def fare_meta(f):
     return f"{dates_text(f)} · {hm(f.get('depart_time'))} – {hm(f.get('arrive_time'))} · {duration(f.get('duration_min'))}"
 
 
+def carried_note(f):
+    """'Price from the Nov 12 check.' for a fare kept from an earlier scan because the latest one missed its route."""
+    at = local_time(f.get("carried_from"))
+    return f"Price from the {at.strftime('%b %-d, %-I %p')} check." if at else None
+
+
 def card_actions(f, key, came_from="home", note=None):
     """Book now + Cabin experience ▾ (V8 p4, p22). Inside a `cabin_panel_row()` block the panel opens full width
     below the card's row (see `row_cabin_panel`); elsewhere it opens inside the card as before.
     Everything sits in one group so the card's bottom alignment keeps the note under its buttons."""
     open_ = st.session_state.get(f"cxopen_{key}", False)
+    carried = carried_note(f)
+    note = " ".join(x for x in (carried, note) if x) or None
     with st.container(gap="small", key=f"actgroup_{key}"):
         with st.container(horizontal=True, gap="small", key=f"btnrow_{key}"):
             st.link_button("Book now", book(f), type="primary",
@@ -1078,6 +1086,8 @@ def dest_label(iata):
         label += f" · starts {d.get('status_note') or 'soon'}"
     elif status == "suspending":
         label += " · ending soon"
+    elif status == "not_flying":
+        label += " · not flying now"
     elif status == "seasonal" or d.get("seasonal"):
         label += " · seasonal"
     return label
@@ -2032,7 +2042,44 @@ def reviews_panel(summary, code):
             <div class="credit">Source: {esc(settings.REVIEWS_SOURCE)}</div>""", unsafe_allow_html=True)
 
 
-STATUS_TEXT = {"current": "Year-round", "seasonal": "Seasonal", "coming_soon": "Starting soon", "suspending": "Ending soon"}
+STATUS_TEXT = {"current": "Year-round", "seasonal": "Seasonal", "coming_soon": "Starting soon", "suspending": "Ending soon",
+               "not_flying": "Not flying now"}
+
+
+def route_status(dest, airline=None):
+    """(status, note) for TPA -> dest from destinations.json: that airline's service when given, else the destination's."""
+    d = config.destination(dest) or {}
+    if airline:
+        cs = (d.get("carrier_status") or {}).get(airline) or {}
+        return cs.get("status", "current"), cs.get("note")
+    return d.get("status") or ("seasonal" if d.get("seasonal") else "current"), d.get("status_note")
+
+
+def route_availability(dest, airline=None):
+    """A sentence for a route that isn't flying year-round, or None: 'Breeze nonstops to Cancun start Dec 19, 2026.'"""
+    status, note = route_status(dest, airline)
+    who = f"{config.airline_name(airline)} nonstops" if airline else "Nonstops"
+    where = f"TPA → {config.city(dest)}"
+    if status == "coming_soon":
+        return f"{who} on {where} start {note or 'soon'}; there are no flights before then."
+    if status == "seasonal":
+        when = f" {note}." if note else ""
+        return f"{where} is seasonal: {who if airline else 'nonstops'} run only part of the year, so some dates have none.{when}"
+    if status == "not_flying":
+        return f"{who} on {where} aren't flying right now ({note or 'no flights scheduled'})."
+    if status == "suspending":
+        return f"{who} on {where} are ending ({note or 'soon'})."
+    return None
+
+
+def unpriced_text(status, last_seen):
+    """Why a route row has no price: the route isn't flying yet / this season, or no nonstop turned up lately."""
+    if status == "coming_soon":
+        return "Not flying yet"
+    if status in ("seasonal", "suspending", "not_flying"):
+        return "Not flying now"
+    at = local_time(last_seen)
+    return f"No flights since {at.strftime('%b %-d')}" if at else "No flights found"
 
 
 def route_search(s, dest, round_trip, fare=None, airline=None, today=None):
@@ -2085,6 +2132,7 @@ def routes_panel(code, routes):
     trip = ss.get(f"routes_trip_{code}") or "Round-trip"
     round_trip = trip == "Round-trip"
     priced = q("route_prices", code, "round_trip" if round_trip else "one_way")
+    seen = q("last_nonstop_seen", code)
     unit = "round trip" if round_trip else "one-way"
     by_dest = {f["destination"]: f for f in priced}
     dests = {d["iata"]: d for d in config.destinations()}
@@ -2103,7 +2151,13 @@ def routes_panel(code, routes):
             f = by_dest.get(r)
             cs = ((dests.get(r) or {}).get("carrier_status") or {}).get(code) or {}
             status = cs.get("note") or STATUS_TEXT.get(cs.get("status"), "")
-            price = f'from <b>{money(f["price_usd"])}</b> ({unit})' if f else '<span class="muted">not priced</span>'
+            if f:
+                price = f'from <b>{money(f["price_usd"])}</b> ({unit})'
+            else:
+                why = route_availability(r, code) or ("No nonstop on the dates we checked in the next few weeks. "
+                                                      "Select the route to search other dates.")
+                price = (f'<span class="muted" title="{esc(why)}">'
+                         f'{unpriced_text(cs.get("status", "current"), seen.get(r))}</span>')
             with st.container(key=f"routerow_{code}_{r}"):
                 st.markdown(f'<div class="rp-row"><b>TPA → {esc(config.city(r))}</b>'
                             f'<span class="muted">{aircraft_label(f) if f and f.get("aircraft_type") else "—"}</span>'
