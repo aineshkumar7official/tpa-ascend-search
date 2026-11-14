@@ -1,0 +1,21 @@
+{
+  "_note": "Hand-checked corrections to destinations.json (which is generated from TPA_Nonstop_Destinations.docx), applied by core.config.destinations(). Keyed 'AIRLINE|IATA'. Checked by searching Google Flights nonstops for every day of Dec 7-13 2026, Jan 11-17 and Feb 15-21 2027. 'not_flying' = none in those weeks; 'seasonal' = flights on some dates only (a note gives when they start, if known). Re-check and remove an entry once the route is back.",
+  "checked": "2026-11-13",
+  "routes": {
+    "WN|CLE": {"status": "not_flying", "note": "No flights through Feb 2027"},
+    "WN|GRR": {"status": "not_flying", "note": "No flights through Feb 2027"},
+    "WN|OKC": {"status": "not_flying", "note": "No flights through Feb 2027"},
+    "WN|RIC": {"status": "not_flying", "note": "No flights through Feb 2027"},
+    "WN|SLC": {"status": "not_flying", "note": "No flights through Feb 2027"},
+    "F9|GRR": {"status": "not_flying", "note": "No flights through Feb 2027"},
+    "F9|ISP": {"status": "not_flying", "note": "No flights through Feb 2027"},
+    "F9|PUJ": {"status": "not_flying", "note": "No flights through Feb 2027"},
+    "F9|TTN": {"status": "not_flying", "note": "No flights through Feb 2027"},
+    "MX|CRW": {"status": "not_flying", "note": "No flights through Feb 2027"},
+    "MX|ISP": {"status": "seasonal", "note": "Flights from Jan 2027"},
+    "MX|LAS": {"status": "seasonal", "note": "Flights from Jan 2027"},
+    "WN|ROC": {"status": "seasonal"},
+    "WN|TYS": {"status": "seasonal"},
+    "AC|YHZ": {"status": "seasonal"}
+  }
+}

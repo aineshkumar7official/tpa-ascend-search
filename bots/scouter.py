@@ -19,6 +19,8 @@ TRIP_TYPES = ("one_way", "round_trip")
 ANY_STOPS_WINDOW = "mid+4"   # Airline Matrix "absolute cheapest" scan runs on one window only
 FALLBACK_WINDOW = "fallback"  # Airline Matrix: nonstops for airlines the main scan missed (dates: route_scan_dates)
 ROUTE_WINDOW = "routes"      # Airline Matrix route prices (scan_routes)
+NOT_FLYING_YET = ("coming_soon", "not_flying")  # route scan tries these on Tuesday and Friday only
+ROUTE_EXTRA_SEARCHES = 120  # per route scan: days beyond Tuesday/Friday (about 6 minutes at most)
 ROUTE_SCAN_EVERY_HOURS = 20  # about daily; pages keep a route's price up to 3 days (queries.CARRY_FORWARD_DAYS)
 DROP_THRESHOLD = 0.20
 BASELINE_DAYS = 14
@@ -236,11 +238,20 @@ def route_scan_dates(today=None, extra=False):
     """(depart, return) to try for a route: the Tuesday of the mid+4 window, then that Friday for airlines
     that don't fly every day. A week away in both cases, so the return is on a day they fly too.
 
-    With `extra`, also the Sunday and Monday after, for airlines flying only a few days a week (British Airways
-    doesn't fly TPA-LHR on Tuesdays or Fridays; Allegiant's usual days include Sunday and Monday)."""
+    With `extra`, then the rest of that week (Wed, Thu, Sat, Sun, Mon): many routes run only a few days a week
+    (British Airways TPA-LHR skips Tuesdays and Fridays; Breeze flies Bangor and Burlington on Wednesdays and
+    Saturdays)."""
     tuesday = window_dates(ANY_STOPS_WINDOW, today or today_local())[0]
-    days = (0, 3, 5, 6) if extra else (0, 3)
+    days = (0, 3, 1, 2, 4, 5, 6) if extra else (0, 3)
     return [(tuesday + timedelta(days=n), tuesday + timedelta(days=n + 7)) for n in days]
+
+
+def _flown_weekdays(conn, dest, airlines):
+    """{weekday: count} of past nonstop departures on these airlines to dest, to try their usual days first."""
+    marks = ",".join("?" * len(airlines))
+    return dict(conn.execute(f"""SELECT CAST(strftime('%w', depart_date) AS INTEGER), COUNT(*) FROM fares
+                                 WHERE destination=? AND stops=0 AND airline_iata IN ({marks}) GROUP BY 1""",
+                             (dest, *airlines)).fetchall())
 
 
 def _priced_routes(conn, trip_type, since):
@@ -264,22 +275,38 @@ def scan_routes(conn, search=None, search_returns=None, today=None):
     search_returns = search_returns or flights_fast.search_returns
     scan_id, scanned_at = str(uuid.uuid4()), utcnow()
     since = (datetime.fromisoformat(scanned_at) - timedelta(days=1)).isoformat()
-    base, one_way_dates = route_scan_dates(today), route_scan_dates(today, extra=True)
+    base, week = route_scan_dates(today), route_scan_dates(today, extra=True)
     flies = {}  # dest -> departure dates the one-way search found a missing airline on; round trips try them first
-    searched = found = 0
+    searched = found = extra_used = 0
     for trip_type in TRIP_TYPES:
         priced = _priced_routes(conn, trip_type, since)
         for d in config.destinations():
             dest = d["iata"]
             missing = {c for c in d.get("carriers", []) if (c, dest) not in priced}
             if trip_type == "one_way":
-                dates = one_way_dates
+                # Tuesday and Friday, then the rest of the week for airlines flying (not coming soon / not flying),
+                # their usual weekdays first. %w counts Sunday as 0; Python's weekday() counts Monday as 0.
+                flying = {c for c in missing if (d.get("carrier_status", {}).get(c) or {}).get("status") not in NOT_FLYING_YET}
+                usual = _flown_weekdays(conn, dest, flying) if flying else {}
+                rest = sorted(week[len(base):], key=lambda x: -usual.get((x[0].weekday() + 1) % 7, 0))
+                dates = base + [(*x, "extra") for x in rest] if flying else base
             else:
-                found_days = [(x, x + timedelta(days=7)) for x in flies.get(dest, [])]
-                dates = list(dict.fromkeys(found_days + base))
-            for depart, ret in dates:
-                if not missing:
+                # Days the one-way found (this scan, else the airline's usual weekday this week) a week apart, then
+                # Tuesday/Friday; then shorter trips from the first such day, for airlines that fly back only on some
+                # days (Southwest flies Memphis Fri-Sun: Friday out, Friday back has no nonstop return).
+                flying = {c for c in missing if (d.get("carrier_status", {}).get(c) or {}).get("status") not in NOT_FLYING_YET}
+                usual = _flown_weekdays(conn, dest, missing) if missing else {}
+                known = flies.get(dest) or [x for x, _ in week if usual.get((x.weekday() + 1) % 7)]
+                dates = list(dict.fromkeys([(x, x + timedelta(days=7)) for x in known] + base))
+                first = known[0] if known else base[1][0]
+                dates += [(first, first + timedelta(days=n), "extra") for n in (2, 3, 4)]
+            for depart, ret, *kind in dates:
+                if not missing or (kind and not (missing & flying)):
                     break
+                if kind:
+                    if extra_used >= ROUTE_EXTRA_SEARCHES:
+                        break
+                    extra_used += 1
                 _sleep()
                 searched += 1
                 back = ret.isoformat() if trip_type == "round_trip" else None
@@ -300,7 +327,7 @@ def scan_routes(conn, search=None, search_returns=None, today=None):
                 found += len(rows)
                 if rows and trip_type == "one_way":
                     flies.setdefault(dest, []).append(depart)
-    log.info("route scan %s: %d searches, %d fares", scan_id, searched, found)
+    log.info("route scan %s: %d searches (%d on extra days), %d fares", scan_id, searched, extra_used, found)
     return scan_id
 
 

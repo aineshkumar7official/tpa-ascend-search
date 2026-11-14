@@ -453,6 +453,13 @@ def route_prices(conn, airline, trip_type="one_way"):
     return list(seen.values())
 
 
+def last_nonstop_seen(conn, airline):
+    """{destination: newest scanned_at of any nonstop fare on this airline}, for saying how long a route has gone
+    without a flight on the dates we check."""
+    return dict(conn.execute("SELECT destination, MAX(scanned_at) FROM fares WHERE airline_iata=? AND stops=0 "
+                             "GROUP BY destination", (airline,)).fetchall())
+
+
 def airline_deals(conn, airline, trip_type="one_way"):
     """The three 'Deals on [airline]' cards (V5.1 p7) for one trip type; any of them can be None.
 
