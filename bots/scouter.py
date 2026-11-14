@@ -19,7 +19,7 @@ TRIP_TYPES = ("one_way", "round_trip")
 ANY_STOPS_WINDOW = "mid+4"   # Airline Matrix "absolute cheapest" scan runs on one window only
 FALLBACK_WINDOW = "fallback"  # Airline Matrix: nonstops for airlines the main scan missed (dates: route_scan_dates)
 ROUTE_WINDOW = "routes"      # Airline Matrix route prices (scan_routes)
-ROUTE_SCAN_EVERY_HOURS = 20  # about daily: a price stops counting as current a day after the latest scan
+ROUTE_SCAN_EVERY_HOURS = 20  # about daily; pages keep a route's price up to 3 days (queries.CARRY_FORWARD_DAYS)
 DROP_THRESHOLD = 0.20
 BASELINE_DAYS = 14
 MIN_POINTS = 6
@@ -232,11 +232,15 @@ def scan_airline_routes(conn, scan_id, scanned_at, seen, dry_run=False, search=N
     return collected
 
 
-def route_scan_dates(today=None):
+def route_scan_dates(today=None, extra=False):
     """(depart, return) to try for a route: the Tuesday of the mid+4 window, then that Friday for airlines
-    that don't fly every day. A week away in both cases, so the return is on a day they fly too."""
+    that don't fly every day. A week away in both cases, so the return is on a day they fly too.
+
+    With `extra`, also the Sunday and Monday after, for airlines flying only a few days a week (British Airways
+    doesn't fly TPA-LHR on Tuesdays or Fridays; Allegiant's usual days include Sunday and Monday)."""
     tuesday = window_dates(ANY_STOPS_WINDOW, today or today_local())[0]
-    return [(d, d + timedelta(days=7)) for d in (tuesday, tuesday + timedelta(days=3))]
+    days = (0, 3, 5, 6) if extra else (0, 3)
+    return [(tuesday + timedelta(days=n), tuesday + timedelta(days=n + 7)) for n in days]
 
 
 def _priced_routes(conn, trip_type, since):
@@ -260,13 +264,19 @@ def scan_routes(conn, search=None, search_returns=None, today=None):
     search_returns = search_returns or flights_fast.search_returns
     scan_id, scanned_at = str(uuid.uuid4()), utcnow()
     since = (datetime.fromisoformat(scanned_at) - timedelta(days=1)).isoformat()
-    dates = route_scan_dates(today)
+    base, one_way_dates = route_scan_dates(today), route_scan_dates(today, extra=True)
+    flies = {}  # dest -> departure dates the one-way search found a missing airline on; round trips try them first
     searched = found = 0
     for trip_type in TRIP_TYPES:
         priced = _priced_routes(conn, trip_type, since)
         for d in config.destinations():
             dest = d["iata"]
             missing = {c for c in d.get("carriers", []) if (c, dest) not in priced}
+            if trip_type == "one_way":
+                dates = one_way_dates
+            else:
+                found_days = [(x, x + timedelta(days=7)) for x in flies.get(dest, [])]
+                dates = list(dict.fromkeys(found_days + base))
             for depart, ret in dates:
                 if not missing:
                     break
@@ -288,6 +298,8 @@ def scan_routes(conn, search=None, search_returns=None, today=None):
                 conn.commit()
                 missing -= {r["airline_iata"] for r in rows}
                 found += len(rows)
+                if rows and trip_type == "one_way":
+                    flies.setdefault(dest, []).append(depart)
     log.info("route scan %s: %d searches, %d fares", scan_id, searched, found)
     return scan_id
 

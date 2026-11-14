@@ -112,3 +112,19 @@ def test_route_scan_due_about_daily(conn, world):
     run(conn, {})
     assert not scouter.route_scan_due(conn, now=now + timedelta(hours=1))
     assert scouter.route_scan_due(conn, now=now + timedelta(hours=21))
+
+
+def test_one_way_tries_sunday_then_monday_for_airlines_still_missing(conn, world):
+    _, _, (sun, _), (mon, _) = scouter.route_scan_dates(TODAY, extra=True)
+    assert sun.weekday() == 6 and mon.weekday() == 0
+    calls = run(conn, {"CAK": [("MX", 80, 0, mon.isoformat())], "ATL": [("DL", 90, 0, None), ("F9", 40, 0, None)]})
+    assert [c[1] for c in calls if c[0] == "CAK" and c[2] is None][2:] == [sun.isoformat(), mon.isoformat()]
+    assert stored(conn)[("MX", "CAK")] == 80
+    assert len([c for c in calls if c[0] == "ATL"]) == 2  # found on Tuesday both ways: no extra days
+
+
+def test_round_trip_starts_on_the_day_the_one_way_found_the_airline(conn, world):
+    (_, _), _, (sun, sun_back), _ = scouter.route_scan_dates(TODAY, extra=True)
+    calls = run(conn, {"CAK": [("MX", 80, 0, sun.isoformat())]})
+    assert [c for c in calls if c[0] == "CAK" and c[2]][0] == ("CAK", sun.isoformat(), sun_back.isoformat())
+    assert stored(conn, "round_trip")[("MX", "CAK")] == 80
