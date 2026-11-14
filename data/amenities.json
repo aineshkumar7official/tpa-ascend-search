@@ -69,7 +69,8 @@
     "legroom_pitch_in": "30–31",
     "cool_thing": "Trading cards",
     "wifi_cost": "Free messaging",
-    "power_outlet": "USB and universal (AC) outlets"
+    "power_outlet": "USB and universal (AC) outlets",
+    "entertainment_system": "United Private Screening"
   },
   "UA|Boeing 737": {
     "carry_on": "Free. Basic: not included domestic, short-haul; included transatlantic, transpacific.",
@@ -81,7 +82,8 @@
     "legroom_pitch_in": "30–31",
     "cool_thing": "Trading cards",
     "wifi_cost": "Free messaging",
-    "power_outlet": "USB and universal (AC) outlets"
+    "power_outlet": "USB and universal (AC) outlets",
+    "entertainment_system": "United Private Screening"
   },
   "UA|737-700": {
     "carry_on": "Free. Basic: not included domestic, short-haul; included transatlantic, transpacific.",
@@ -94,7 +96,8 @@
     "cool_thing": "Trading cards",
     "wifi_cost": "Free messaging",
     "power_outlet": "USB and universal (AC) outlets",
-    "screen_size_in": "10"
+    "screen_size_in": "10",
+    "entertainment_system": "United Private Screening"
   },
   "UA|737 MAX 8": {
     "carry_on": "Free. Basic: not included domestic, short-haul; included transatlantic, transpacific.",
@@ -107,7 +110,8 @@
     "cool_thing": "Trading cards",
     "wifi_cost": "Free messaging",
     "power_outlet": "USB and universal (AC) outlets",
-    "screen_size_in": "10"
+    "screen_size_in": "10",
+    "entertainment_system": "United Private Screening"
   },
   "UA|737 MAX 9": {
     "carry_on": "Free. Basic: not included domestic, short-haul; included transatlantic, transpacific.",
@@ -120,7 +124,8 @@
     "cool_thing": "Trading cards",
     "wifi_cost": "Free messaging",
     "power_outlet": "USB and universal (AC) outlets",
-    "screen_size_in": "10"
+    "screen_size_in": "10",
+    "entertainment_system": "United Private Screening"
   },
   "UA|A321neo": {
     "carry_on": "Free. Basic: not included domestic, short-haul; included transatlantic, transpacific.",
@@ -133,7 +138,8 @@
     "cool_thing": "Trading cards",
     "wifi_cost": "Free messaging",
     "power_outlet": "USB and universal (AC) outlets",
-    "screen_size_in": "10"
+    "screen_size_in": "10",
+    "entertainment_system": "United Private Screening"
   },
   "UA|737-800": {
     "carry_on": "Free. Basic: not included domestic, short-haul; included transatlantic, transpacific.",
@@ -145,7 +151,8 @@
     "legroom_pitch_in": "30–31",
     "cool_thing": "Trading cards",
     "wifi_cost": "Free messaging",
-    "power_outlet": "USB and universal (AC) outlets"
+    "power_outlet": "USB and universal (AC) outlets",
+    "entertainment_system": "United Private Screening"
   },
   "UA|737-900": {
     "carry_on": "Free. Basic: not included domestic, short-haul; included transatlantic, transpacific.",
@@ -157,7 +164,8 @@
     "legroom_pitch_in": "30–31",
     "cool_thing": "Trading cards",
     "wifi_cost": "Free messaging",
-    "power_outlet": "USB and universal (AC) outlets"
+    "power_outlet": "USB and universal (AC) outlets",
+    "entertainment_system": "United Private Screening"
   },
   "NK|*": {
     "carry_on": null,
@@ -329,7 +337,8 @@
     "cool_thing": "Free Discover cookies for dessert",
     "screen_size_in": "9",
     "wifi_cost": "Free messaging; more Wi-Fi plans for a fee",
-    "power_outlet": "Universal (AC) and USB sockets"
+    "power_outlet": "Universal (AC) and USB sockets",
+    "entertainment_system": "Discover Airlines Entertainment"
   },
   "WK|*": {
     "carry_on": "Free · 8 kg",
@@ -341,7 +350,8 @@
     "legroom_pitch_in": "31",
     "cool_thing": "Pre-arrival Biberli, a Swiss ginger biscuit",
     "screen_size_in": "9",
-    "power_outlet": "In-seat power and USB outlets"
+    "power_outlet": "In-seat power and USB outlets",
+    "entertainment_system": "Edelweiss Entertainment"
   },
   "PD|*": {
     "carry_on": "Not included on Basic; 1 free on Standard and above",

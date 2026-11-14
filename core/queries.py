@@ -40,6 +40,40 @@ def latest_scan(conn, mode="nonstop"):
     return dict(row) if row else None
 
 
+# A scan doesn't reach every route: Google blocks some searches and some come back empty. A route the newest scan
+# missed keeps the fare from its own newest scan, up to CARRY_FORWARD_DAYS old and only while the flight is still
+# ahead, instead of disappearing. An older scan never wins over a newer one for the same route, even when cheaper.
+CARRY_FORWARD_DAYS = 3
+
+
+def _carry_cutoff(scan):
+    """Oldest scanned_at still shown. ISO-formatted like the column, because the values compare as text (SQLite's
+    datetime() uses a space instead of 'T', which lets older scans through)."""
+    return (datetime.fromisoformat(scan["scanned_at"]) - timedelta(days=CARRY_FORWARD_DAYS)).isoformat()
+
+
+def current_fares(conn, where, args, per, scan=None, mode="nonstop"):
+    """Fares matching `where` from each group's newest scan (group = the `per` columns, e.g. 'destination'),
+    within CARRY_FORWARD_DAYS of the latest scan and departing no earlier than its date. Rows (not hydrated)."""
+    scan = scan or latest_scan(conn, mode)
+    if not scan:
+        return []
+    return conn.execute(f"""
+        WITH pool AS (SELECT * FROM fares WHERE {where} AND status='ready_to_publish'
+                      AND scanned_at>=? AND depart_date>=?)
+        SELECT * FROM pool WHERE scanned_at=(SELECT MAX(scanned_at) FROM pool newer
+                                             WHERE {" AND ".join(f"newer.{c} IS pool.{c}" for c in per.split(","))})
+        ORDER BY price_usd, return_leg IS NULL""",
+        (*args, _carry_cutoff(scan), scan["scanned_at"][:10])).fetchall()
+
+
+def _mark_carried(f, scan):
+    """Note on a fare kept from an earlier scan, so the card can say when its price was checked."""
+    if scan and f.get("scanned_at") and f["scanned_at"] < scan["scanned_at"]:
+        f["carried_from"] = f["scanned_at"]
+    return f
+
+
 def last_scan_time(conn):
     row = conn.execute("SELECT MAX(scanned_at) FROM fares").fetchone()
     return row[0] if row else None
@@ -101,46 +135,40 @@ def fare_by_id(conn, fare_id):
     return None
 
 
-def _ready(conn, sql, args):
+def _ready(conn, sql, args=None, scan=None):
+    """Hydrated fares from a query, or from rows already fetched (pass a list as `sql`)."""
     out = []
-    for r in conn.execute(sql, args):
-        f = hydrate(conn, r)
+    for r in (conn.execute(sql, args) if isinstance(sql, str) else sql):
+        f = _mark_carried(hydrate(conn, r), scan)
         f["fare_id"] = str(r["id"])
         out.append(f)
     return out
 
 
+_HOME_NONSTOPS = "trip_type=? AND scan_mode='nonstop' AND stops=0"
+
+
 # ---------------------------------------------------------------- Home
 def cheapest_nonstops(conn, trip_type="one_way", n=3):
-    """Cheapest nonstop per destination in the latest scan, top n by price."""
+    """Cheapest nonstop per destination from its newest scan (see current_fares), top n by price."""
     scan = latest_scan(conn)
-    if not scan:
-        return []
-    return _ready(conn, """
-        SELECT f.* FROM fares f
-        JOIN (SELECT destination, MIN(price_usd) p FROM fares
-              WHERE scan_id=? AND trip_type=? AND scan_mode='nonstop' AND stops=0 AND status='ready_to_publish'
-              GROUP BY destination) m ON m.destination=f.destination AND m.p=f.price_usd
-        WHERE f.scan_id=? AND f.trip_type=? AND f.scan_mode='nonstop' AND f.stops=0 AND f.status='ready_to_publish'
-        GROUP BY f.destination ORDER BY f.price_usd, f.depart_date LIMIT ?""",
-        (scan["scan_id"], trip_type, scan["scan_id"], trip_type, n))
+    best = {}
+    for r in current_fares(conn, _HOME_NONSTOPS, (trip_type,), "destination", scan):
+        best.setdefault(r["destination"], r)  # rows come cheapest first
+    rows = sorted(best.values(), key=lambda r: (r["price_usd"], r["depart_date"]))[:n]
+    return _ready(conn, rows, scan=scan)
 
 
 def nonstop_candidates(conn, trip_type="one_way"):
-    """Cheapest nonstop per (destination, airline) in the latest scan — the pool Home re-ranks by the
-    with-bags total when 'Bags included' is on (a low fare with high bag fees can lose to another airline)."""
+    """Cheapest nonstop per (destination, airline) from each destination's newest scan — the pool Home re-ranks by
+    the with-bags total when 'Bags included' is on (a low fare with high bag fees can lose to another airline).
+    Among equal prices the fare with a return flight wins."""
     scan = latest_scan(conn)
-    if not scan:
-        return []
-    return _ready(conn, """
-        SELECT f.*, MAX(f.return_leg IS NOT NULL) AS has_return FROM fares f
-        JOIN (SELECT destination, airline_iata, MIN(price_usd) p FROM fares
-              WHERE scan_id=? AND trip_type=? AND scan_mode='nonstop' AND stops=0 AND status='ready_to_publish'
-              GROUP BY destination, airline_iata) m
-          ON m.destination=f.destination AND m.airline_iata IS f.airline_iata AND m.p=f.price_usd
-        WHERE f.scan_id=? AND f.trip_type=? AND f.scan_mode='nonstop' AND f.stops=0 AND f.status='ready_to_publish'
-        GROUP BY f.destination, f.airline_iata ORDER BY f.price_usd, f.depart_date""",
-        (scan["scan_id"], trip_type, scan["scan_id"], trip_type))
+    best = {}
+    for r in current_fares(conn, _HOME_NONSTOPS, (trip_type,), "destination", scan):
+        best.setdefault((r["destination"], r["airline_iata"]), r)  # cheapest first, return flight first on ties
+    rows = sorted(best.values(), key=lambda r: (r["price_usd"], r["depart_date"]))
+    return _ready(conn, rows, scan=scan)
 
 
 def cheapest_mix(conn, trip_type="one_way", n=3):
@@ -172,10 +200,9 @@ def deals(conn, window_id, trip_type, region=None, carry_on=0, checked=0, party=
     scan = latest_scan(conn)
     if not scan:
         return []
-    rows = conn.execute(
-        """SELECT * FROM fares WHERE scan_id=? AND window_id=? AND trip_type=? AND scan_mode='nonstop'
-           AND stops=0 AND status='ready_to_publish' ORDER BY price_usd, return_leg IS NULL""",
-        (scan["scan_id"], window_id, trip_type)).fetchall()
+    # Each destination's newest scan in this window (a destination the latest scan missed keeps its last fare).
+    rows = current_fares(conn, "window_id=? AND trip_type=? AND scan_mode='nonstop' AND stops=0",
+                         (window_id, trip_type), "destination", scan)
     if carry_on or checked:
         quotes = [(r, quote(dict(r), carry_on, checked, party)) for r in rows]
         priced = sorted((x for x in quotes if x[1].bags_total is not None), key=lambda x: x[1].total)
@@ -189,14 +216,15 @@ def deals(conn, window_id, trip_type, region=None, carry_on=0, checked=0, party=
         if region and d.get("region") != region:
             continue
         # 30 days for the chart's 7/14/30-day views; the baseline and `trend` stay on the last 14.
-        hist30 = history(conn, dest, trip_type, window_id, r["depart_date"], days=30, until=scan["scanned_at"])
-        cutoff = (datetime.fromisoformat(scan["scanned_at"][:19]) - timedelta(days=BASELINE_DAYS)).isoformat()
+        at = r["scanned_at"]  # the fare's own scan: older than the latest one when carried forward
+        hist30 = history(conn, dest, trip_type, window_id, r["depart_date"], days=30, until=at)
+        cutoff = (datetime.fromisoformat(at[:19]) - timedelta(days=BASELINE_DAYS)).isoformat()
         hist = [h for h in hist30 if h["scanned_at"] >= cutoff]
-        prev = [h["min_price"] for h in hist if h["scanned_at"] < scan["scanned_at"]]
+        prev = [h["min_price"] for h in hist if h["scanned_at"] < at]
         tracking = len(prev) < MIN_POINTS
         baseline = statistics.median(prev) if not tracking else None
         drop = (baseline - r["price_usd"]) / baseline if baseline else None
-        fare = hydrate(conn, r)
+        fare = _mark_carried(hydrate(conn, r), scan)
         fare["fare_id"] = str(r["id"])
         out.append({"fare": fare, "trend": [h["min_price"] for h in hist], "baseline": baseline,
                     "drop_pct": drop, "tracking": tracking, "prev": prev,
@@ -265,21 +293,10 @@ def standouts_to_show(standouts, home_destinations, n=STANDOUT_MAX_CARDS):
 
 
 # ---------------------------------------------------------------- Airline Matrix
-def _recent_cutoff(scan):
-    """Oldest scanned_at still counted as current. ISO-formatted like the column, because the values
-    compare as text (SQLite's datetime() uses a space instead of 'T', which lets older scans through)."""
-    return (datetime.fromisoformat(scan["scanned_at"]) - timedelta(days=1)).isoformat()
-
-
 def _current_nonstops(conn, airline, trip_type, scan):
-    """An airline's nonstops from each route's newest scan, cheapest first. Older scans are skipped even when
-    cheaper, so a price that has since gone up never shows; a route the last scan missed keeps its previous one."""
-    return _ready(conn, """
-        WITH mine AS (SELECT * FROM fares WHERE airline_iata=? AND stops=0 AND trip_type=?
-                      AND status='ready_to_publish' AND scanned_at>=?)
-        SELECT * FROM mine
-        WHERE scanned_at=(SELECT MAX(scanned_at) FROM mine newer WHERE newer.destination=mine.destination)
-        ORDER BY price_usd, return_leg IS NULL""", (airline, trip_type, _recent_cutoff(scan)))
+    """An airline's nonstops from each route's newest scan, cheapest first (see current_fares)."""
+    return _ready(conn, current_fares(conn, "airline_iata=? AND stops=0 AND trip_type=?", (airline, trip_type),
+                                      "destination", scan), scan=scan)
 
 
 def airline_routes(conn, airline):
@@ -289,7 +306,7 @@ def airline_routes(conn, airline):
     if scan:
         dests |= {r[0] for r in conn.execute(
             "SELECT DISTINCT destination FROM fares WHERE airline_iata=? AND stops=0 AND scanned_at>=?",
-            (airline, _recent_cutoff(scan)))}
+            (airline, _carry_cutoff(scan)))}
     return sorted(dests)
 
 
@@ -445,9 +462,8 @@ def airline_deals(conn, airline, trip_type="one_way"):
     if scan:
         nonstop = _current_nonstops(conn, airline, trip_type, scan)
     if any_scan:
-        with_stops = _ready(conn, """SELECT * FROM fares WHERE scan_id=? AND airline_iata=? AND stops>0 AND trip_type=?
-                                      AND status='ready_to_publish' ORDER BY price_usd LIMIT 1""",
-                            (any_scan["scan_id"], airline, trip_type))
+        with_stops = _ready(conn, current_fares(conn, "airline_iata=? AND stops>0 AND trip_type=?", (airline, trip_type),
+                                                "destination", any_scan, mode="any")[:1], scan=any_scan)
     timed = [f for f in nonstop if f.get("duration_min")]
     return {"cheapest": min(nonstop[:1] + with_stops, key=lambda f: f["price_usd"], default=None),
             "fastest_nonstop": min(timed, key=lambda f: (f["duration_min"], f["price_usd"]), default=None),

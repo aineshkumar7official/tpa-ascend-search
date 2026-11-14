@@ -290,11 +290,19 @@ def fare_meta(f):
     return f"{dates_text(f)} · {hm(f.get('depart_time'))} – {hm(f.get('arrive_time'))} · {duration(f.get('duration_min'))}"
 
 
+def carried_note(f):
+    """'Price from the Nov 12 check.' for a fare kept from an earlier scan because the latest one missed its route."""
+    at = local_time(f.get("carried_from"))
+    return f"Price from the {at.strftime('%b %-d, %-I %p')} check." if at else None
+
+
 def card_actions(f, key, came_from="home", note=None):
     """Book now + Cabin experience ▾ (V8 p4, p22). Inside a `cabin_panel_row()` block the panel opens full width
     below the card's row (see `row_cabin_panel`); elsewhere it opens inside the card as before.
     Everything sits in one group so the card's bottom alignment keeps the note under its buttons."""
     open_ = st.session_state.get(f"cxopen_{key}", False)
+    carried = carried_note(f)
+    note = " ".join(x for x in (carried, note) if x) or None
     with st.container(gap="small", key=f"actgroup_{key}"):
         with st.container(horizontal=True, gap="small", key=f"btnrow_{key}"):
             st.link_button("Book now", book(f), type="primary",
